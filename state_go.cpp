@@ -418,56 +418,56 @@ inline void StateGo::apply(DataGo d)
         //Try to join blocks of same color.
         bool first=true;
         if(i>0)
-          if(Stones[i-1][j]==d.player && Blocks[i-1][j]!=Blocks[d.i][d.j])
+          if(Stones[i-1][j]==d.player && Blocks[i-1][j]!=Blocks[i][j])
             if(first){
               *Blocks[i-1][j]+=*adj;
               delete adj;
-              Blocks[d.i][d.j]=Blocks[i-1][j];
+              Blocks[i][j]=Blocks[i-1][j];
               first=false;
             }
             else{
-              *Blocks[d.i][d.j]+=*Blocks[i-1][j];
+              *Blocks[i][j]+=*Blocks[i-1][j];
               delete Blocks[i-1][j];
-              update_block(Blocks[i-1][j],Blocks[d.i][d.j],i-1,j);
+              update_block(Blocks[i-1][j],Blocks[i][j],i-1,j);
             }
         if(j>0)
-          if(Stones[i][j-1]==d.player && Blocks[i][j-1]!=Blocks[d.i][d.j])
+          if(Stones[i][j-1]==d.player && Blocks[i][j-1]!=Blocks[i][j])
             if(first){
               *Blocks[i][j-1]+=*adj;
               delete adj;
-              Blocks[d.i][d.j]=Blocks[i][j-1];
+              Blocks[i][j]=Blocks[i][j-1];
               first=false;
             }
             else{
-              *Blocks[d.i][d.j]+=*Blocks[i][j-1];
+              *Blocks[i][j]+=*Blocks[i][j-1];
               delete Blocks[i][j-1];
-              update_block(Blocks[i][j-1],Blocks[d.i][d.j],i,j-1);
+              update_block(Blocks[i][j-1],Blocks[i][j],i,j-1);
             }
         if(j<_size-1)
-          if(Stones[i][j+1]==d.player && Blocks[i][j+1]!=Blocks[d.i][d.j])
+          if(Stones[i][j+1]==d.player && Blocks[i][j+1]!=Blocks[i][j])
             if(first){
               *Blocks[i][j+1]+=*adj;
               delete adj;
-              Blocks[d.i][d.j]=Blocks[i][j+1];
+              Blocks[i][j]=Blocks[i][j+1];
               first=false;
             }
             else{
-              *Blocks[d.i][d.j]+=*Blocks[i][j+1];
+              *Blocks[i][j]+=*Blocks[i][j+1];
               delete Blocks[i][j+1];
-              update_block(Blocks[i][j+1],Blocks[d.i][d.j],i,j+1);
+              update_block(Blocks[i][j+1],Blocks[i][j],i,j+1);
             }
         if(i<_size-1)
-          if(Stones[i+1][j]==d.player && Blocks[i+1][j]!=Blocks[d.i][d.j])
+          if(Stones[i+1][j]==d.player && Blocks[i+1][j]!=Blocks[i][j])
             if(first){
               *Blocks[i+1][j]+=*adj;
               delete adj;
-              Blocks[d.i][d.j]=Blocks[i+1][j];
+              Blocks[i][j]=Blocks[i+1][j];
               first=false;
             }
             else{
-              *Blocks[d.i][d.j]+=*Blocks[i+1][j];
+              *Blocks[i][j]+=*Blocks[i+1][j];
               delete Blocks[i+1][j];
-              update_block(Blocks[i+1][j],Blocks[d.i][d.j],i+1,j);
+              update_block(Blocks[i+1][j],Blocks[i][j],i+1,j);
             }
 
     }
