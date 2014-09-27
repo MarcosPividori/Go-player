@@ -23,7 +23,7 @@ States<Value,Data>::~States(){}
 
 template <class Value,class Data,class Nod> class Selection{
     public:
-        virtual Nod *select(const Nod *nod)=0;
+        virtual Nod *select(Nod *nod)=0;
 };
 
 template <class Value,class Data,class Nod,class State> class Expansion{
@@ -54,7 +54,6 @@ class Mcts{
         Simulation<Value,Data,State> *_sim;
         Retropropagation<Value,Data,Nod> *_ret;
         SelectRes<Value,Data,Nod> *_sel_res;
-        std::mutex _mutex;
         //std::mutex _mutex2;
         //clock_t selection,retropropagation,simulation,locking; 
     public:
@@ -97,7 +96,6 @@ inline void Mcts<Value,Data,Nod,State>::run_one_cycle(Nod *root,
     node=root;
 //    clock_t time_init=clock();
     //Selection
-    _mutex.lock();
 //    _mutex2.lock();
 //    locking+=clock()-time_init;
 //    _mutex2.unlock();
@@ -108,13 +106,15 @@ inline void Mcts<Value,Data,Nod,State>::run_one_cycle(Nod *root,
     }
     //Expansion
     before=node;
-    if((node=_exp->expand(node,actual_state)) != before)
+    if((node=_exp->expand(node,actual_state)) != before){
+        before->mutex.unlock();
         actual_state->apply(node->data);
+    }else
+        before->mutex.unlock();
 //    _mutex2.lock();
 //    selection+=clock()-time_init;
 //    _mutex2.unlock();
 //    time_init=clock();
-    _mutex.unlock();
     //Simulation
     res= _sim->simulate(actual_state);
 //  _mutex2.lock();
@@ -122,7 +122,6 @@ inline void Mcts<Value,Data,Nod,State>::run_one_cycle(Nod *root,
 //  _mutex2.unlock();
 //  time_init=clock();
     //Retropropagation
-    _mutex.lock();
 //    _mutex2.lock();
 //    locking+=clock()-time_init;
 //    _mutex2.unlock();
@@ -131,7 +130,6 @@ inline void Mcts<Value,Data,Nod,State>::run_one_cycle(Nod *root,
 //    _mutex2.lock();
 //    retropropagation+=clock()-time_init;
 //    _mutex2.unlock();
-    _mutex.unlock();
     delete actual_state;
 }
 
@@ -140,14 +138,15 @@ void Mcts<Value,Data,Nod,State>::run_time(double time_limit,
                                           Nod *root,
                                           State *init_state)
 {
+/*
     clock_t time_init=clock();//(NULL);
     for(;(((float)(clock()-time_init)) / CLOCKS_PER_SEC)<time_limit;)
         run_one_cycle(root,init_state);
-/*
+*/
     time_t time_init=time(NULL);
     for(;difftime(time(NULL),time_init)<time_limit;)
         run_one_cycle(root,init_state);
-*/
+/**/
 }
 
 template <class Value,class Data,class Nod,class State>

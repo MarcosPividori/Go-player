@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
+#include <mutex>
 
 template <class Value,class Data> class NodeUCT{
     private:
@@ -14,6 +15,7 @@ template <class Value,class Data> class NodeUCT{
         double sqrt_visits;
         Value value;
         Data data;
+        std::mutex mutex;
         std::vector< NodeUCT<Value,Data>* > children;
         NodeUCT<Value,Data> *parent;
         NodeUCT(Value init_value,Data init_data,NodeUCT<Value,Data> *father);

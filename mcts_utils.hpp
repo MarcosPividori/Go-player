@@ -10,10 +10,10 @@ template <class Value,class Data>
 class SelectionUCT: public Selection<Value,Data, NodeUCT<Value,Data> >{
     private:
         double _coeff;
-        double get_uct_val(const NodeUCT<Value,Data> *nod,double log_parent);
+        double get_uct_val(NodeUCT<Value,Data> *nod,double log_parent);
     public:
         SelectionUCT(double coeff);
-        NodeUCT<Value,Data>* select(const NodeUCT<Value,Data> *nod);
+        NodeUCT<Value,Data>* select(NodeUCT<Value,Data> *nod);
 };
 
 template <class Value,class Data,class State>
@@ -61,22 +61,29 @@ SelectionUCT<Value,Data>::SelectionUCT(double coeff) : _coeff(coeff)
 {}
 
 template <class Value,class Data>
-inline double SelectionUCT<Value,Data>::get_uct_val(const NodeUCT<Value,Data> *nod, double sqrt_log_parent)
+inline double SelectionUCT<Value,Data>::get_uct_val(NodeUCT<Value,Data> *nod, double sqrt_log_parent)
 {
+    double val;
+    nod->mutex.lock();
     if(nod->visits==0)
-        return -1;
-    return (((double) nod->value) / (double) nod->visits) +
-             _coeff * sqrt_log_parent / nod->sqrt_visits;
+        val=-1;
+    else
+        val=(((double) nod->value) / (double) nod->visits) +
+               _coeff * sqrt_log_parent / nod->sqrt_visits;
+    nod->mutex.unlock();
+    return val;
 }
 
 template <class Value,class Data>
-NodeUCT<Value,Data>* SelectionUCT<Value,Data>::select(const NodeUCT<Value,Data> *nod)
+NodeUCT<Value,Data>* SelectionUCT<Value,Data>::select(NodeUCT<Value,Data> *nod)
 {
+    nod->mutex.lock();
     //TODO: Make the selection of no visited nodes randomly!
     if(nod->children.empty())
         return NULL;
     NodeUCT<Value,Data> *max_nod= nod->children[0];
     double max_val,val,sqrt_log_parent = sqrt(log((double) nod->visits));
+    nod->mutex.unlock();
     if((max_val = get_uct_val(nod->children[0],sqrt_log_parent))==-1)
         return max_nod;
     for(int i=1;i<nod->children.size();i++){
@@ -161,9 +168,11 @@ void RetropropagationSimple<Value,Data,EvalNode>::retro(NodeUCT<Value,Data> *nod
                                    Value value)
 {
     do{
+        node->mutex.lock();
         node->value=_eval_fun(node->value,value,node->data);
         assert(node->visits<ULONG_MAX);
         node->set_visits(node->visits+1);
+        node->mutex.unlock();
     }while((node=node->parent)!=NULL);
 }
 
