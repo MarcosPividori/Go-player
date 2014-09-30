@@ -1,5 +1,7 @@
 
 #include "state_go.hpp"
+#include "mcts_utils.hpp"
+#include "mcts_uct.hpp"
 
 struct EvalNode{
     ValGo operator()(ValGo v_nodo,ValGo v_final,DataGo dat_nodo)
@@ -17,7 +19,7 @@ class Game{
         int _size;
         NodeUCT<ValGo,DataGo> *_root;
         SelectionUCT<ValGo,DataGo> _sel;
-        ExpansionAllChildren<ValGo,DataGo,StateGo> _exp;
+        ExpansionAllChildren<ValGo,DataGo,StateGo,NodeUCT<ValGo,DataGo> > _exp;
         SimulationTotallyRandom<ValGo,DataGo,StateGo> _sim;
         RetropropagationSimple<ValGo,DataGo,EvalNode> _ret;
         SelectResMostRobust<ValGo,DataGo> _sel_res;

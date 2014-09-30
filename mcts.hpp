@@ -1,25 +1,11 @@
+#ifndef __MCTS__
+#define __MCTS__
 
-#include "node.hpp"
 #include <vector>
 #include <cstddef>
 #include <ctime>
 #include <mutex>
-
-template <class Value,class Data>
-class States{
-    public:
-        virtual ~States()=0;
-        virtual States *copy()=0;
-        virtual void get_possible_moves(std::vector<Data>& v)=0;
-        virtual void apply(Data)=0;
-        virtual Value get_final_value()=0;
-#ifdef DEBUG
-        virtual void show()=0;
-#endif
-};
-
-template <class Value,class Data>
-States<Value,Data>::~States(){}
+#include "states.hpp"
 
 template <class Value,class Data,class Nod> class Selection{
     public:
@@ -167,3 +153,4 @@ Data Mcts<Value,Data,Nod,State>::get_resultant_move(Nod *root)
     return _sel_res->select_res(root);
 }
 
+#endif // __MCTS__

@@ -1,7 +1,7 @@
 
 #include <iostream>
-#include "mcts_utils.hpp"
 #include "defines.h"
+#include "states.hpp"
 
 typedef double ValGo;
 
