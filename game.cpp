@@ -63,8 +63,8 @@ bool Game::play_move(DataGo pos){
 
 DataGo Game::gen_move(Player p){
     assert(p==_state->turn);
-    std::thread threads[1];
-    for(int i=0; i<1; i++)
+    std::thread threads[5];
+    for(int i=0; i<5; i++)
         threads[i] = std::thread(&Mcts<ValGo,DataGo,NodeUCT<ValGo,DataGo>,StateGo>::run_time,&_m,5,_root,_state);
     for(std::thread& th : threads) th.join();
     DataGo pos = _m.get_resultant_move(_root);

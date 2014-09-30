@@ -140,14 +140,14 @@ void Mcts<Value,Data,Nod,State>::run_time(double time_limit,
                                           Nod *root,
                                           State *init_state)
 {
+/*
     clock_t time_init=clock();//(NULL);
     for(;(((float)(clock()-time_init)) / CLOCKS_PER_SEC)<time_limit;)
         run_one_cycle(root,init_state);
-/*
+*/
     time_t time_init=time(NULL);
     for(;difftime(time(NULL),time_init)<time_limit;)
         run_one_cycle(root,init_state);
-*/
 }
 
 template <class Value,class Data,class Nod,class State>
