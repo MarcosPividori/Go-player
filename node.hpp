@@ -9,6 +9,7 @@
 template <class Value,class Data> class NodeUCT{
     private:
         void count_nodes(int level,long counter[],int max_level);
+        NodeUCT(Value init_value,Data init_data,NodeUCT<Value,Data> *father);
     public:
         unsigned long visits;
         double sqrt_visits;
@@ -16,13 +17,18 @@ template <class Value,class Data> class NodeUCT{
         Data data;
         std::vector< NodeUCT<Value,Data>* > children;
         NodeUCT<Value,Data> *parent;
-        NodeUCT(Value init_value,Data init_data,NodeUCT<Value,Data> *father);
+        NodeUCT(Value init_value,Data init_data);
         void create_child(Value init_value,Data init_data);
         void delete_tree();
         NodeUCT<Value,Data> *move_root_to_child(Data child_data);
         void set_visits(unsigned long v);
         void show();
 };
+
+template <class Value,class Data>
+NodeUCT<Value,Data>::NodeUCT(Value init_value,Data init_data) : 
+        value(init_value),data(init_data),parent(NULL),visits(0),sqrt_visits(0)
+{}
 
 template <class Value,class Data>
 NodeUCT<Value,Data>::NodeUCT(Value init_value,Data init_data,NodeUCT<Value,Data> *father) : 

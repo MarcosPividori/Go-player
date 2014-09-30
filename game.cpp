@@ -5,7 +5,7 @@
 
 Game::Game(int size) : _komi(0),_size(size),_sel(1),_exp(2,0),_ret(EvalNode()),_m(&_sel,&_exp,&_sim,&_ret,&_sel_res){
     _state = new StateGo(_size,_komi);
-    _root= new NodeUCT<ValGo,DataGo>(0,{CHANGE_PLAYER(_state->turn),0,0},NULL);
+    _root= new NodeUCT<ValGo,DataGo>(0,{CHANGE_PLAYER(_state->turn),0,0});
 }
 
 Game::~Game(){
@@ -19,7 +19,7 @@ void Game::set_boardsize(int size){
         _root->delete_tree();
         _size = size;
         _state = new StateGo(_size,_komi);
-        _root= new NodeUCT<ValGo,DataGo>(0,{CHANGE_PLAYER(_state->turn),0,0},NULL);
+        _root= new NodeUCT<ValGo,DataGo>(0,{CHANGE_PLAYER(_state->turn),0,0});
     }
 }
 
@@ -27,7 +27,7 @@ void Game::clear_board(){
     delete _state;
     _root->delete_tree();
     _state = new StateGo(_size,_komi);
-    _root= new NodeUCT<ValGo,DataGo>(0,{CHANGE_PLAYER(_state->turn),0,0},NULL);
+    _root= new NodeUCT<ValGo,DataGo>(0,{CHANGE_PLAYER(_state->turn),0,0});
 }
 
 void Game::set_komi(float komi){
@@ -36,7 +36,7 @@ void Game::set_komi(float komi){
         _root->delete_tree();
         _komi = komi;
         _state = new StateGo(_size,_komi);
-        _root= new NodeUCT<ValGo,DataGo>(0,{CHANGE_PLAYER(_state->turn),0,0},NULL);
+        _root= new NodeUCT<ValGo,DataGo>(0,{CHANGE_PLAYER(_state->turn),0,0});
     }
 }
 
@@ -56,7 +56,7 @@ bool Game::play_move(DataGo pos){
         _root=next;
     }else{
         _root->delete_tree();
-        _root= new NodeUCT<ValGo,DataGo>(0,pos,NULL);
+        _root= new NodeUCT<ValGo,DataGo>(0,pos);
     }
     return true;
 }
