@@ -22,7 +22,7 @@ class Game{
         ExpansionAllChildren<ValGo,DataGo,StateGo,NodeUCT<ValGo,DataGo> > _exp;
         SimulationTotallyRandom<ValGo,DataGo,StateGo> _sim;
         RetropropagationSimple<ValGo,DataGo,EvalNode> _ret;
-        SelectResMostRobust<ValGo,DataGo> _sel_res;
+        SelectResMostRobust<ValGo,DataGo,NodeUCT<ValGo,DataGo> > _sel_res;
         Mcts<ValGo,DataGo,NodeUCT<ValGo,DataGo>,StateGo> _m;
     public:
         Game(int size);

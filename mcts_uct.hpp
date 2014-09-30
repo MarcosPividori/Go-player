@@ -25,12 +25,6 @@ class RetropropagationSimple: public Retropropagation<Value,Data, NodeUCT<Value,
         void retro(NodeUCT<Value,Data> *node,Value value);
 };
 
-template <class Value,class Data>
-class SelectResMostRobust: public SelectRes<Value,Data, NodeUCT<Value,Data> > {
-    public:
-        Data select_res(NodeUCT<Value,Data> *node);
-};
-
 ////////////////////////////////////////////////////////////////////
 
 template <class Value,class Data>
@@ -82,16 +76,3 @@ void RetropropagationSimple<Value,Data,EvalNode>::retro(NodeUCT<Value,Data> *nod
     }while((node=node->parent)!=NULL);
 }
 
-template <class Value,class Data>
-Data SelectResMostRobust<Value,Data>::select_res(NodeUCT<Value,Data> *node)
-{
-    assert(!node->children.empty());
-    unsigned long max_visits = node->children[0]->visits;
-    NodeUCT<Value,Data> *max_node = node->children[0];
-    for(int i=1;i<node->children.size();i++)
-        if(node->children[i]->visits > max_visits){
-            max_node = node->children[i];
-            max_visits = node->children[i]->visits;
-        }
-    return max_node->data;
-}

@@ -27,6 +27,12 @@ class SimulationTotallyRandom: public Simulation<Value,Data,State> {
         Value simulate(State *state);
 };
 
+template <class Value,class Data,class Node>
+class SelectResMostRobust: public SelectRes<Value,Data,Node> {
+    public:
+        Data select_res(Node *node);
+};
+
 ////////////////////////////////////////////////////////////////////
 
 template <class Value,class Data,class State,class Node>
@@ -91,3 +97,16 @@ Value SimulationTotallyRandom<Value,Data,State>::simulate(State *state)
     return state->get_final_value();
 }
 
+template <class Value,class Data,class Node>
+Data SelectResMostRobust<Value,Data,Node>::select_res(Node *node)
+{
+    assert(!node->children.empty());
+    unsigned long max_visits = node->children[0]->visits;
+    Node *max_node = node->children[0];
+    for(int i=1;i<node->children.size();i++)
+        if(node->children[i]->visits > max_visits){
+            max_node = node->children[i];
+            max_visits = node->children[i]->visits;
+        }
+    return max_node->data;
+}
