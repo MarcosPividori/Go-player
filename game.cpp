@@ -70,6 +70,11 @@ bool Game::play_move(DataGo pos){
     if(next=_root->move_root_to_child(pos)){
         delete _root;
         _root=next;
+#ifdef DEBUG
+        std::cerr << "STATS PLAYED NODE: vis=" << _root->visits << " win=" << _root->value
+                  << " vis_amaf=" << _root->amaf_visits << " win_amaf=" << _root->amaf_value << std::endl;
+        std::cerr << "                   rate=" << (_root->value / _root->visits) << "  amaf_rate=" << (_root->amaf_value / _root->amaf_visits) << "  amaf_coeff="<< (sqrt(K_RAVE)/_root->sqrt_for_amaf) << std::endl;
+#endif
     }else{
         _root->delete_tree();
         _root= new Nod(0,pos);
@@ -79,10 +84,6 @@ bool Game::play_move(DataGo pos){
 
 DataGo Game::gen_move(Player p){
     assert(p==_state->turn);
-#ifdef DEBUG
-    std::cerr << "STATS: vis=" << _root->visits << " win=" << _root->value
-              << " vis_amaf=" << _root->amaf_visits << " win_amaf=" << _root->amaf_value << std::endl;
-#endif
     std::thread threads[NUM_THREADS];
     for(int i=0; i<NUM_THREADS; i++)
         threads[i] = std::thread(&Mcts<ValGo,DataGo,Nod,StateGo>::run_time,_m[i],5,_root,_state);

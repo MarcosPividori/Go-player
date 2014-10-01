@@ -51,6 +51,9 @@ inline double SelectionUCTRave<Value,Data>::get_uct_amaf_val(const NodeUCTRave<V
 {
     if(nod->visits==0)
         return -1;
+    if(nod->amaf_visits==0)
+        return (((double) nod->value) / (double) nod->visits) +
+                 _coeff * sqrt_log_parent / nod->sqrt_visits;
     double amaf_coeff = _amaf_coeff / nod->sqrt_for_amaf;
     return (((double) nod->value) / (double) nod->visits) * (1-amaf_coeff) +
            (((double) nod->amaf_value) / (double) nod->amaf_visits) * amaf_coeff +
