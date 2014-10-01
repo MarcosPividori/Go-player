@@ -21,7 +21,6 @@ class RetropropagationSimple: public Retropropagation<Value,Data, NodeUCT<Value,
     private:
         EvalNode _eval_fun;
     public:
-        RetropropagationSimple(EvalNode fun);
         void retro(NodeUCT<Value,Data> *node,Value value);
 };
 
@@ -60,10 +59,6 @@ NodeUCT<Value,Data>* SelectionUCT<Value,Data>::select(const NodeUCT<Value,Data> 
     }
     return max_nod;
 }
-
-template <class Value,class Data,class EvalNode>
-RetropropagationSimple<Value,Data,EvalNode>::RetropropagationSimple(EvalNode fun) : _eval_fun(fun)
-{}
 
 template <class Value,class Data,class EvalNode>
 void RetropropagationSimple<Value,Data,EvalNode>::retro(NodeUCT<Value,Data> *node,

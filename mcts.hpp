@@ -40,7 +40,7 @@ class Mcts{
         Simulation<Value,Data,State> *_sim;
         Retropropagation<Value,Data,Nod> *_ret;
         SelectRes<Value,Data,Nod> *_sel_res;
-        std::mutex _mutex;
+        std::mutex *_mutex;
         //std::mutex _mutex2;
         //clock_t selection,retropropagation,simulation,locking; 
     public:
@@ -48,7 +48,8 @@ class Mcts{
              Expansion<Value,Data,Nod,State> *exp,
              Simulation<Value,Data,State> *sim,
              Retropropagation<Value,Data,Nod> *ret,
-             SelectRes<Value,Data,Nod> *sel_res);
+             SelectRes<Value,Data,Nod> *sel_res,
+             std::mutex *mutex);
         void run_time(double time_limit,
                  Nod *root,
                  State *init_state);
@@ -68,8 +69,9 @@ Mcts<Value,Data,Nod,State>::Mcts(Selection<Value,Data,Nod> *sel,
                            Expansion<Value,Data,Nod,State> *exp,
                            Simulation<Value,Data,State> *sim,
                            Retropropagation<Value,Data,Nod> *ret,
-                           SelectRes<Value,Data,Nod> *sel_res)
-                         : _sel(sel),_exp(exp),_sim(sim),_ret(ret),_sel_res(sel_res)
+                           SelectRes<Value,Data,Nod> *sel_res,
+                           std::mutex *mutex)
+                         : _sel(sel),_exp(exp),_sim(sim),_ret(ret),_sel_res(sel_res),_mutex(mutex)
 //                          ,selection(0),retropropagation(0),simulation(0),locking(0)
 {}
 
@@ -83,7 +85,7 @@ inline void Mcts<Value,Data,Nod,State>::run_one_cycle(Nod *root,
     node=root;
 //    clock_t time_init=clock();
     //Selection
-    _mutex.lock();
+    _mutex->lock();
 //    _mutex2.lock();
 //    locking+=clock()-time_init;
 //    _mutex2.unlock();
@@ -100,7 +102,7 @@ inline void Mcts<Value,Data,Nod,State>::run_one_cycle(Nod *root,
 //    selection+=clock()-time_init;
 //    _mutex2.unlock();
 //    time_init=clock();
-    _mutex.unlock();
+    _mutex->unlock();
     //Simulation
     res= _sim->simulate(actual_state);
 //  _mutex2.lock();
@@ -108,7 +110,7 @@ inline void Mcts<Value,Data,Nod,State>::run_one_cycle(Nod *root,
 //  _mutex2.unlock();
 //  time_init=clock();
     //Retropropagation
-    _mutex.lock();
+    _mutex->lock();
 //    _mutex2.lock();
 //    locking+=clock()-time_init;
 //    _mutex2.unlock();
@@ -117,7 +119,7 @@ inline void Mcts<Value,Data,Nod,State>::run_one_cycle(Nod *root,
 //    _mutex2.lock();
 //    retropropagation+=clock()-time_init;
 //    _mutex2.unlock();
-    _mutex.unlock();
+    _mutex->unlock();
     delete actual_state;
 }
 

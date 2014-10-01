@@ -2,15 +2,31 @@
 #include "game.hpp"
 #include <iomanip>
 #include <thread>
+#include <mutex>
 
-Game::Game(int size) : _komi(0),_size(size),_sel(1),_exp(2,0),_ret(EvalNode()),_m(&_sel,&_exp,&_sim,&_ret,&_sel_res){
+Game::Game(int size) : _komi(0),_size(size),_exp(2,0),
+#ifdef RAVE
+_sel(1,K_RAVE)
+#else
+_sel(1)
+#endif
+{
+    for(int i=0;i<NUM_THREADS;i++){
+#ifdef RAVE
+        _m[i]=new Mcts<ValGo,DataGo,Nod,StateGo>(&_sel,&_exp,&_sim_and_retro[i],&_sim_and_retro[i],&_sel_res,&_mutex);
+#else
+        _m[i]=new Mcts<ValGo,DataGo,Nod,StateGo>(&_sel,&_exp,&_sim,&_ret,&_sel_res,&_mutex);
+#endif
+    }
     _state = new StateGo(_size,_komi);
-    _root= new NodeUCT<ValGo,DataGo>(0,{CHANGE_PLAYER(_state->turn),0,0});
+    _root= new Nod(0,{CHANGE_PLAYER(_state->turn),0,0});
 }
 
 Game::~Game(){
     delete _state;
     _root->delete_tree();
+    for(int i=0;i<NUM_THREADS;i++)
+        delete _m[i];
 }
 
 void Game::set_boardsize(int size){
@@ -19,7 +35,7 @@ void Game::set_boardsize(int size){
         _root->delete_tree();
         _size = size;
         _state = new StateGo(_size,_komi);
-        _root= new NodeUCT<ValGo,DataGo>(0,{CHANGE_PLAYER(_state->turn),0,0});
+        _root= new Nod(0,{CHANGE_PLAYER(_state->turn),0,0});
     }
 }
 
@@ -27,7 +43,7 @@ void Game::clear_board(){
     delete _state;
     _root->delete_tree();
     _state = new StateGo(_size,_komi);
-    _root= new NodeUCT<ValGo,DataGo>(0,{CHANGE_PLAYER(_state->turn),0,0});
+    _root= new Nod(0,{CHANGE_PLAYER(_state->turn),0,0});
 }
 
 void Game::set_komi(float komi){
@@ -36,7 +52,7 @@ void Game::set_komi(float komi){
         _root->delete_tree();
         _komi = komi;
         _state = new StateGo(_size,_komi);
-        _root= new NodeUCT<ValGo,DataGo>(0,{CHANGE_PLAYER(_state->turn),0,0});
+        _root= new Nod(0,{CHANGE_PLAYER(_state->turn),0,0});
     }
 }
 
@@ -50,28 +66,33 @@ bool Game::play_move(DataGo pos){
     if(!_state->valid_move(pos))
         return false;
     _state->apply(pos);
-    NodeUCT<ValGo,DataGo> *next;
+    Nod *next;
     if(next=_root->move_root_to_child(pos)){
         delete _root;
         _root=next;
     }else{
         _root->delete_tree();
-        _root= new NodeUCT<ValGo,DataGo>(0,pos);
+        _root= new Nod(0,pos);
     }
     return true;
 }
 
 DataGo Game::gen_move(Player p){
     assert(p==_state->turn);
-    std::thread threads[5];
-    for(int i=0; i<5; i++)
-        threads[i] = std::thread(&Mcts<ValGo,DataGo,NodeUCT<ValGo,DataGo>,StateGo>::run_time,&_m,5,_root,_state);
+#ifdef DEBUG
+    std::cerr << "STATS: vis=" << _root->visits << " win=" << _root->value
+              << " vis_amaf=" << _root->amaf_visits << " win_amaf=" << _root->amaf_value << std::endl;
+#endif
+    std::thread threads[NUM_THREADS];
+    for(int i=0; i<NUM_THREADS; i++)
+        threads[i] = std::thread(&Mcts<ValGo,DataGo,Nod,StateGo>::run_time,_m[i],5,_root,_state);
     for(std::thread& th : threads) th.join();
-    DataGo pos = _m.get_resultant_move(_root);
+    DataGo pos = _m[0]->get_resultant_move(_root);
 #ifdef DEBUG
     _root->show();
     std::cerr << "Resultado: " << " i=" << (int)pos.i << " j=" << (int)pos.j
-              << " vis=" << _root->visits << " win=" << _root->value << std::endl;
+              << " vis=" << _root->visits << " win=" << _root->value
+              << " vis_amaf=" << _root->amaf_visits << " win_amaf=" << _root->amaf_value << std::endl;
 #endif
     return pos;
 }

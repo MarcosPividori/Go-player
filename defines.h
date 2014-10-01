@@ -4,13 +4,14 @@
 #define VERSION          "1.0"
 #define GTP_VERSION      2
 #define MAX_BOARD        19      
+#define K_RAVE           100
 
 #define UNUSED(x)        (void)x
 
 #define PASSI            -1
 #define RESIGNI          -2
 #define PASS(player)     {player,PASSI,PASSI}
-#define IS_PASS(d)       d.i==PASSI
+#define IS_PASS(d)       (d.i==PASSI)
 #define RESIGN(player)   {player,RESIGNI,RESIGNI}
 #define IS_RESIGN(d)     d.i==RESIGNI
 #define MOVE(player,i,j) {player,i,j}

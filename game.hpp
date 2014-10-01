@@ -1,7 +1,17 @@
 
 #include "state_go.hpp"
 #include "mcts_utils.hpp"
+
+#define NUM_THREADS 5
+
+#ifdef RAVE
+#include "mcts_rave.hpp"
+#include "moverecorder_go.hpp"
+typedef NodeUCTRave<ValGo,DataGo> Nod;
+#else
 #include "mcts_uct.hpp"
+typedef NodeUCT<ValGo,DataGo> Nod;
+#endif
 
 struct EvalNode{
     ValGo operator()(ValGo v_nodo,ValGo v_final,DataGo dat_nodo)
@@ -17,13 +27,19 @@ class Game{
         StateGo *_state;
         float _komi;
         int _size;
-        NodeUCT<ValGo,DataGo> *_root;
+        Nod *_root;
+        std::mutex _mutex;
+        ExpansionAllChildren<ValGo,DataGo,StateGo,Nod> _exp;
+        SelectResMostRobust<ValGo,DataGo,Nod> _sel_res;
+        Mcts<ValGo,DataGo,Nod,StateGo> *_m[NUM_THREADS];
+#ifdef RAVE
+        SelectionUCTRave<ValGo,DataGo> _sel;
+        SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo> _sim_and_retro[NUM_THREADS];
+#else
         SelectionUCT<ValGo,DataGo> _sel;
-        ExpansionAllChildren<ValGo,DataGo,StateGo,NodeUCT<ValGo,DataGo> > _exp;
         SimulationTotallyRandom<ValGo,DataGo,StateGo> _sim;
         RetropropagationSimple<ValGo,DataGo,EvalNode> _ret;
-        SelectResMostRobust<ValGo,DataGo,NodeUCT<ValGo,DataGo> > _sel_res;
-        Mcts<ValGo,DataGo,NodeUCT<ValGo,DataGo>,StateGo> _m;
+#endif
     public:
         Game(int size);
         ~Game();
