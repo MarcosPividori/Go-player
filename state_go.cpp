@@ -498,10 +498,6 @@ void StateGo::show(){
 
 inline bool StateGo::no_ko_nor_suicide(INDEX i,INDEX j,Player p)
 {
-    //Check Ko situation.
-    if(ko_flag && ko_unique && koi==i && koj==j)
-        return false;
-
     if(i>0 && Stones[i-1][j]==Empty)
         return true;
     if(j>0 && Stones[i][j-1]==Empty)
@@ -552,13 +548,14 @@ inline bool StateGo::no_ko_nor_suicide(INDEX i,INDEX j,Player p)
     b[2]=NULL;
     b[3]=NULL;
     c=0;
-    int sumb[4]={0,0,0,0};
+    int sumb[4]={0,0,0,0},ib[4],jb[4];
 
     //Check if some opponent block will be removed.
     if(i>0)
       if(Stones[i-1][j]!=p){
         sumb[c]+=(*Blocks[i-1][j])-1;
         b[c]=Blocks[i-1][j];
+        ib[c]=i-1;jb[c]=j;
         c++;
       }
     if(j>0)
@@ -568,6 +565,7 @@ inline bool StateGo::no_ko_nor_suicide(INDEX i,INDEX j,Player p)
         else{
           sumb[c]=(*Blocks[i][j-1])-1;
           b[c]=Blocks[i][j-1];
+          ib[c]=i;jb[c]=j-1;
           c++;
         }
       }
@@ -580,6 +578,7 @@ inline bool StateGo::no_ko_nor_suicide(INDEX i,INDEX j,Player p)
         else {
           sumb[c]=(*Blocks[i][j+1])-1;
           b[c]=Blocks[i][j+1];
+          ib[c]=i;jb[c]=j+1;
           c++;
         }
       }
@@ -594,14 +593,37 @@ inline bool StateGo::no_ko_nor_suicide(INDEX i,INDEX j,Player p)
         else{
             sumb[c]=(*Blocks[i+1][j])-1;
             b[c]=Blocks[i+1][j];
+            ib[c]=i+1;jb[c]=j;
             c++;
         }
       }
 
+    int counter=0,i1,j1;
     for(int k=0;k<c;k++)
-      if(sumb[k]==0)
+      if(sumb[k]==0){//not suicide because it remove an opponent block.
+        counter++;//return true;
+        i1=ib[k];
+        j1=jb[k];
+      }
+
+    //Check Ko situation.
+    if(ko_flag && ko_unique && koi==i && koj==j && counter==1){
+        //Check if block destroyed is size > 1
+        if(i1>0 && Blocks[i1-1][j1]==Blocks[i1][j1])
+            return true;
+        if(i1<_size-1 && Blocks[i1+1][j1]==Blocks[i1][j1])
+            return true;
+        if(j1>0 && Blocks[i1][j1-1]==Blocks[i1][j1])
+            return true;
+        if(i1<_size-1 && Blocks[i1][j1+1]==Blocks[i1][j1])
+            return true;
+        return false;
+    }
+
+    if(counter>0)
         return true;
 
+    //is suicide.
     return false;
 }
 
