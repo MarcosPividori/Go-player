@@ -5,12 +5,16 @@
 #define NUM_THREADS 5
 
 #ifdef RAVE
-#include "mcts_rave.hpp"
-#include "moverecorder_go.hpp"
-typedef NodeUCTRave<ValGo,DataGo> Nod;
+ #ifdef KNOWLEDGE
+  #include "mcts_go.hpp"
+ #else
+  #include "mcts_rave.hpp"
+ #endif
+ #include "moverecorder_go.hpp"
+ typedef NodeUCTRave<ValGo,DataGo> Nod;
 #else
-#include "mcts_uct.hpp"
-typedef NodeUCT<ValGo,DataGo> Nod;
+ #include "mcts_uct.hpp"
+ typedef NodeUCT<ValGo,DataGo> Nod;
 #endif
 
 struct EvalNode{
@@ -29,19 +33,24 @@ class Game{
         int _size;
         Nod *_root;
         std::mutex _mutex;
+        PatternList *_patterns;
         ExpansionAllChildren<ValGo,DataGo,StateGo,Nod> _exp;
         SelectResMostRobust<ValGo,DataGo,Nod> _sel_res;
         Mcts<ValGo,DataGo,Nod,StateGo> *_m[NUM_THREADS];
 #ifdef RAVE
         SelectionUCTRave<ValGo,DataGo> _sel;
+#ifdef KNOWLEDGE
+        SimulationWithDomainKnowledge<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo> _sim_and_retro[NUM_THREADS];
+#else
         SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo> _sim_and_retro[NUM_THREADS];
+#endif
 #else
         SelectionUCT<ValGo,DataGo> _sel;
         SimulationTotallyRandom<ValGo,DataGo,StateGo> _sim;
         RetropropagationSimple<ValGo,DataGo,EvalNode> _ret;
 #endif
     public:
-        Game(int size);
+        Game(int size,const char *pattern_file=NULL);
         ~Game();
         void set_boardsize(int size);
         int get_boardsize(){return _size;}
@@ -53,6 +62,7 @@ class Game{
         void show_board(FILE *output);
 #ifdef DEBUG
         void debug();
+        void match_patterns();
 #endif
 };
 

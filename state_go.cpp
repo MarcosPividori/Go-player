@@ -8,7 +8,7 @@
 #define FLAG_BOTH (FLAG_B | FLAG_W)
 #define NO_FLAG   0x3fffffff
 
-StateGo::StateGo(int size,float komi) : _size(size),_komi(komi)
+StateGo::StateGo(int size,float komi,PatternList *p) : _size(size),_komi(komi),patterns(p)
 #ifdef JAPANESE
         ,captured_b(0),captured_w(0)
 #endif
@@ -30,11 +30,12 @@ StateGo::StateGo(int size,float komi) : _size(size),_komi(komi)
     ko_flag=false;
     ko_unique=false;
     turn=Black;
+    last_mov=PASS(CHANGE_PLAYER(turn));
 }
 
 StateGo *StateGo::copy()
 {
-    StateGo *p= new StateGo(_size);
+    StateGo *p= new StateGo(_size,_komi,patterns);
     for(int i=0;i<_size;i++)
         for(int j=0;j<_size;j++){
             p->Stones[i][j]=Stones[i][j];
@@ -53,6 +54,12 @@ StateGo *StateGo::copy()
     p->ko_unique=ko_unique;
     p->pass=pass;
     p->turn=turn;
+    p->patterns=patterns;
+    p->last_mov=last_mov;
+#ifdef JAPANESE
+    p->captured_b=captured_b;
+    p->captured_w=captured_w;
+#endif 
     return p;
 }
 
@@ -297,6 +304,43 @@ inline void StateGo::get_possible_moves(std::vector<DataGo>& v)
     v.push_back(PASS(turn));
 }
 
+#ifdef KNOWLEDGE
+void StateGo::get_pattern_moves(std::vector<DataGo>& v)
+{
+    if(patterns==NULL)
+        return;
+    if(IS_PASS(last_mov))
+        return;
+    for(INDEX k=MAX(last_mov.i-1,0);k<= MIN(_size-1,last_mov.i+1);k++)
+      for(INDEX l=MAX(last_mov.j-1,0);l<= MIN(_size-1,last_mov.j+1);l++)
+        if(Stones[k][l]==Empty && no_ko_nor_suicide(k,l,turn)){
+          Stones[k][l]=turn;
+          if(patterns->match(this,k,l))
+            v.push_back({turn,k,l});
+          Stones[k][l]=Empty;
+        }
+}
+
+void StateGo::get_capture_moves(std::vector<DataGo>& v)
+{
+    if(pass==2)
+        return;
+    for(INDEX i=0;i<_size;i++)
+        for(INDEX j=0;j<_size;j++)
+            if(Stones[i][j]==Empty && remove_opponent_block_and_no_ko(i,j,turn))
+                v.push_back({turn,i,j});
+}
+
+bool StateGo::is_completely_empty(INDEX i,INDEX j)
+{
+    for(int k=MAX(i-1,0);k<= MIN(_size-1,i+1);k++)
+      for(int l=MAX(j-1,0);l<= MIN(_size-1,j+1);l++)
+        if(Stones[k][l]!=Empty)
+            return false;
+    return true;
+}
+#endif
+
 inline ValGo StateGo::get_final_value()
 {
     float res = final_value();
@@ -472,6 +516,7 @@ inline void StateGo::apply(DataGo d)
 
     }
     turn=CHANGE_PLAYER(turn);
+    last_mov=d;
 }
 
 void StateGo::show(FILE *output){
@@ -494,6 +539,88 @@ void StateGo::show(FILE *output){
 
 void StateGo::show(){
     show(stdout);
+}
+
+inline bool StateGo::remove_opponent_block_and_no_ko(INDEX i,INDEX j,Player p)
+{
+    //Check if free block near position.
+    int sum=0,*b[4]={NULL,NULL,NULL,NULL},c=0;
+    int sumb[4]={0,0,0,0},ib[4],jb[4];
+    Player opp=CHANGE_PLAYER(turn);
+
+    //Check if some opponent block will be removed.
+    if(i>0)
+      if(Stones[i-1][j]==opp){
+        sumb[c]+=(*Blocks[i-1][j])-1;
+        b[c]=Blocks[i-1][j];
+        ib[c]=i-1;jb[c]=j;
+        c++;
+      }
+    if(j>0)
+      if(Stones[i][j-1]==opp){
+        if(Blocks[i][j-1]==b[0])
+          sumb[0]-=1;
+        else{
+          sumb[c]=(*Blocks[i][j-1])-1;
+          b[c]=Blocks[i][j-1];
+          ib[c]=i;jb[c]=j-1;
+          c++;
+        }
+      }
+    if(j<_size-1)
+      if(Stones[i][j+1]==opp){
+        if(Blocks[i][j+1]==b[0])
+          sumb[0]-=1;
+        else if(Blocks[i][j+1]==b[1])
+          sumb[1]-=1;
+        else {
+          sumb[c]=(*Blocks[i][j+1])-1;
+          b[c]=Blocks[i][j+1];
+          ib[c]=i;jb[c]=j+1;
+          c++;
+        }
+      }
+    if(i<_size-1)
+      if(Stones[i+1][j]==opp){
+        if(Blocks[i+1][j]==b[0])
+          sumb[0]-=1;
+        else if(Blocks[i+1][j]==b[1])
+          sumb[1]-=1;
+        else if(Blocks[i+1][j]==b[2])
+          sumb[2]-=1;
+        else{
+            sumb[c]=(*Blocks[i+1][j])-1;
+            b[c]=Blocks[i+1][j];
+            ib[c]=i+1;jb[c]=j;
+            c++;
+        }
+      }
+
+    int counter=0,i1,j1;
+    for(int k=0;k<c;k++)
+      if(sumb[k]==0){
+        counter++;
+        i1=ib[k];
+        j1=jb[k];
+      }
+
+    if(counter==0)
+        return false;
+
+    //Check Ko situation.
+    if(ko_flag && ko_unique && koi==i && koj==j && counter==1){
+        //Check if block destroyed is size > 1
+        if(i1>0 && Blocks[i1-1][j1]==Blocks[i1][j1])
+            return true;
+        if(i1<_size-1 && Blocks[i1+1][j1]==Blocks[i1][j1])
+            return true;
+        if(j1>0 && Blocks[i1][j1-1]==Blocks[i1][j1])
+            return true;
+        if(i1<_size-1 && Blocks[i1][j1+1]==Blocks[i1][j1])
+            return true;
+        return false;
+    }
+    return true;
 }
 
 inline bool StateGo::no_ko_nor_suicide(INDEX i,INDEX j,Player p)
@@ -543,88 +670,7 @@ inline bool StateGo::no_ko_nor_suicide(INDEX i,INDEX j,Player p)
     if(sum!=0)
         return true;
 
-    b[0]=NULL;
-    b[1]=NULL;
-    b[2]=NULL;
-    b[3]=NULL;
-    c=0;
-    int sumb[4]={0,0,0,0},ib[4],jb[4];
-
-    //Check if some opponent block will be removed.
-    if(i>0)
-      if(Stones[i-1][j]!=p){
-        sumb[c]+=(*Blocks[i-1][j])-1;
-        b[c]=Blocks[i-1][j];
-        ib[c]=i-1;jb[c]=j;
-        c++;
-      }
-    if(j>0)
-      if(Stones[i][j-1]!=p){
-        if(Blocks[i][j-1]==b[0])
-          sumb[0]-=1;
-        else{
-          sumb[c]=(*Blocks[i][j-1])-1;
-          b[c]=Blocks[i][j-1];
-          ib[c]=i;jb[c]=j-1;
-          c++;
-        }
-      }
-    if(j<_size-1)
-      if(Stones[i][j+1]!=p){
-        if(Blocks[i][j+1]==b[0])
-          sumb[0]-=1;
-        else if(Blocks[i][j+1]==b[1])
-          sumb[1]-=1;
-        else {
-          sumb[c]=(*Blocks[i][j+1])-1;
-          b[c]=Blocks[i][j+1];
-          ib[c]=i;jb[c]=j+1;
-          c++;
-        }
-      }
-    if(i<_size-1)
-      if(Stones[i+1][j]!=p){
-        if(Blocks[i+1][j]==b[0])
-          sumb[0]-=1;
-        else if(Blocks[i+1][j]==b[1])
-          sumb[1]-=1;
-        else if(Blocks[i+1][j]==b[2])
-          sumb[2]-=1;
-        else{
-            sumb[c]=(*Blocks[i+1][j])-1;
-            b[c]=Blocks[i+1][j];
-            ib[c]=i+1;jb[c]=j;
-            c++;
-        }
-      }
-
-    int counter=0,i1,j1;
-    for(int k=0;k<c;k++)
-      if(sumb[k]==0){//not suicide because it remove an opponent block.
-        counter++;//return true;
-        i1=ib[k];
-        j1=jb[k];
-      }
-
-    //Check Ko situation.
-    if(ko_flag && ko_unique && koi==i && koj==j && counter==1){
-        //Check if block destroyed is size > 1
-        if(i1>0 && Blocks[i1-1][j1]==Blocks[i1][j1])
-            return true;
-        if(i1<_size-1 && Blocks[i1+1][j1]==Blocks[i1][j1])
-            return true;
-        if(j1>0 && Blocks[i1][j1-1]==Blocks[i1][j1])
-            return true;
-        if(i1<_size-1 && Blocks[i1][j1+1]==Blocks[i1][j1])
-            return true;
-        return false;
-    }
-
-    if(counter>0)
-        return true;
-
-    //is suicide.
-    return false;
+    return remove_opponent_block_and_no_ko(i,j,p);
 }
 
 bool StateGo::valid_move(DataGo d)

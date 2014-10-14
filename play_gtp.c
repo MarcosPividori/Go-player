@@ -25,6 +25,7 @@ DECLARE(gtp_showboard);
 DECLARE(gtp_final_score);
 #ifdef DEBUG
 DECLARE(gtp_debug);
+DECLARE(gtp_match_patterns);
 #endif
 
 /* List of known commands. */
@@ -44,6 +45,7 @@ static struct gtp_command commands[] = {
   {"final_score",             gtp_final_score},
 #ifdef DEBUG
   {"debug",        	          gtp_debug},
+  {"match_patterns",          gtp_match_patterns},
 #endif
   {NULL,                      NULL}
 };
@@ -325,6 +327,23 @@ gtp_debug(char *s)
   gtp_start_response(GTP_SUCCESS);
   gtp_printf("\n");
   game->debug();
+  return gtp_finish_response();
+}
+
+/* Function:  Show debug info related to patterns to stdout.
+ * Arguments: none
+ * Fails:     never
+ * Returns:   nothing
+ *
+ */
+static int
+gtp_match_patterns(char *s)
+{
+  UNUSED(s);
+  
+  gtp_start_response(GTP_SUCCESS);
+  gtp_printf("\n");
+  game->match_patterns();
   return gtp_finish_response();
 }
 #endif

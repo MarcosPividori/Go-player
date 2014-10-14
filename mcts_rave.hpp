@@ -36,7 +36,7 @@ class SimulationAndRetropropagationRave: public Simulation<Value,Data,State>,
         EvalNode _eval_fun;
     public:
         SimulationAndRetropropagationRave();
-        Value simulate(State *state);
+        virtual Value simulate(State *state);
         void retro(NodeUCTRave<Value,Data> *node,Value value);
 };
 

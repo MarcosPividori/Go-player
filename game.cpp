@@ -4,9 +4,9 @@
 #include <thread>
 #include <mutex>
 
-Game::Game(int size) : _komi(0),_size(size),_exp(2,0),
+Game::Game(int size,const char *pattern_file) : _komi(0),_size(size),_exp(2,0),
 #ifdef RAVE
-_sel(1,K_RAVE)
+_sel(0.5,K_RAVE)
 #else
 _sel(1)
 #endif
@@ -18,7 +18,11 @@ _sel(1)
         _m[i]=new Mcts<ValGo,DataGo,Nod,StateGo>(&_sel,&_exp,&_sim,&_ret,&_sel_res,&_mutex);
 #endif
     }
-    _state = new StateGo(_size,_komi);
+    if(pattern_file){
+        _patterns= new PatternList();
+        _patterns->read_file(pattern_file);
+    }
+    _state = new StateGo(_size,_komi,_patterns);
     _root= new Nod(0,{CHANGE_PLAYER(_state->turn),0,0});
 }
 
@@ -27,6 +31,8 @@ Game::~Game(){
     _root->delete_tree();
     for(int i=0;i<NUM_THREADS;i++)
         delete _m[i];
+    if(_patterns)
+        delete _patterns;
 }
 
 void Game::set_boardsize(int size){
@@ -34,7 +40,7 @@ void Game::set_boardsize(int size){
         delete _state;
         _root->delete_tree();
         _size = size;
-        _state = new StateGo(_size,_komi);
+        _state = new StateGo(_size,_komi,_patterns);
         _root= new Nod(0,{CHANGE_PLAYER(_state->turn),0,0});
     }
 }
@@ -42,7 +48,7 @@ void Game::set_boardsize(int size){
 void Game::clear_board(){
     delete _state;
     _root->delete_tree();
-    _state = new StateGo(_size,_komi);
+    _state = new StateGo(_size,_komi,_patterns);
     _root= new Nod(0,{CHANGE_PLAYER(_state->turn),0,0});
 }
 
@@ -51,7 +57,7 @@ void Game::set_komi(float komi){
         delete _state;
         _root->delete_tree();
         _komi = komi;
-        _state = new StateGo(_size,_komi);
+        _state = new StateGo(_size,_komi,_patterns);
         _root= new Nod(0,{CHANGE_PLAYER(_state->turn),0,0});
     }
 }
@@ -86,7 +92,7 @@ DataGo Game::gen_move(Player p){
     assert(p==_state->turn);
     std::thread threads[NUM_THREADS];
     for(int i=0; i<NUM_THREADS; i++)
-        threads[i] = std::thread(&Mcts<ValGo,DataGo,Nod,StateGo>::run_time,_m[i],5,_root,_state);
+        threads[i] = std::thread(&Mcts<ValGo,DataGo,Nod,StateGo>::run_cycles,_m[i],15000,_root,_state);
     for(std::thread& th : threads) th.join();
     DataGo pos = _m[0]->get_resultant_move(_root);
 #ifdef DEBUG
@@ -124,5 +130,18 @@ void Game::debug(){
               std::cerr<<std::setw(3)<<(*_state->Blocks[i][j]);
         std::cerr<<std::endl;
     }
+}
+
+void Game::match_patterns(){
+    std::vector<DataGo> v;
+    std::cerr<<"PATTERNS: "<<std::endl;
+    _state->get_pattern_moves(v);
+    for(int i=0;i<v.size();i++)
+        std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;
+    v.clear();
+    std::cerr<<"CAPTURES: "<<std::endl;
+    _state->get_capture_moves(v);
+    for(int i=0;i<v.size();i++)
+        std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;
 }
 #endif

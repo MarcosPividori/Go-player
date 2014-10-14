@@ -1,3 +1,5 @@
+#ifndef __NODE_RAVE__
+#define __NODE_RAVE__
 
 #include <vector>
 #include <cstddef>
@@ -98,3 +100,4 @@ void NodeUCTRave<Value,Data>::show(){
     std::cout<<"============="<<std::endl;
 }
 
+#endif //__NODE_RAVE__
