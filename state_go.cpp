@@ -123,78 +123,6 @@ void StateGo::eliminate_block(int *block,INDEX i,INDEX j)
           *Blocks[i+1][j]+=1;
 }
 
-/* ITERACTIVE ELIMINATING (BFS)
-#define POSI(i,j) ((i)*MAX_BOARD+(j))
-#define I(p)      p/MAX_BOARD       
-#define J(p)      p%MAX_BOARD
-
-inline void StateGo::eliminate_block(int *block,INDEX i,INDEX j)
-{
-
-    Blocks[i][j]=NULL;
-    Stones[i][j]=Empty;
-    std::queue<int> list;
-    list.push(POSI(i,j));
-    int pos;
-    while(!list.empty()){
-    pos=list.front();
-    list.pop();
-    i=I(pos);
-    j=J(pos);
-#ifdef JAPANESE
-    if(Stones[i][j]==Black)
-        captured_b++;
-    else
-        captured_w++;
-#endif
-    if(!ko_flag){
-      ko_flag=true;
-      ko_unique=true;
-      koi=i;
-      koj=j;
-    }else{
-      ko_unique=false;
-    }
-    if(i>0)
-      if(Blocks[i-1][j]==block){//If same block, propagate.
-        Blocks[i-1][j]=NULL;
-        Stones[i-1][j]=Empty;
-        list.push(POSI(i-1,j));
-      }
-      else
-        if(Stones[i-1][j]!=Empty)//Add a free adjacency.
-          *Blocks[i-1][j]+=1;
-    if(j>0)
-      if(Blocks[i][j-1]==block){//If same block, propagate.
-        Blocks[i][j-1]=NULL;
-        Stones[i][j-1]=Empty;
-        list.push(POSI(i,j-1));
-      }
-      else
-        if(Stones[i][j-1]!=Empty)//Add a free adjacency.
-          *Blocks[i][j-1]+=1;
-    if(j<_size-1)
-      if(Blocks[i][j+1]==block){//If same block, propagate.
-        Blocks[i][j+1]=NULL;
-        Stones[i][j+1]=Empty;
-        list.push(POSI(i,j+1));
-      }
-      else
-        if(Stones[i][j+1]!=Empty)//Add a free adjacency.
-          *Blocks[i][j+1]+=1;
-    if(i<_size-1)
-      if(Blocks[i+1][j]==block){//If same block, propagate.
-        Blocks[i+1][j]=NULL;
-        Stones[i+1][j]=Empty;
-        list.push(POSI(i+1,j));
-      }
-      else
-        if(Stones[i+1][j]!=Empty)//Add a free adjacency.
-          *Blocks[i+1][j]+=1;
-    }
-}
-*/
-
 // RECURSIVE UPDATING (DFS)
 void StateGo::update_block(int *block,int *new_block,INDEX i,INDEX j)
 {
@@ -212,42 +140,6 @@ void StateGo::update_block(int *block,int *new_block,INDEX i,INDEX j)
       if(Blocks[i+1][j]==block)//If same block, propagate.
         update_block(block,new_block,i+1,j);
 }
-/*
-// ITERACTIVE UPDATING (BFS)
-inline void StateGo::update_block(int *block,int *new_block,INDEX i,INDEX j)
-{
-    std::queue<int> list;
-    list.push(POSI(i,j));
-    int pos;
-    Blocks[i][j]=new_block;
-    while(!list.empty()){
-    pos=list.front();
-    list.pop();
-    i=I(pos);
-    j=J(pos);
-    if(i>0)
-      if(Blocks[i-1][j]==block){//If same block, propagate.
-        Blocks[i-1][j]=new_block;
-        list.push(POSI(i-1,j));
-      }
-    if(j>0)
-      if(Blocks[i][j-1]==block){//If same block, propagate.
-        Blocks[i][j-1]=new_block;
-        list.push(POSI(i,j-1));
-      }
-    if(j<_size-1)
-      if(Blocks[i][j+1]==block){//If same block, propagate.
-        Blocks[i][j+1]=new_block;
-        list.push(POSI(i,j+1));
-      }
-    if(i<_size-1)
-      if(Blocks[i+1][j]==block){//If same block, propagate.
-        Blocks[i+1][j]=new_block;
-        list.push(POSI(i+1,j));
-      }
-    }
-}
-*/
 
 unsigned int StateGo::count_area(bool **visited,INDEX i,INDEX j)
 {
