@@ -4,7 +4,7 @@
 #define VERSION          "1.0"
 #define GTP_VERSION      2
 #define MAX_BOARD        19      
-#define K_RAVE           100
+#define K_RAVE           1000
 
 #define UNUSED(x)        (void)x
 
@@ -16,6 +16,9 @@
 #define IS_RESIGN(d)     d.i==RESIGNI
 #define MOVE(player,i,j) {player,i,j}
 #define CHANGE_PLAYER(p) (p==White ? Black : White)
+
+#define MIN(a,b)  ((a)<(b)? a : b)
+#define MAX(a,b)  ((a)>(b)? a : b)
 
 typedef enum : char{
     Black = -1,
