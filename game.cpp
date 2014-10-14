@@ -134,6 +134,10 @@ void Game::debug(){
 
 void Game::match_patterns(){
     std::vector<DataGo> v;
+    std::cerr<<"ESCAPE ATARI: "<<std::endl;
+    _state->get_atari_escape_moves(v);
+    for(int i=0;i<v.size();i++)
+        std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;
     std::cerr<<"PATTERNS: "<<std::endl;
     _state->get_pattern_moves(v);
     for(int i=0;i<v.size();i++)

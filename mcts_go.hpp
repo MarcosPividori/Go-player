@@ -45,6 +45,8 @@ inline void SimulationWithDomainKnowledge<Value,Data,State,EvalNode,MoveRecorder
 {
     mov_counter++;
     INDEX i,j;
+    if(state->get_atari_escape_moves(v),!v.empty())
+      return;
     for(int c=0;c<FILL_BOARD_N;c++){
         i=mov_dist(SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::mt);
         j=mov_dist(SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::mt);
@@ -53,11 +55,12 @@ inline void SimulationWithDomainKnowledge<Value,Data,State,EvalNode,MoveRecorder
             return;
         }
     }
-    if(state->get_pattern_moves(v),v.empty())
-      if(mov_counter>(state->size() * state->size() * COEFF_LONG_GAME))
+    if(state->get_pattern_moves(v),!v.empty())
+      return;
+    if(mov_counter>(state->size() * state->size() * COEFF_LONG_GAME))
+      state->get_possible_moves(v);
+    else
+      if(state->get_capture_moves(v),v.empty())
         state->get_possible_moves(v);
-      else
-        if(state->get_capture_moves(v),v.empty())
-          state->get_possible_moves(v);
 }
 
