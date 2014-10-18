@@ -4,7 +4,6 @@
 #define VERSION          "1.0"
 #define GTP_VERSION      2
 #define MAX_BOARD        19      
-#define K_RAVE           1000
 
 #define UNUSED(x)        (void)x
 

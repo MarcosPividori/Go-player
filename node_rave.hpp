@@ -14,6 +14,7 @@ template <class Value,class Data> class NodeUCTRave{
         void count_nodes(int level,long counter[],int max_level);
         NodeUCTRave(Value init_value,Data init_data,NodeUCTRave<Value,Data> *father);
     public:
+        static double k_rave;
         unsigned long visits;
         unsigned long amaf_visits;
         double sqrt_visits;
@@ -32,6 +33,9 @@ template <class Value,class Data> class NodeUCTRave{
 };
 
 template <class Value,class Data>
+double NodeUCTRave<Value,Data>::k_rave;
+
+template <class Value,class Data>
 NodeUCTRave<Value,Data>::NodeUCTRave(Value init_value,Data init_data) : 
         value(init_value),data(init_data),parent(NULL),visits(0),sqrt_visits(0),amaf_visits(0),amaf_value(0),sqrt_for_amaf(0)
 {}
@@ -46,7 +50,7 @@ inline void NodeUCTRave<Value,Data>::set_visits(unsigned long v)
 {
     visits = v;
     sqrt_visits = sqrt((double) v);
-    sqrt_for_amaf = sqrt(3 * ((double) v)+K_RAVE);
+    sqrt_for_amaf = sqrt(3 * ((double) v)+k_rave);
 }
 
 template <class Value,class Data>

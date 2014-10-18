@@ -1,6 +1,7 @@
 
 #include "state_go.hpp"
 #include "mcts_utils.hpp"
+#include "config.hpp"
 
 #define NUM_THREADS 5
 
@@ -40,9 +41,9 @@ class Game{
 #ifdef RAVE
         SelectionUCTRave<ValGo,DataGo> _sel;
 #ifdef KNOWLEDGE
-        SimulationWithDomainKnowledge<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo> _sim_and_retro[NUM_THREADS];
+        SimulationWithDomainKnowledge<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo> *_sim_and_retro[NUM_THREADS];
 #else
-        SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo> _sim_and_retro[NUM_THREADS];
+        SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo> *_sim_and_retro[NUM_THREADS];
 #endif
 #else
         SelectionUCT<ValGo,DataGo> _sel;
@@ -50,7 +51,7 @@ class Game{
         RetropropagationSimple<ValGo,DataGo,EvalNode> _ret;
 #endif
     public:
-        Game(int size,const char *pattern_file=NULL);
+        Game(int size,Config &cfg_input);
         ~Game();
         void set_boardsize(int size);
         int get_boardsize(){return _size;}
