@@ -7,11 +7,15 @@ struct Config
     double number_fill_board_attemps;
     double long_game_coeff;
     int limit_expansion;
+    int number_cycles_mcts;
+    int num_threads_mcts;
     Config() : pattern_file(NULL),
                bandit_coeff(0.5),
                amaf_coeff(1000),
                number_fill_board_attemps(6),
                long_game_coeff(1.4),
-               limit_expansion(2)
+               limit_expansion(2),
+               number_cycles_mcts(75000),
+               num_threads_mcts(5)
     {}
 };

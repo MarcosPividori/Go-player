@@ -4,14 +4,18 @@
 #include <thread>
 #include <mutex>
 
-Game::Game(int size,Config &cfg_input) : _komi(0),_size(size),_exp(cfg_input.limit_expansion,0),
+Game::Game(int size,Config &cfg_input) : _komi(0),_size(size),_exp(cfg_input.limit_expansion,0),_cfg(cfg_input),
 #ifdef RAVE
 _sel(cfg_input.bandit_coeff,cfg_input.amaf_coeff)
 #else
 _sel(cfg_input.bandit_coeff)
 #endif
 {
-    for(int i=0;i<NUM_THREADS;i++){
+    _m= new Mcts<ValGo,DataGo,Nod,StateGo>*[_cfg.num_threads_mcts];
+#ifdef RAVE
+    _sim_and_retro= new SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo>*[_cfg.num_threads_mcts];
+#endif
+    for(int i=0;i<_cfg.num_threads_mcts;i++){
 #ifdef RAVE
 #ifdef KNOWLEDGE
         _sim_and_retro[i]=new SimulationWithDomainKnowledge<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo>(cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff);
@@ -23,6 +27,7 @@ _sel(cfg_input.bandit_coeff)
         _m[i]=new Mcts<ValGo,DataGo,Nod,StateGo>(&_sel,&_exp,&_sim,&_ret,&_sel_res,&_mutex);
 #endif
     }
+    _patterns=NULL;
     if(cfg_input.pattern_file){
         _patterns= new PatternList();
         _patterns->read_file(cfg_input.pattern_file);
@@ -37,10 +42,12 @@ _sel(cfg_input.bandit_coeff)
 Game::~Game(){
     delete _state;
     _root->delete_tree();
-    for(int i=0;i<NUM_THREADS;i++){
+    for(int i=0;i<_cfg.num_threads_mcts;i++){
         delete _m[i];
         delete _sim_and_retro[i];
     }
+    delete[] _m;
+    delete[] _sim_and_retro;
     if(_patterns)
         delete _patterns;
 }
@@ -102,10 +109,12 @@ bool Game::play_move(DataGo pos){
 
 DataGo Game::gen_move(Player p){
     assert(p==_state->turn);
-    std::thread threads[NUM_THREADS];
-    for(int i=0; i<NUM_THREADS; i++)
-        threads[i] = std::thread(&Mcts<ValGo,DataGo,Nod,StateGo>::run_cycles,_m[i],15000,_root,_state);
-    for(std::thread& th : threads) th.join();
+    std::thread *threads= new std::thread[_cfg.num_threads_mcts];
+    for(int i=0; i<_cfg.num_threads_mcts; i++)
+        threads[i] = std::thread(&Mcts<ValGo,DataGo,Nod,StateGo>::run_cycles,_m[i],_cfg.number_cycles_mcts/_cfg.num_threads_mcts,_root,_state);
+    for(int i=0;i<_cfg.num_threads_mcts;i++)
+        threads[i].join();
+    delete[] threads;
     DataGo pos = _m[0]->get_resultant_move(_root);
 #ifdef DEBUG
     _root->show();

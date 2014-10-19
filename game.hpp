@@ -33,18 +33,15 @@ class Game{
         float _komi;
         int _size;
         Nod *_root;
+        Config _cfg;
         std::mutex _mutex;
         PatternList *_patterns;
         ExpansionAllChildren<ValGo,DataGo,StateGo,Nod> _exp;
         SelectResMostRobust<ValGo,DataGo,Nod> _sel_res;
-        Mcts<ValGo,DataGo,Nod,StateGo> *_m[NUM_THREADS];
+        Mcts<ValGo,DataGo,Nod,StateGo> **_m;
 #ifdef RAVE
         SelectionUCTRave<ValGo,DataGo> _sel;
-#ifdef KNOWLEDGE
-        SimulationWithDomainKnowledge<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo> *_sim_and_retro[NUM_THREADS];
-#else
-        SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo> *_sim_and_retro[NUM_THREADS];
-#endif
+        SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo> **_sim_and_retro;
 #else
         SelectionUCT<ValGo,DataGo> _sel;
         SimulationTotallyRandom<ValGo,DataGo,StateGo> _sim;
