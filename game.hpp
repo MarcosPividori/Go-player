@@ -37,7 +37,7 @@ class Game{
         std::mutex _mutex;
         PatternList *_patterns;
         ExpansionAllChildren<ValGo,DataGo,StateGo,Nod> _exp;
-        SelectResMostRobust<ValGo,DataGo,Nod> _sel_res;
+        SelectResMostRobustOverLimit<Nod> _sel_res;
         Mcts<ValGo,DataGo,Nod,StateGo> **_m;
 #ifdef RAVE
         SelectionUCTRave<ValGo,DataGo> _sel;

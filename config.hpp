@@ -9,6 +9,7 @@ struct Config
     int limit_expansion;
     int number_cycles_mcts;
     int num_threads_mcts;
+    double resign_limit;
     Config() : pattern_file(NULL),
                bandit_coeff(0.5),
                amaf_coeff(1000),
@@ -16,6 +17,7 @@ struct Config
                long_game_coeff(1.4),
                limit_expansion(2),
                number_cycles_mcts(75000),
-               num_threads_mcts(5)
+               num_threads_mcts(5),
+               resign_limit(0.1)
     {}
 };

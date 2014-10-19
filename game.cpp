@@ -4,7 +4,7 @@
 #include <thread>
 #include <mutex>
 
-Game::Game(int size,Config &cfg_input) : _komi(0),_size(size),_exp(cfg_input.limit_expansion,0),_cfg(cfg_input),
+Game::Game(int size,Config &cfg_input) : _komi(0),_size(size),_exp(cfg_input.limit_expansion,0),_cfg(cfg_input),_sel_res(cfg_input.resign_limit),
 #ifdef RAVE
 _sel(cfg_input.bandit_coeff,cfg_input.amaf_coeff)
 #else
