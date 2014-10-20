@@ -1,0 +1,71 @@
+b w b
+- x -
+x x x
+
+b w -
+- x -
+x - x
+
+b w x
+b x -
+x - x
+
+b w w
+- b -
+x - x
+
+
+b w x
+w x -
+x - x
+
+b w x
+w x b
+x - x
+
+b w x
+w x w
+x w x
+
+b w x
+w x b
+x w x
+
+b w x
+w x -
+x b x
+
+b w x
+w x w
+x b x
+
+b w x
+w x b
+x b x
+
+
+x b x
+w x w
+W W W
+
+
+b - x
+w x x
+* * *
+
+x b x
+B x w
+* * *
+
+x b w
+x b x
+* * *
+
+x b w
+x w B
+* * *
+
+x b w
+w w b
+* * *
+
