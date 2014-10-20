@@ -20,7 +20,6 @@ class ExpansionAllChildren: public Expansion<Value,Data,Node,State> {
 template <class Value,class Data,class State>
 class SimulationTotallyRandom: public Simulation<Value,Data,State> {
     private:
-//        clock_t counter1,counter2,counter3;    
         std::mt19937 mt;
     public:
         SimulationTotallyRandom();

@@ -8,6 +8,10 @@
 #define FLAG_BOTH (FLAG_B | FLAG_W)
 #define NO_FLAG   0x3fffffff
 
+#define INIT_LIB  0
+#define FOUND_LIB 1
+#define FAIL_LIB  2
+
 StateGo::StateGo(int size,float komi,PatternList *p) : _size(size),_komi(komi),patterns(p)
 #ifdef JAPANESE
         ,captured_b(0),captured_w(0)
@@ -123,78 +127,6 @@ void StateGo::eliminate_block(int *block,INDEX i,INDEX j)
           *Blocks[i+1][j]+=1;
 }
 
-/* ITERACTIVE ELIMINATING (BFS)
-#define POSI(i,j) ((i)*MAX_BOARD+(j))
-#define I(p)      p/MAX_BOARD       
-#define J(p)      p%MAX_BOARD
-
-inline void StateGo::eliminate_block(int *block,INDEX i,INDEX j)
-{
-
-    Blocks[i][j]=NULL;
-    Stones[i][j]=Empty;
-    std::queue<int> list;
-    list.push(POSI(i,j));
-    int pos;
-    while(!list.empty()){
-    pos=list.front();
-    list.pop();
-    i=I(pos);
-    j=J(pos);
-#ifdef JAPANESE
-    if(Stones[i][j]==Black)
-        captured_b++;
-    else
-        captured_w++;
-#endif
-    if(!ko_flag){
-      ko_flag=true;
-      ko_unique=true;
-      koi=i;
-      koj=j;
-    }else{
-      ko_unique=false;
-    }
-    if(i>0)
-      if(Blocks[i-1][j]==block){//If same block, propagate.
-        Blocks[i-1][j]=NULL;
-        Stones[i-1][j]=Empty;
-        list.push(POSI(i-1,j));
-      }
-      else
-        if(Stones[i-1][j]!=Empty)//Add a free adjacency.
-          *Blocks[i-1][j]+=1;
-    if(j>0)
-      if(Blocks[i][j-1]==block){//If same block, propagate.
-        Blocks[i][j-1]=NULL;
-        Stones[i][j-1]=Empty;
-        list.push(POSI(i,j-1));
-      }
-      else
-        if(Stones[i][j-1]!=Empty)//Add a free adjacency.
-          *Blocks[i][j-1]+=1;
-    if(j<_size-1)
-      if(Blocks[i][j+1]==block){//If same block, propagate.
-        Blocks[i][j+1]=NULL;
-        Stones[i][j+1]=Empty;
-        list.push(POSI(i,j+1));
-      }
-      else
-        if(Stones[i][j+1]!=Empty)//Add a free adjacency.
-          *Blocks[i][j+1]+=1;
-    if(i<_size-1)
-      if(Blocks[i+1][j]==block){//If same block, propagate.
-        Blocks[i+1][j]=NULL;
-        Stones[i+1][j]=Empty;
-        list.push(POSI(i+1,j));
-      }
-      else
-        if(Stones[i+1][j]!=Empty)//Add a free adjacency.
-          *Blocks[i+1][j]+=1;
-    }
-}
-*/
-
 // RECURSIVE UPDATING (DFS)
 void StateGo::update_block(int *block,int *new_block,INDEX i,INDEX j)
 {
@@ -212,46 +144,129 @@ void StateGo::update_block(int *block,int *new_block,INDEX i,INDEX j)
       if(Blocks[i+1][j]==block)//If same block, propagate.
         update_block(block,new_block,i+1,j);
 }
-/*
-// ITERACTIVE UPDATING (BFS)
-inline void StateGo::update_block(int *block,int *new_block,INDEX i,INDEX j)
+
+unsigned int StateGo::get_liberty_block(int *block,INDEX i,INDEX j,INDEX &lib_i,INDEX &lib_j)
 {
-    std::queue<int> list;
-    list.push(POSI(i,j));
-    int pos;
-    Blocks[i][j]=new_block;
-    while(!list.empty()){
-    pos=list.front();
-    list.pop();
-    i=I(pos);
-    j=J(pos);
+    Blocks[i][j]= (int*) 1;
+    INDEX t_i,t_j;
+    unsigned int res=INIT_LIB,v;
     if(i>0)
       if(Blocks[i-1][j]==block){//If same block, propagate.
-        Blocks[i-1][j]=new_block;
-        list.push(POSI(i-1,j));
+        v=get_liberty_block(block,i-1,j,t_i,t_j);
+        if(v == FAIL_LIB)
+          return FAIL_LIB;
+        if(v == FOUND_LIB)
+          if(res == FOUND_LIB){
+            if(lib_i!=t_i || lib_j!=t_j)
+              return FAIL_LIB;
+          }
+          else{
+            lib_i=t_i;lib_j=t_j;
+            res=FOUND_LIB;
+          }
       }
+      else
+        if(Stones[i-1][j]==Empty)
+          if(res == FOUND_LIB){
+            if(lib_i!=i-1 || lib_j!=j)
+              return FAIL_LIB;
+          }
+          else{
+            lib_i=i-1;lib_j=j;
+            res=FOUND_LIB;
+          }
     if(j>0)
       if(Blocks[i][j-1]==block){//If same block, propagate.
-        Blocks[i][j-1]=new_block;
-        list.push(POSI(i,j-1));
+        v=get_liberty_block(block,i,j-1,t_i,t_j);
+        if(v == FAIL_LIB)
+          return FAIL_LIB;
+        if(v == FOUND_LIB)
+          if(res == FOUND_LIB){
+            if(lib_i!=t_i || lib_j!=t_j)
+              return FAIL_LIB;
+          }
+          else{
+            lib_i=t_i;lib_j=t_j;
+            res=FOUND_LIB;
+          }
       }
+      else
+        if(Stones[i][j-1]==Empty)
+          if(res == FOUND_LIB){
+            if(lib_i!=i || lib_j!=j-1)
+              return FAIL_LIB;
+          }
+          else{
+            lib_i=i;lib_j=j-1;
+            res=FOUND_LIB;
+          }
     if(j<_size-1)
       if(Blocks[i][j+1]==block){//If same block, propagate.
-        Blocks[i][j+1]=new_block;
-        list.push(POSI(i,j+1));
+        v=get_liberty_block(block,i,j+1,t_i,t_j);
+        if(v == FAIL_LIB)
+          return FAIL_LIB;
+        if(v == FOUND_LIB)
+          if(res == FOUND_LIB){
+            if(lib_i!=t_i || lib_j!=t_j)
+              return FAIL_LIB;
+          }
+          else{
+            lib_i=t_i;lib_j=t_j;
+            res=FOUND_LIB;
+          }
       }
+      else
+        if(Stones[i][j+1]==Empty)
+          if(res == FOUND_LIB){
+            if(lib_i!=i || lib_j!=j+1)
+              return FAIL_LIB;
+          }
+          else{
+            lib_i=i;lib_j=j+1;
+            res=FOUND_LIB;
+          }
     if(i<_size-1)
       if(Blocks[i+1][j]==block){//If same block, propagate.
-        Blocks[i+1][j]=new_block;
-        list.push(POSI(i+1,j));
+        v=get_liberty_block(block,i+1,j,t_i,t_j);
+        if(v == FAIL_LIB)
+          return FAIL_LIB;
+        if(v == FOUND_LIB)
+          if(res == FOUND_LIB){
+            if(lib_i!=t_i || lib_j!=t_j)
+              return FAIL_LIB;
+          }
+          else{
+            lib_i=t_i;lib_j=t_j;
+            res=FOUND_LIB;
+          }
       }
-    }
+      else
+        if(Stones[i+1][j]==Empty)
+          if(res == FOUND_LIB){
+            if(lib_i!=i+1 || lib_j!=j)
+              return FAIL_LIB;
+          }
+          else{
+            lib_i=i+1;lib_j=j;
+            res=FOUND_LIB;
+          }
+    return res;
 }
-*/
+
+bool StateGo::is_block_in_atari(INDEX i,INDEX j,INDEX &i_atari,INDEX &j_atari)
+{
+    if(*(Blocks[i][j]) >4)
+      return false;
+    int *block=Blocks[i][j];
+    bool res=false;
+    if(get_liberty_block(block,i,j,i_atari,j_atari)==FOUND_LIB)
+        res=true;
+    update_block((int*)1,block,i,j);
+    return res;
+}
 
 unsigned int StateGo::count_area(bool **visited,INDEX i,INDEX j)
 {
-    
     unsigned int res=1,v;
     visited[i][j]=true;
     if(i>0)
@@ -305,6 +320,50 @@ inline void StateGo::get_possible_moves(std::vector<DataGo>& v)
 }
 
 #ifdef KNOWLEDGE
+void StateGo::get_atari_escape_moves(std::vector<DataGo>& v)
+{
+    if(IS_PASS(last_mov))
+      return;
+    int *b[3]={NULL,NULL,NULL},c=0;
+    INDEX i=last_mov.i,j=last_mov.j,t_i,t_j;
+    if(i>0
+       && Stones[i-1][j]==turn
+       && is_block_in_atari(i-1,j,t_i,t_j)
+       && no_self_atari_nor_suicide(t_i,t_j,turn)){
+       v.push_back({turn,t_i,t_j});
+       b[c]=Blocks[i-1][j];
+       c++;
+    }
+    if(i<_size-1
+       && Stones[i+1][j]==turn
+       && Blocks[i+1][j]!=b[0]
+       && is_block_in_atari(i+1,j,t_i,t_j)
+       && no_self_atari_nor_suicide(t_i,t_j,turn)){
+       v.push_back({turn,t_i,t_j});
+       b[c]=Blocks[i+1][j];
+       c++;
+    }
+    if(j>0
+       && Stones[i][j-1]==turn
+       && Blocks[i][j-1]!=b[0]
+       && Blocks[i][j-1]!=b[1]
+       && is_block_in_atari(i,j-1,t_i,t_j)
+       && no_self_atari_nor_suicide(t_i,t_j,turn)){
+       v.push_back({turn,t_i,t_j});
+       b[c]=Blocks[i][j-1];
+       c++;
+    }
+    if(j<_size-1
+       && Stones[i][j+1]==turn
+       && Blocks[i][j+1]!=b[0]
+       && Blocks[i][j+1]!=b[1]
+       && Blocks[i][j+1]!=b[2]
+       && is_block_in_atari(i,j+1,t_i,t_j)
+       && no_self_atari_nor_suicide(t_i,t_j,turn)){
+       v.push_back({turn,t_i,t_j});
+    }
+}
+
 void StateGo::get_pattern_moves(std::vector<DataGo>& v)
 {
     if(patterns==NULL)
@@ -621,6 +680,115 @@ inline bool StateGo::remove_opponent_block_and_no_ko(INDEX i,INDEX j,Player p)
         return false;
     }
     return true;
+}
+
+inline bool StateGo::no_self_atari_nor_suicide(INDEX i,INDEX j,Player p)
+{
+    int c_empty=0;
+    bool flag=false;
+    INDEX l_i,l_j;
+    if(i>0 && Stones[i-1][j]==Empty){
+      flag=true;
+      l_i=i-1;
+      l_j=j;
+      c_empty++;
+    }
+    if(j>0 && Stones[i][j-1]==Empty){
+      flag=true;
+      l_i=i;
+      l_j=j-1;
+      c_empty++;
+    }
+    if(j<_size-1 && Stones[i][j+1]==Empty){
+      flag=true;
+      l_i=i;
+      l_j=j+1;
+      c_empty++;
+    }
+    if(i<_size-1 && Stones[i+1][j]==Empty){
+      flag=true;
+      l_i=i+1;
+      l_j=j;
+      c_empty++;
+    }
+
+    if(c_empty>1)
+      return true;
+
+    //Check if next blocks of same player wont be atari.
+    Stones[i][j]=p;
+    INDEX t_i,t_j;
+    if(i>0 && Stones[i-1][j]==p)
+      if(is_block_in_atari(i-1,j,t_i,t_j))
+        if(flag){
+          if(t_i!=l_i || t_j!=l_j){
+            Stones[i][j]=Empty;
+            return true;
+          }
+        }
+        else{
+          flag=true;
+          l_i=t_i;
+          l_j=t_j;
+        }
+      else{
+        Stones[i][j]=Empty;
+        return true;
+      }
+    if(j>0 && Stones[i][j-1]==p)
+      if(is_block_in_atari(i,j-1,t_i,t_j))
+        if(flag){
+          if(t_i!=l_i || t_j!=l_j){
+            Stones[i][j]=Empty;
+            return true;
+          }
+        }
+        else{
+          flag=true;
+          l_i=t_i;
+          l_j=t_j;
+        }
+      else{
+        Stones[i][j]=Empty;
+        return true;
+      }
+    if(j<_size-1 && Stones[i][j+1]==p)
+      if(is_block_in_atari(i,j+1,t_i,t_j))
+        if(flag){
+          if(t_i!=l_i || t_j!=l_j){
+            Stones[i][j]=Empty;
+            return true;
+          }
+        }
+        else{
+          flag=true;
+          l_i=t_i;
+          l_j=t_j;
+        }
+      else{
+        Stones[i][j]=Empty;
+        return true;
+      } 
+    if(i<_size-1 && Stones[i+1][j]==p)
+      if(is_block_in_atari(i+1,j,t_i,t_j))
+        if(flag){
+          if(t_i!=l_i || t_j!=l_j){
+            Stones[i][j]=Empty;
+            return true;
+          }
+        }
+        else{
+          flag=true;
+          l_i=t_i;
+          l_j=t_j;
+        }
+      else{
+        Stones[i][j]=Empty;
+        return true;
+      }
+
+    Stones[i][j]=Empty;
+    return false;
 }
 
 inline bool StateGo::no_ko_nor_suicide(INDEX i,INDEX j,Player p)

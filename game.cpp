@@ -4,24 +4,37 @@
 #include <thread>
 #include <mutex>
 
-Game::Game(int size,const char *pattern_file) : _komi(0),_size(size),_exp(2,0),
+Game::Game(int size,Config &cfg_input) : _komi(0),_size(size),_exp(cfg_input.limit_expansion,0),_cfg(cfg_input),_sel_res(cfg_input.resign_limit),
 #ifdef RAVE
-_sel(0.5,K_RAVE)
+_sel(cfg_input.bandit_coeff,cfg_input.amaf_coeff)
 #else
-_sel(1)
+_sel(cfg_input.bandit_coeff)
 #endif
 {
-    for(int i=0;i<NUM_THREADS;i++){
+    _m= new Mcts<ValGo,DataGo,Nod,StateGo>*[_cfg.num_threads_mcts];
 #ifdef RAVE
-        _m[i]=new Mcts<ValGo,DataGo,Nod,StateGo>(&_sel,&_exp,&_sim_and_retro[i],&_sim_and_retro[i],&_sel_res,&_mutex);
+    _sim_and_retro= new SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo>*[_cfg.num_threads_mcts];
+#endif
+    for(int i=0;i<_cfg.num_threads_mcts;i++){
+#ifdef RAVE
+#ifdef KNOWLEDGE
+        _sim_and_retro[i]=new SimulationWithDomainKnowledge<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo>(cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff);
+#else
+        _sim_and_retro[i]=new SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo>();
+#endif
+        _m[i]=new Mcts<ValGo,DataGo,Nod,StateGo>(&_sel,&_exp,_sim_and_retro[i],_sim_and_retro[i],&_sel_res,&_mutex);
 #else
         _m[i]=new Mcts<ValGo,DataGo,Nod,StateGo>(&_sel,&_exp,&_sim,&_ret,&_sel_res,&_mutex);
 #endif
     }
-    if(pattern_file){
+    _patterns=NULL;
+    if(cfg_input.pattern_file){
         _patterns= new PatternList();
-        _patterns->read_file(pattern_file);
+        _patterns->read_file(cfg_input.pattern_file);
     }
+#ifdef RAVE
+    NodeUCTRave<ValGo,DataGo>::k_rave = cfg_input.amaf_coeff;
+#endif
     _state = new StateGo(_size,_komi,_patterns);
     _root= new Nod(0,{CHANGE_PLAYER(_state->turn),0,0});
 }
@@ -29,8 +42,12 @@ _sel(1)
 Game::~Game(){
     delete _state;
     _root->delete_tree();
-    for(int i=0;i<NUM_THREADS;i++)
+    for(int i=0;i<_cfg.num_threads_mcts;i++){
         delete _m[i];
+        delete _sim_and_retro[i];
+    }
+    delete[] _m;
+    delete[] _sim_and_retro;
     if(_patterns)
         delete _patterns;
 }
@@ -79,7 +96,9 @@ bool Game::play_move(DataGo pos){
 #ifdef DEBUG
         std::cerr << "STATS PLAYED NODE: vis=" << _root->visits << " win=" << _root->value
                   << " vis_amaf=" << _root->amaf_visits << " win_amaf=" << _root->amaf_value << std::endl;
-        std::cerr << "                   rate=" << (_root->value / _root->visits) << "  amaf_rate=" << (_root->amaf_value / _root->amaf_visits) << "  amaf_coeff="<< (sqrt(K_RAVE)/_root->sqrt_for_amaf) << std::endl;
+        std::cerr << "                   rate=" << (_root->value / _root->visits) 
+                  << "  amaf_rate=" << (_root->amaf_value / _root->amaf_visits)
+                  << "  amaf_coeff="<< (sqrt(NodeUCTRave<ValGo,DataGo>::k_rave)/_root->sqrt_for_amaf) << std::endl;
 #endif
     }else{
         _root->delete_tree();
@@ -90,10 +109,12 @@ bool Game::play_move(DataGo pos){
 
 DataGo Game::gen_move(Player p){
     assert(p==_state->turn);
-    std::thread threads[NUM_THREADS];
-    for(int i=0; i<NUM_THREADS; i++)
-        threads[i] = std::thread(&Mcts<ValGo,DataGo,Nod,StateGo>::run_cycles,_m[i],15000,_root,_state);
-    for(std::thread& th : threads) th.join();
+    std::thread *threads= new std::thread[_cfg.num_threads_mcts];
+    for(int i=0; i<_cfg.num_threads_mcts; i++)
+        threads[i] = std::thread(&Mcts<ValGo,DataGo,Nod,StateGo>::run_cycles,_m[i],_cfg.number_cycles_mcts/_cfg.num_threads_mcts,_root,_state);
+    for(int i=0;i<_cfg.num_threads_mcts;i++)
+        threads[i].join();
+    delete[] threads;
     DataGo pos = _m[0]->get_resultant_move(_root);
 #ifdef DEBUG
     _root->show();
@@ -134,13 +155,23 @@ void Game::debug(){
 
 void Game::match_patterns(){
     std::vector<DataGo> v;
+    std::cerr<<"ESCAPE ATARI: "<<std::endl;
+    _state->get_atari_escape_moves(v);
+    for(int i=0;i<v.size();i++)
+        std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;
     std::cerr<<"PATTERNS: "<<std::endl;
+    v.clear();
     _state->get_pattern_moves(v);
     for(int i=0;i<v.size();i++)
         std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;
     v.clear();
     std::cerr<<"CAPTURES: "<<std::endl;
     _state->get_capture_moves(v);
+    for(int i=0;i<v.size();i++)
+        std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;
+    std::cerr<<"SIMULATION POSSIBLE MOVES: "<<std::endl;
+    v.clear();
+    _state->get_simulation_possible_moves(v);
     for(int i=0;i<v.size();i++)
         std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;
 }
