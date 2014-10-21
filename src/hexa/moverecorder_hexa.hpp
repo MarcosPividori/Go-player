@@ -1,39 +1,35 @@
 
-class MoveRecorderGo: public MoveRecorder<DataGo>{
+#include "defines.h"
+#include "mcts_rave.hpp"
+
+class MoveRecorderHexa: public MoveRecorder<DataHexa>{
     private:
-        Player Stones[MAX_BOARD][MAX_BOARD];
+        CELL A[11][11];
     public:
         void clear();
-        void postMove(DataGo move);
-        void prevMove(DataGo move); 
-        bool isMove(DataGo move);
+        void postMove(DataHexa move);
+        void prevMove(DataHexa move); 
+        bool isMove(DataHexa move);
 };
 
-inline void MoveRecorderGo::clear()
+inline void MoveRecorderHexa::clear()
 {
-    for(int i=0;i<MAX_BOARD;i++)
-        for(int j=0;j<MAX_BOARD;j++)
-            Stones[i][j]=Empty;
+    for(int i=0;i<11;i++)
+        for(int j=0;j<11;j++)
+            A[i][j]=EMPTY;
 }
 
-inline void MoveRecorderGo::postMove(DataGo move)
+inline void MoveRecorderHexa::postMove(DataHexa move)
 {
-    if(! IS_PASS(move))
-        if(Stones[move.i][move.j]==Empty)
-            Stones[move.i][move.j]=move.player;
+    A[I(move)][J(move)]=PlayerToCell(Player(move));
 }
 
-inline void MoveRecorderGo::prevMove(DataGo move)
+inline void MoveRecorderHexa::prevMove(DataHexa move)
 {
-    if(! IS_PASS(move))
-        Stones[move.i][move.j]=move.player;
+    A[I(move)][J(move)]=PlayerToCell(Player(move));
 }
 
-inline bool MoveRecorderGo::isMove(DataGo move)
+inline bool MoveRecorderHexa::isMove(DataHexa move)
 {
-    if(IS_PASS(move))
-        return false;//TODO:REVISAR!!
-    if(Stones[move.i][move.j]==move.player)
-        return true;
-    return false;
+    return A[I(move)][J(move)]==PlayerToCell(Player(move));
 }
