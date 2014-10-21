@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
-#include "defines.h"
 
 template <class Value,class Data> class NodeUCTRave{
     private:
