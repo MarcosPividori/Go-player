@@ -11,16 +11,12 @@ SRCDIR_2048 = src/2048
 CC = g++
 CFLAGS = -std=c++0x -pthread -O2 -I $(SRCDIR_MCTS) 
 CFLAGS_GO = -DJAPANESE -DRAVE -DKNOWLEDGE
-CFLAGS_HEXA =
 DEBUGFLAGS = -DDEBUG -g
 
 SOURCESC_GO = play_gtp.c gtp.c
 SOURCESCPP_GO = state_go.cpp game.cpp pattern_list.cpp
 OBJS_GO = $(SOURCESCPP_GO:%.cpp=$(OBJDIR)/%.o) $(SOURCESC_GO:%.c=$(OBJDIR)/%.o)
 OBJS_DEBUG_GO = $(SOURCESCPP_GO:%.cpp=$(OBJDIR)/%_debug.o) $(SOURCESC_GO:%.c=$(OBJDIR)/%_debug.o)
-
-SOURCESCPP_HEXA = state_hexa.cpp
-OBJS_HEXA = $(SOURCESCPP_HEXA:%.cpp=$(OBJDIR)/%.o)
 
 all: marcos_go marcos_debug tateti connect4 2048 hexa
 
@@ -42,14 +38,11 @@ $(OBJDIR)/%.o: $(SRCDIR_GO)/%.cpp
 $(OBJDIR)/%.o: $(SRCDIR_GO)/%.c
 		$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJDIR)/%.o: $(SRCDIR_HEXA)/%.cpp
-		$(CC) $(CFLAGS) -c $< -o $@
-
 clean:
 		$(RM) $(BINDIR)/* $(OBJDIR)/*
 
 tateti:
-		$(CC) $(CFLAGS) $(SRCDIR_TATETI)/marcos_tateti.cpp -o $(BINDIR)/marcos_tateti
+		$(CC) $(CFLAGS) $(SRCDIR_TATETI)/marcos_tateti.cpp $(SRCDIR_TATETI)/state_tateti.cpp -o $(BINDIR)/marcos_tateti
 
 connect4:
 		$(CC) $(CFLAGS) $(SRCDIR_CONNECT4)/marcos_connect4.cpp -o $(BINDIR)/marcos_connect4
@@ -57,6 +50,5 @@ connect4:
 2048:
 		$(CC) $(CFLAGS) $(SRCDIR_2048)/marcos_2048.cpp -o $(BINDIR)/marcos_2048
 
-hexa: $(OBJS_HEXA)
-		$(CC) $(CFLAGS) $(CFLAGS_HEXA) $(SRCDIR_HEXA)/marcos_hexa.cpp -o $(BINDIR)/marcos_hexa $(OBJS_HEXA)
-
+hexa: 
+		$(CC) $(CFLAGS) $(CFLAGS_HEXA) $(SRCDIR_HEXA)/marcos_hexa.cpp $(SRCDIR_HEXA)/state_hexa.cpp -o $(BINDIR)/marcos_hexa
