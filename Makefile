@@ -45,7 +45,7 @@ tateti:
 		$(CC) $(CFLAGS) $(SRCDIR_TATETI)/marcos_tateti.cpp $(SRCDIR_TATETI)/state_tateti.cpp -o $(BINDIR)/marcos_tateti
 
 connect4:
-		$(CC) $(CFLAGS) $(SRCDIR_CONNECT4)/marcos_connect4.cpp -o $(BINDIR)/marcos_connect4
+		$(CC) $(CFLAGS) $(SRCDIR_CONNECT4)/marcos_connect4.cpp $(SRCDIR_CONNECT4)/state_connect4.cpp -o $(BINDIR)/marcos_connect4
 
 2048:
 		$(CC) $(CFLAGS) $(SRCDIR_2048)/marcos_2048.cpp -o $(BINDIR)/marcos_2048
