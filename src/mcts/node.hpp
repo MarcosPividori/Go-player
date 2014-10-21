@@ -1,3 +1,5 @@
+#ifndef __NODE__
+#define __NODE__
 
 #include <vector>
 #include <cstddef>
@@ -93,3 +95,4 @@ void NodeUCT<Value,Data>::show(){
     std::cout<<"============="<<std::endl;
 }
 
+#endif //__NODE__
