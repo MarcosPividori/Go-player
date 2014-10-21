@@ -202,11 +202,11 @@ int main()
             exp.counter=0;
 #endif
 
-        std::thread threads[NUM_THREADS];
-        for(int i=0; i<NUM_THREADS; i++)
-            threads[i] = std::thread(&Mcts<ValTateti,DataTateti,Nod,StateTateti>::run_cycles,m,NUM_CYCLES/NUM_THREADS,nod,&state);
-        for(int i=0; i<NUM_THREADS; i++)
-            threads[i].join();
+            std::thread threads[NUM_THREADS];
+            for(int i=0; i<NUM_THREADS; i++)
+                threads[i] = std::thread(&Mcts<ValTateti,DataTateti,Nod,StateTateti>::run_cycles,m,NUM_CYCLES/NUM_THREADS,nod,&state);
+            for(int i=0; i<NUM_THREADS; i++)
+                threads[i].join();
 
 #ifdef DEBUG
             std::cout<<"Expansion counter: "<<exp.counter<<std::endl;
