@@ -18,7 +18,7 @@
  typedef NodeUCT<ValGo,DataGo> Nod;
 #endif
 
-struct EvalNode{
+struct EvalNod : EvalNode<ValGo,DataGo> {
     ValGo operator()(ValGo v_nodo,ValGo v_final,DataGo dat_nodo)
     {
         if(v_final == dat_nodo.player)
@@ -41,11 +41,11 @@ class Game{
         Mcts<ValGo,DataGo,Nod,StateGo> **_m;
 #ifdef RAVE
         SelectionUCTRave<ValGo,DataGo> _sel;
-        SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo> **_sim_and_retro;
+        SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo> **_sim_and_retro;
 #else
         SelectionUCT<ValGo,DataGo> _sel;
         SimulationTotallyRandom<ValGo,DataGo,StateGo> _sim;
-        RetropropagationSimple<ValGo,DataGo,EvalNode> _ret;
+        RetropropagationSimple<ValGo,DataGo,EvalNod> _ret;
 #endif
     public:
         Game(int size,Config &cfg_input);

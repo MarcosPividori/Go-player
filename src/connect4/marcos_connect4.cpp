@@ -6,7 +6,7 @@
 #include <thread>
 #include "state_connect4.hpp"
 
-struct EvalNode{
+struct EvalNod : public EvalNode<ValConnect4,DataConnect4> {
     ValConnect4 operator()(ValConnect4 v_nodo,ValConnect4 v_final,DataConnect4 dat_nodo)
     {
         if(v_final == EMPTY)//Tie
@@ -55,7 +55,7 @@ int main()
     SelectionUCT<ValConnect4,DataConnect4> sel(1);
     ExpansionAllChildren<ValConnect4,DataConnect4,StateConnect4,Nod> exp(2,0);
     SimulationTotallyRandom<ValConnect4,DataConnect4,StateConnect4> sim;
-    RetropropagationSimple<ValConnect4,DataConnect4,EvalNode> ret;
+    RetropropagationSimple<ValConnect4,DataConnect4,EvalNod> ret;
     SelectResMostRobust<ValConnect4,DataConnect4,Nod> sel_res;
     Mcts<ValConnect4,DataConnect4,Nod,StateConnect4> m(&sel,&exp,&sim,&ret,&sel_res,&mutex);
     

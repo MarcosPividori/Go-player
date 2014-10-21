@@ -14,7 +14,7 @@
 #define NUM_THREADS 5
 #define NUM_CYCLES 30000
 
-struct EvalNode{
+struct EvalNod : public EvalNode<ValHexa,DataHexa> {
     ValHexa operator()(ValHexa v_nodo,ValHexa v_final,DataHexa dat_nodo)
     {
         if(v_final == EMPTY)//Tie
@@ -65,13 +65,13 @@ int main()
 #ifdef RAVE
     SelectionUCTRave<ValHexa,DataHexa> sel(1,100);
     Mcts<ValHexa,DataHexa,Nod,StateHexa> *m[NUM_THREADS];
-    SimulationAndRetropropagationRave<ValHexa,DataHexa,StateHexa,EvalNode,MoveRecorderHexa> sim_and_retro[NUM_THREADS];
+    SimulationAndRetropropagationRave<ValHexa,DataHexa,StateHexa,EvalNod,MoveRecorderHexa> sim_and_retro[NUM_THREADS];
     for(int i=0;i<NUM_THREADS;i++)
       m[i]= new Mcts<ValHexa,DataHexa,Nod,StateHexa>(&sel,&exp,&sim_and_retro[i],&sim_and_retro[i],&sel_res,&mutex);
 #else
     SelectionUCT<ValHexa,DataHexa> sel(1);
     SimulationTotallyRandom<ValHexa,DataHexa,StateHexa> sim;
-    RetropropagationSimple<ValHexa,DataHexa,EvalNode> ret;
+    RetropropagationSimple<ValHexa,DataHexa,EvalNod> ret;
     Mcts<ValHexa,DataHexa,Nod,StateHexa> m(&sel,&exp,&sim,&ret,&sel_res,&mutex);
 #endif
     

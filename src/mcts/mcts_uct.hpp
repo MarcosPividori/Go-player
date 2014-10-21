@@ -16,6 +16,11 @@ class SelectionUCT: public Selection<Value,Data, NodeUCT<Value,Data> >{
         NodeUCT<Value,Data>* select(const NodeUCT<Value,Data> *nod);
 };
 
+template <class Value,class Data>
+struct EvalNode{                                                       
+    virtual Value operator()(Value v_nodo,Value v_final,Data dat_nodo)=0;
+}; 
+
 template <class Value,class Data,class EvalNode>
 class RetropropagationSimple: public Retropropagation<Value,Data, NodeUCT<Value,Data> > {
     private:

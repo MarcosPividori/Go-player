@@ -6,7 +6,7 @@
 #include <thread>
 #include "state_tateti.hpp"
 
-struct EvalNode{
+struct EvalNod: public EvalNode<ValTateti,DataTateti> {
     ValTateti operator()(ValTateti v_nodo,ValTateti v_final,DataTateti dat_nodo)
     {
         if(v_final == EMPTY)//Tie
@@ -54,7 +54,7 @@ int main()
     SelectionUCT<ValTateti,DataTateti> sel(1);
     ExpansionAllChildren<ValTateti,DataTateti,StateTateti,Nod> exp(2,0);
     SimulationTotallyRandom<ValTateti,DataTateti,StateTateti> sim;
-    RetropropagationSimple<ValTateti,DataTateti,EvalNode> ret;
+    RetropropagationSimple<ValTateti,DataTateti,EvalNod> ret;
     SelectResMostRobust<ValTateti,DataTateti,Nod> sel_res;
     Mcts<ValTateti,DataTateti,Nod,StateTateti> m(&sel,&exp,&sim,&ret,&sel_res,&mutex);
     

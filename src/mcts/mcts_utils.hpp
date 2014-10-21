@@ -53,8 +53,6 @@ Node* ExpansionAllChildren<Value,Data,State,Node>::expand(Node *nod,
         if(v.empty()){
 #ifdef DEBUG
             counter++;
-//          std::cout<<"SIZE OF V: "<<v.size()<<std::endl;
-//          state->show();
 #endif
             return nod;
         }
@@ -71,7 +69,6 @@ SimulationTotallyRandom<Value,Data,State>::SimulationTotallyRandom()
 {
     std::random_device rd;
     mt.seed(rd());
-//    counter1=0,counter2=0,counter3=0;    
 }
 
 template <class Value,class Data,class State>
@@ -79,20 +76,12 @@ Value SimulationTotallyRandom<Value,Data,State>::simulate(State *state)
 {
     std::vector<Data> v;
     state->get_possible_moves(v);
-//    clock_t time_init;    
     while(!v.empty()){
-//        time_init=clock();    
         std::uniform_int_distribution<int> dist(0, v.size()-1);
-//        counter1+=clock()-time_init;
-//        time_init=clock();    
         state->apply(v[dist(mt)]);
-//        counter2+=clock()-time_init;
         v.clear();
-//        time_init=clock();    
         state->get_possible_moves(v);
-//        counter3+=clock()-time_init;
     }
-//    std::cout<<"STATS SIMULATION: random: "<<counter1<<" apply: "<<counter2<<" possible_moves: "<<counter3<<std::endl;
     return state->get_final_value();
 }
 
