@@ -155,7 +155,7 @@ DataTateti insert_mov(Player player,StateTateti *state)
 {
     int i,j;
     while(1){
-        std::cout<<"Insert mov: ";
+        std::cout<<"Insert mov (row and column): ";
         if((std::cin>>i>>j) && (i>=1 && i<4) && (j>=1 && j<4) && state->valid_move(MOVE(i-1,j-1,player)))
             break;
         std::cin.clear();

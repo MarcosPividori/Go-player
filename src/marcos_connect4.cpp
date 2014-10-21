@@ -1,5 +1,6 @@
 
 #include "mcts_utils.hpp"
+#include "mcts_uct.hpp"
 #include <iostream>
 #include <cassert>
 #include <thread>
@@ -10,9 +11,12 @@
 #define PlayerToCell(p) (p==Circle ? CIRCLE : CROSS)
 #define CellToPlayer(p) (p==CIRCLE ? Circle : (p==CROSS ? Cross : assert(0)))
 #define ChangePlayer(p) (p==Circle ? Cross  : Circle)
+#define NUM_THREADS 5
+#define NUM_CYCLES 50000
 
 typedef long DataConnect4;
 typedef double ValConnect4;
+typedef NodeUCT<ValConnect4,DataConnect4> Nod;
 
 typedef enum {
     Circle = 0,
@@ -25,7 +29,7 @@ typedef enum {
     CROSS  =  1,
 } CELL;
 
-class StateConnect4: public State<ValConnect4,DataConnect4>{
+class StateConnect4: public States<ValConnect4,DataConnect4>{
     private:
         CELL A[6][7];
     public:
@@ -146,6 +150,9 @@ void StateConnect4::apply(DataConnect4 d)
 
 void StateConnect4::show()
 {
+    for(int j=0;j<7;j++)
+        std::cout<<" "<<j;
+    std::cout<<std::endl;
     for(int i=0;i<6;i++){
         for(int j=0;j<7;j++)
             std::cout<<(A[i][j] == EMPTY ? " -" : (A[i][j]==CROSS ? " X" : " O"));
@@ -158,14 +165,16 @@ bool StateConnect4::valid_move(DataConnect4 d)
     return A[0][Pos(d)]==EMPTY;
 }
 
-ValConnect4 fun(ValConnect4 v_nodo,ValConnect4 v_final,DataConnect4 dat_nodo)
-{
-    if(v_final == EMPTY)//Tie
-        return v_nodo+0.9999;
-    if(v_final == PlayerToCell(Player(dat_nodo)))
-        return v_nodo+1;
-    return v_nodo;
-}
+struct EvalNode{
+    ValConnect4 operator()(ValConnect4 v_nodo,ValConnect4 v_final,DataConnect4 dat_nodo)
+    {
+        if(v_final == EMPTY)//Tie
+            return v_nodo+0.9999;
+        if(v_final == PlayerToCell(Player(dat_nodo)))
+            return v_nodo+1;
+        return v_nodo;
+    }
+};
 
 Player insert_player()
 {
@@ -184,7 +193,7 @@ DataConnect4 insert_mov(Player player,StateConnect4 *state)
 {
     int j;
     while(1){
-        std::cout<<"Insert mov: ";
+        std::cout<<"Insert mov (Column num 0-6): ";
         if((std::cin>>j) && (j>=0 && j<7) && state->valid_move(MOVE(j,player)))
             break;
         std::cin.clear();
@@ -196,17 +205,18 @@ DataConnect4 insert_mov(Player player,StateConnect4 *state)
 
 int main()
 {
-    NodeUCT<ValConnect4,DataConnect4> *nod=new NodeUCT<ValConnect4,DataConnect4>(0,MOVE(Circle,0),NULL),*next;
+    Nod *nod=new Nod(0,MOVE(Circle,0)),*next;
     StateConnect4 state;
     DataConnect4 res;
     std::vector<DataConnect4> v;
     
+    std::mutex mutex;
     SelectionUCT<ValConnect4,DataConnect4> sel(1);
-    ExpansionAllChildren<ValConnect4,DataConnect4> exp(2,0);
-    SimulationTotallyRandom<ValConnect4,DataConnect4> sim;
-    RetropropagationSimple<ValConnect4,DataConnect4> ret(fun);
-    SelectResMostRobust<ValConnect4,DataConnect4> sel_res;
-    Mcts<ValConnect4,DataConnect4,NodeUCT<ValConnect4,DataConnect4>> m(&sel,&exp,&sim,&ret,&sel_res);
+    ExpansionAllChildren<ValConnect4,DataConnect4,StateConnect4,Nod> exp(2,0);
+    SimulationTotallyRandom<ValConnect4,DataConnect4,StateConnect4> sim;
+    RetropropagationSimple<ValConnect4,DataConnect4,EvalNode> ret;
+    SelectResMostRobust<ValConnect4,DataConnect4,Nod> sel_res;
+    Mcts<ValConnect4,DataConnect4,Nod,StateConnect4> m(&sel,&exp,&sim,&ret,&sel_res,&mutex);
     
     std::cout<< "CONNNECT4:"<<std::endl;
     Player us_player=insert_player();
@@ -230,12 +240,11 @@ int main()
             nod->show();
             exp.counter=0;
 #endif
-            std::thread threads[5];
-            for(int i=0;i<5;i++)
-                threads[i] = std::thread(&Mcts<ValConnect4,DataConnect4,NodeUCT<ValConnect4,DataConnect4>>::run_time,&m,5,nod,&state);
+            std::thread threads[NUM_THREADS];
+            for(int i=0; i<NUM_THREADS; i++)
+                threads[i] = std::thread(&Mcts<ValConnect4,DataConnect4,Nod,StateConnect4>::run_cycles,m,NUM_CYCLES/NUM_THREADS,nod,&state);
             for(std::thread& th : threads)
                 th.join();
-            //m.run_cycles(100000,nod,&state);
 #ifdef DEBUG
             std::cout<<"Expansion counter: "<<exp.counter<<std::endl;
             nod->show();
@@ -253,7 +262,7 @@ int main()
             nod=next;
         }else{
             nod->delete_tree();
-            nod= new NodeUCT<ValConnect4,DataConnect4>(0,res,NULL);
+            nod= new Nod(0,res);
         }
 
         state.show();
