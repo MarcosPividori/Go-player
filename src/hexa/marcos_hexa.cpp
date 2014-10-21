@@ -1,8 +1,15 @@
 
 #include "mcts_utils.hpp"
+#ifdef RAVE
+ #include "mcts_rave.hpp"
+ #include "moverecorder_hexa.hpp"
+#else
+ #include "mcts_uct.hpp"
+#endif
 #include <iostream>
-#include <iomanip>
 #include <cassert>
+#include <thread>
+#include <iomanip>
 
 #define MOVE(i,j,player) ((i)*22+(j)*2+(player))
 #define I(m) (m)/22
@@ -11,9 +18,12 @@
 #define PlayerToCell(p) (p==Circle ? CIRCLE : CROSS)
 #define CellToPlayer(p) (p==CIRCLE ? Circle : (p==CROSS ? Cross : assert(0)))
 #define ChangePlayer(p) (p==Circle ? Cross  : Circle)
+#define NUM_THREADS 5
+#define NUM_CYCLES 50000
 
 typedef long DataHexa;
 typedef double ValHexa;
+typedef NodeUCT<ValHexa,DataHexa> Nod;
 
 typedef enum {
     Circle = 0,
@@ -26,7 +36,7 @@ typedef enum {
     CROSS  =  1,
 } CELL;
 
-class StateHexa: public State<ValHexa,DataHexa>{
+class StateHexa: public States<ValHexa,DataHexa>{
     private:
         CELL A[11][11];
         bool check_vertical(int i,int j,CELL p,bool visited[][11]);
@@ -187,14 +197,16 @@ bool StateHexa::valid_move(DataHexa d)
     return A[I(d)][J(d)]==EMPTY;
 }
 
-ValHexa fun(ValHexa v_nodo,ValHexa v_final,DataHexa dat_nodo)
-{
-    if(v_final == EMPTY)//Tie
-        return v_nodo+0.9999;
-    if(v_final == PlayerToCell(Player(dat_nodo)))
-        return v_nodo+1;
-    return v_nodo;
-}
+struct EvalNode{
+    ValHexa operator()(ValHexa v_nodo,ValHexa v_final,DataHexa dat_nodo)
+    {
+        if(v_final == EMPTY)//Tie
+            return v_nodo+0.9999;
+        if(v_final == PlayerToCell(Player(dat_nodo)))
+            return v_nodo+1;
+        return v_nodo;
+    }
+};
 
 Player insert_player()
 {
@@ -213,7 +225,7 @@ DataHexa insert_mov(Player player,StateHexa *state)
 {
     int i,j;
     while(1){
-        std::cout<<"Insert mov: ";
+        std::cout<<"Insert mov (row and column): ";
         if((std::cin>>i>>j) && (i>=1 && i<12) && (j>=1 && j<12) && state->valid_move(MOVE(i-1,j-1,player)))
             break;
         std::cin.clear();
@@ -225,17 +237,27 @@ DataHexa insert_mov(Player player,StateHexa *state)
 
 int main()
 {
-    NodeUCT<ValHexa,DataHexa> *nod=new NodeUCT<ValHexa,DataHexa>(0,0,NULL),*next;
+    Nod *nod=new Nod(0,0),*next;
     StateHexa state;
     DataHexa res;
     std::vector<DataHexa> v;
     
+    std::mutex mutex;    
     SelectionUCT<ValHexa,DataHexa> sel(1);
-    ExpansionAllChildren<ValHexa,DataHexa> exp(2,0);
-    SimulationTotallyRandom<ValHexa,DataHexa> sim;
-    RetropropagationSimple<ValHexa,DataHexa> ret(fun);
-    SelectResMostRobust<ValHexa,DataHexa> sel_res;
-    Mcts<ValHexa,DataHexa,NodeUCT<ValHexa,DataHexa>> m(&sel,&exp,&sim,&ret,&sel_res);
+    ExpansionAllChildren<ValHexa,DataHexa,StateHexa,Nod> exp(2,0);
+#ifdef RAVE
+    Mcts<ValHexa,DataHexa,Nod,StateHexa> *m[NUM_THREADS];
+    SimulationAndRetropropagationRave<ValHexa,DataHexa,StateHexa,EvalNode,MoveRecorderHexa> *sim_and_retro[NUM_THREADS];
+    for(int i=0;i<NUM_THREADS,i++){
+      sim_and_retro[i]=new SimulationAndRetropropagationRave<ValHexa,DataHexa,StateHexa,EvalNode,MoveRecorderHexa>();
+      m[i]=new Mcts<ValHexa,DataHexa,Nod,StateHexa>(&sel,&exp,sim_and_retro[i],sim_and_retro[i],&sel_res,&mutex);
+    }
+#else
+    SimulationTotallyRandom<ValHexa,DataHexa,StateHexa> sim;
+    RetropropagationSimple<ValHexa,DataHexa,EvalNode> ret;
+    Mcts<ValHexa,DataHexa,Nod,StateHexa> m(&sel,&exp,&sim,&ret,&sel_res,&mutex);
+#endif
+    SelectResMostRobust<ValHexa,DataHexa,Nod> sel_res;
     
     std::cout<< "HEXA:"<<std::endl;
     Player us_player=insert_player();
@@ -259,7 +281,15 @@ int main()
             nod->show();
             exp.counter=0;
 #endif
-            m.run_time(5,nod,&state);
+            std::thread threads[NUM_THREADS];
+            for(int i=0; i<NUM_THREADS; i++)
+#ifdef RAVE
+                threads[i] = std::thread(&Mcts<ValHexa,DataHexa,Nod,StateHexa>::run_cycles,m[i],NUM_CYCLES/NUM_THREADS,nod,&state);
+#else
+                threads[i] = std::thread(&Mcts<ValHexa,DataHexa,Nod,StateHexa>::run_cycles,m,NUM_CYCLES/NUM_THREADS,nod,&state);
+#endif
+            for(int i=0; i<NUM_THREADS; i++)
+                threads[i].join();
 #ifdef DEBUG
             std::cout<<"Expansion counter: "<<exp.counter<<std::endl;
             nod->show();
@@ -277,7 +307,7 @@ int main()
             nod=next;
         }else{
             nod->delete_tree();
-            nod= new NodeUCT<ValHexa,DataHexa>(0,res,NULL);
+            nod= new Nod(0,res);
         }
 
         state.show();    
@@ -286,6 +316,13 @@ int main()
     std::cout<<std::endl<<"------------------"<<std::endl<<std::endl;
     std::cout << "RESULT: " << (state.get_final_value()==1  ? "++ wins." :
                                (state.get_final_value()==-1 ? "oo wins." : "Tie.")) <<std::endl<<std::endl;
+
+#ifdef RAVE
+    for(int i=0;i<NUM_THREADS,i++){
+      delete sim_and_retro[i];
+      delete m[i];
+    }
+#endif
     return 0;
 }
 
