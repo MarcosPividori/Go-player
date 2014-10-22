@@ -9,6 +9,7 @@
 class PatternList;
 
 typedef double ValGo;
+typedef int Block;
 
 class StateGo : public States<ValGo,DataGo>
 {
@@ -18,12 +19,12 @@ class StateGo : public States<ValGo,DataGo>
 #ifdef DEBUG
     public:
         Player **Stones;
-        int ***Blocks;
+        Block ***Blocks;
     private:
 #else
     private:
         Player **Stones;
-        int ***Blocks;
+        Block ***Blocks;
 #endif
         const int _size;
         const float _komi;
@@ -33,13 +34,13 @@ class StateGo : public States<ValGo,DataGo>
         bool ko_unique;
         DataGo last_mov;
         char pass;
-        void eliminate_block(int *block,INDEX i,INDEX j);
-        void update_block(int *block,int *new_block,INDEX i,INDEX j);
+        void eliminate_block(Block *block,INDEX i,INDEX j);
+        void update_block(Block *block,Block *new_block,INDEX i,INDEX j);
         unsigned int count_area(bool **visited,INDEX i,INDEX j);
         bool no_ko_nor_suicide(INDEX i,INDEX j,Player p);
         bool no_self_atari_nor_suicide(INDEX i,INDEX j,Player p);
         bool remove_opponent_block_and_no_ko(INDEX i,INDEX j,Player p);
-        unsigned int get_liberty_block(int *block,INDEX i,INDEX j,INDEX &lib_i,INDEX &lib_j);
+        unsigned int get_liberty_block(Block *block,INDEX i,INDEX j,INDEX &lib_i,INDEX &lib_j);
         bool is_block_in_atari(INDEX i,INDEX j,INDEX &i_atari,INDEX &j_atari);
         float final_value();
 #ifdef JAPANESE
@@ -53,6 +54,7 @@ class StateGo : public States<ValGo,DataGo>
         StateGo *copy();
         void get_possible_moves(std::vector<DataGo>& v);
 #ifdef KNOWLEDGE
+        void get_simulation_possible_moves(std::vector<DataGo>& v);
         void get_atari_escape_moves(std::vector<DataGo>& v);
         void get_pattern_moves(std::vector<DataGo>& v);
         void get_capture_moves(std::vector<DataGo>& v);

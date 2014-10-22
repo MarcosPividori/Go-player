@@ -31,7 +31,7 @@ $(OBJDIR)/%.o: $(SRCDIR_GO)/%.c
 		$(CC) $(CFLAGS) $(CFLAGS_GO) -c $< -o $@
 
 clean:
-		$(RM) $(BINDIR)/* $(OBJDIR)/*
+		$(RM) $(BINDIR)/* $(OBJDIR)/*.o
 
 all: go debug tateti connect4 2048 hexa
 
