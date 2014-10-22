@@ -1,6 +1,7 @@
 
 #include "state_go.hpp"
 #include "mcts_utils.hpp"
+#include "mcts_uct.hpp"
 #include "config.hpp"
 
 #define NUM_THREADS 5
@@ -14,7 +15,6 @@
  #include "moverecorder_go.hpp"
  typedef NodeUCTRave<ValGo,DataGo> Nod;
 #else
- #include "mcts_uct.hpp"
  typedef NodeUCT<ValGo,DataGo> Nod;
 #endif
 

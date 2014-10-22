@@ -13,14 +13,14 @@ _sel(cfg_input.bandit_coeff)
 {
     _m= new Mcts<ValGo,DataGo,Nod,StateGo>*[_cfg.num_threads_mcts];
 #ifdef RAVE
-    _sim_and_retro= new SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo>*[_cfg.num_threads_mcts];
+    _sim_and_retro= new SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>*[_cfg.num_threads_mcts];
 #endif
     for(int i=0;i<_cfg.num_threads_mcts;i++){
 #ifdef RAVE
 #ifdef KNOWLEDGE
-        _sim_and_retro[i]=new SimulationWithDomainKnowledge<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo>(cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff);
+        _sim_and_retro[i]=new SimulationWithDomainKnowledge<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>(cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff);
 #else
-        _sim_and_retro[i]=new SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNode,MoveRecorderGo>();
+        _sim_and_retro[i]=new SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>();
 #endif
         _m[i]=new Mcts<ValGo,DataGo,Nod,StateGo>(&_sel,&_exp,_sim_and_retro[i],_sim_and_retro[i],&_sel_res,&_mutex);
 #else
