@@ -121,6 +121,7 @@ DataGo Game::gen_move(Player p){
     std::cerr << "Resultado: " << " i=" << (int)pos.i << " j=" << (int)pos.j
               << " vis=" << _root->visits << " win=" << _root->value
               << " vis_amaf=" << _root->amaf_visits << " win_amaf=" << _root->amaf_value << std::endl;
+    debug();
 #endif
     return pos;
 }
@@ -148,7 +149,42 @@ void Game::debug(){
             if(_state->Blocks[i][j] == NULL)
               std::cerr<<std::setw(3)<<"--";
             else
-              std::cerr<<std::setw(3)<<(*_state->Blocks[i][j]);
+              std::cerr<<std::setw(3)<<(_state->Blocks[i][j]->adj);
+        std::cerr<<std::endl;
+    }
+    std::cerr<<std::endl;
+    std::cerr<<"CELL MCTS VISITS:"<<std::endl;
+    long visits[MAX_BOARD][MAX_BOARD];
+    double coeffs[MAX_BOARD][MAX_BOARD];
+    double sqrt_log_parent = sqrt(log((double) _root->visits));
+    for(int i = _size-1;i>=0;i--)
+        for(int j=0;j<_size;j++)
+            visits[i][j]=0;
+    for(int i=0;i<_root->children.size();i++)
+        if(!IS_PASS(_root->children[i]->data)){
+          visits[_root->children[i]->data.i][_root->children[i]->data.j]=_root->children[i]->visits;
+          coeffs[_root->children[i]->data.i][_root->children[i]->data.j]=_sel.get_uct_amaf_val(_root->children[i],sqrt_log_parent);
+        }
+    for(int i = _size-1;i>=0;i--){
+        for(int j=0;j<_size;j++)
+            if(visits[i][j] == 0){
+              std::cerr<<std::setw(4)<<"---";
+              switch(_state->Stones[i][j]){
+                case Black: std::cerr<<"X";break;
+                case White: std::cerr<<"O";break;
+                default: std::cerr<<"-";break;
+              }
+              std::cerr<<"---";
+            }
+            else
+              std::cerr<<std::setw(8)<<visits[i][j];
+        std::cerr<<std::endl;
+        for(int j=0;j<_size;j++)
+            if(visits[i][j] == 0)
+              std::cerr<<std::setw(8)<<" ";
+            else
+              std::cerr<<std::setw(8)<<std::setprecision(5)<<coeffs[i][j];
+        std::cerr<<std::endl;
         std::cerr<<std::endl;
     }
 }
@@ -169,10 +205,10 @@ void Game::match_patterns(){
     _state->get_capture_moves(v);
     for(int i=0;i<v.size();i++)
         std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;
-    std::cerr<<"SIMULATION POSSIBLE MOVES: "<<std::endl;
-    v.clear();
-    _state->get_simulation_possible_moves(v);
-    for(int i=0;i<v.size();i++)
-        std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;
+    //std::cerr<<"SIMULATION POSSIBLE MOVES: "<<std::endl;
+    //v.clear();
+    //_state->get_simulation_possible_moves(v);
+    //for(int i=0;i<v.size();i++)
+    //    std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;
 }
 #endif

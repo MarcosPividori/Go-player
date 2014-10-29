@@ -11,6 +11,9 @@ class SelectionUCTRave: public Selection<Value,Data,NodeUCTRave<Value,Data> >{
     private:
         const double _coeff;
         const double _amaf_coeff;
+#ifdef DEBUG
+    public:
+#endif
         double get_uct_amaf_val(const NodeUCTRave<Value,Data> *nod,double log_parent);
     public:
         SelectionUCTRave(double coeff,double amaf_coeff);

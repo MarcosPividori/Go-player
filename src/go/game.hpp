@@ -7,11 +7,7 @@
 #define NUM_THREADS 5
 
 #ifdef RAVE
- #ifdef KNOWLEDGE
-  #include "mcts_go.hpp"
- #else
-  #include "mcts_rave.hpp"
- #endif
+ #include "mcts_go.hpp"
  #include "moverecorder_go.hpp"
  typedef NodeUCTRave<ValGo,DataGo> Nod;
 #else
