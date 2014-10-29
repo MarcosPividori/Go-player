@@ -205,10 +205,5 @@ void Game::match_patterns(){
     _state->get_capture_moves(v);
     for(int i=0;i<v.size();i++)
         std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;
-    //std::cerr<<"SIMULATION POSSIBLE MOVES: "<<std::endl;
-    //v.clear();
-    //_state->get_simulation_possible_moves(v);
-    //for(int i=0;i<v.size();i++)
-    //    std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;
 }
 #endif

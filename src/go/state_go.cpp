@@ -133,16 +133,16 @@ void StateGo::update_block(Block *block,Block *new_block,INDEX i,INDEX j)
     );
 }
 
-unsigned int StateGo::get_liberty_block(Block *block,INDEX i,INDEX j,INDEX &lib_i,INDEX &lib_j)
+unsigned int StateGo::get_liberty_block(Block *block,Block *flag,INDEX i,INDEX j,INDEX &lib_i,INDEX &lib_j)
 {
-    Blocks[i][j]= (Block*) 1;
+    Blocks[i][j]= flag;
     INDEX t_i,t_j;
     unsigned int res=INIT_LIB,v;
     INDEX k,l;
     FOR_EACH_ADJ(i,j,k,l,
     {
       if(Blocks[k][l]==block){//If same block, propagate.
-        v=get_liberty_block(block,k,l,t_i,t_j);
+        v=get_liberty_block(block,flag,k,l,t_i,t_j);
         if(v == FAIL_LIB)
           return FAIL_LIB;
         if(v == FOUND_LIB)
@@ -170,15 +170,16 @@ unsigned int StateGo::get_liberty_block(Block *block,INDEX i,INDEX j,INDEX &lib_
     return res;
 }
 
-bool StateGo::is_block_in_atari(INDEX i,INDEX j,INDEX &i_atari,INDEX &j_atari)
+inline bool StateGo::is_block_in_atari(INDEX i,INDEX j,INDEX &i_atari,INDEX &j_atari)
 {
     if(Blocks[i][j]->adj >4)
       return false;
     Block *block=Blocks[i][j];
     bool res=false;
-    if(get_liberty_block(block,i,j,i_atari,j_atari)==FOUND_LIB)
+    Block flag;
+    if(get_liberty_block(block,&flag,i,j,i_atari,j_atari)==FOUND_LIB)
         res=true;
-    update_block((Block*)1,block,i,j);
+    update_block(&flag,block,i,j);
     return res;
 }
 

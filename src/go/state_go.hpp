@@ -47,7 +47,7 @@ class StateGo : public States<ValGo,DataGo>
         bool no_ko_nor_suicide(INDEX i,INDEX j,Player p);
         bool no_self_atari_nor_suicide(INDEX i,INDEX j,Player p);
         int remove_opponent_block_and_no_ko(INDEX i,INDEX j,Player p);
-        unsigned int get_liberty_block(Block *block,INDEX i,INDEX j,INDEX &lib_i,INDEX &lib_j);
+        unsigned int get_liberty_block(Block *block,Block *flag,INDEX i,INDEX j,INDEX &lib_i,INDEX &lib_j);
         bool is_block_in_atari(INDEX i,INDEX j,INDEX &i_atari,INDEX &j_atari);
         float final_value();
 #ifdef JAPANESE
