@@ -59,7 +59,7 @@ env:
 	wget -O gnugo-3.8.tar.gz http://ftp.gnu.org/gnu/gnugo/gnugo-3.8.tar.gz
 	tar -zxvf gnugo-3.8.tar.gz
 	cd gnugo-3.8;\
-	configure;\
+	./configure;\
 	make
 
 install:
