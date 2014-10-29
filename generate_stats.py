@@ -41,7 +41,8 @@ def analyze_program(isWhite=False,
                     fill_board=None,
                     long_game_coeff=None,
                     cycles_mcts=None,
-                    threads_mcts=None):
+                    threads_mcts=None,
+                    limit_expansion=None):
     if isWhite:
       prog='WHITE'
       gnu='BLACK'
@@ -64,8 +65,10 @@ def analyze_program(isWhite=False,
         command+=" --cycles_mcts " + str(cycles_mcts)
     if threads_mcts!=None:
         command+=" --threads_mcts " + str(threads_mcts)
+    if limit_expansion!=None:
+        command+=" --limit_expansion " + str(limit_expansion)
     os.environ[prog]=command
-    twogtp="gogui-twogtp -black \"$BLACK\" -white \"$WHITE\" -games 100 -size 9 -komi 6.5 -auto -sgffile ./game/stats"
+    twogtp="gogui-twogtp -black \"$BLACK\" -white \"$WHITE\" -games 100 -size 9 -komi 5 -auto -sgffile ./game/stats"
     if os.path.isfile('./game/stats.dat'):
        subprocess.Popen("rm ./game/stats*",shell=True)
     p=subprocess.Popen(twogtp,shell=True)
@@ -98,36 +101,57 @@ def analyze_program(isWhite=False,
 
 write_row(output,['#','COL','WRATE','TOTAL','BCOEFF','ACOEFF','FBOARD','LGCOEF','CYCLES','THREADS','PATT']);
 #               isWhite  patterns         bandit_coeff  amaf_coeff  fill_board  long_game_coeff  cycles_mcts  threads_mcts)
-analyze_program(True,    'patterns.txt',  0,            1000,       6,          1.4,             30000,       5)
-analyze_program(True,    'patterns.txt',  0.2,          1000,       6,          1.4,             30000,       5)
-analyze_program(True,    'patterns.txt',  0.4,          1000,       6,          1.4,             30000,       5)
-analyze_program(True,    'patterns.txt',  0.6,          1000,       6,          1.4,             30000,       5)
-analyze_program(True,    'patterns.txt',  0.8,          1000,       6,          1.4,             30000,       5)
-analyze_program(True,    'patterns.txt',  1,            1000,       6,          1.4,             30000,       5)
-analyze_program(True,    'patterns.txt',  1.2,          1000,       6,          1.4,             30000,       5)
-analyze_program(True,    'patterns.txt',  1.4,          1000,       6,          1.4,             30000,       5)
-analyze_program(True,    'patterns.txt',  1.6,          1000,       6,          1.4,             30000,       5)
-analyze_program(True,    'patterns.txt',  1.8,          1000,       6,          1.4,             30000,       5)
-analyze_program(True,    'patterns.txt',  2,            1000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,            1000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0.2,          1000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0.4,          1000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0.6,          1000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0.8,          1000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  1,            1000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  1.2,          1000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  1.4,          1000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  1.6,          1000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  1.8,          1000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  2,            1000,       6,          1.4,             30000,       5)
 
-analyze_program(True,    'patterns.txt',  0,              10,       6,          1.4,             30000,       5)
-analyze_program(True,    'patterns.txt',  0,             100,       6,          1.4,             30000,       5)
-analyze_program(True,    'patterns.txt',  0,             500,       6,          1.4,             30000,       5)
-analyze_program(True,    'patterns.txt',  0,            5000,       6,          1.4,             30000,       5)
-analyze_program(True,    'patterns.txt',  0,           10000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,              10,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,             100,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,             500,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,            2000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,            2500,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,            3000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,            3500,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,            5000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,            7500,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,           10000,       6,          1.4,             30000,       5)
 
-analyze_program(True,    'patterns.txt',  0,            1000,       8,          1.4,             30000,       5)
-analyze_program(True,    'patterns.txt',  0,            1000,       6,          1.4,             30000,       5)
-analyze_program(True,    'patterns.txt',  0,            1000,       4,          1.4,             30000,       5)
-analyze_program(True,    'patterns.txt',  0,            1000,       2,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,            1000,       8,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,            1000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,            1000,       4,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,            1000,       2,          1.4,             30000,       5)
 
-analyze_program(True,    'patterns.txt',  0,            1000,       6,          1.8,             30000,       5)
-analyze_program(True,    'patterns.txt',  0,            1000,       6,          2.2,             30000,       5)
-analyze_program(True,    'patterns.txt',  0,            1000,       6,          2.6,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,            2500,       6,          1.4,             60000,       5)
+#analyze_program(True,    'patterns.txt',  0,            3000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,            5000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,            4000,       6,          1.4,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,            2500,       6,          1.4,             30000,       5)
 
-analyze_program(True,    'patterns.txt',  0,            1000,       6,          1.4,             65000,       5)
-analyze_program(True,    'patterns.txt',  0,            1000,       6,          1.4,             55000,       5)
-analyze_program(True,    'patterns.txt',  0,            1000,       6,          1.4,             45000,       5)
+#analyze_program(True,    'patterns.txt',  0,            1000,       6,            1,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,            1000,       6,          1.8,             30000,       5)
+#analyze_program(True,    'patterns.txt',  0,            1000,       6,          2.2,             30000,       5)
+
+#analyze_program(False,   'patterns.txt',  0,            2500,       6,          1.4,             70000,       5)
+
+analyze_program(False,   'patterns.txt',  0,             1000,       6,          1.4,             30000,       5)
+analyze_program(False,   'patterns.txt',  0,             1000,       6,          1.4,             30000,       5)
+#analyze_program(False,   'patterns.txt',  0,             2500,       6,          1.4,             70000,       5)
+
+#analyze_program(False,   'patterns.txt',  0,            1000,       6,          1.4,             70000,       5)
+#analyze_program(False,   'patterns.txt',  0,            5000,       6,          1.4,             70000,       5)
+#analyze_program(True,    'patterns.txt',  0,            2500,       6,          1.4,             70000,       5)
+
+#analyze_program(True,    'patterns.txt',  0,            1000,       6,          1.4,             65000,       5)
+#analyze_program(True,    'patterns.txt',  0,            1000,       6,          1.4,             55000,       5)
+#analyze_program(True,    'patterns.txt',  0,            1000,       6,          1.4,             45000,       5)
 
 output.close()
  
