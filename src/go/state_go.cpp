@@ -18,7 +18,7 @@
               if(j>0){ k=i;l=j-1;Code;} \
               if(j<_size-1){ k=i;l=j+1;Code;} })
 
-StateGo::StateGo(int size,float komi,PatternList *p) : _size(size),_komi(komi),patterns(p)
+StateGo::StateGo(int size,float komi,PatternList *p) : _size(size),_komi(komi),patterns(p),num_movs(0)
 #ifdef JAPANESE
         ,captured_b(0),captured_w(0)
 #endif
@@ -70,6 +70,7 @@ StateGo *StateGo::copy()
     p->captured_b=captured_b;
     p->captured_w=captured_w;
 #endif 
+    p->num_movs=num_movs;
     return p;
 }
 
@@ -114,7 +115,7 @@ void StateGo::eliminate_block(Block *block,INDEX i,INDEX j)
         eliminate_block(block,k,l);
       else
         if(Stones[k][l]!=Empty)//Add a free adjacency.
-          *Blocks[k][l]+=1;
+          Blocks[k][l]->adj+=1;
     }
     );
 }
@@ -171,7 +172,7 @@ unsigned int StateGo::get_liberty_block(Block *block,INDEX i,INDEX j,INDEX &lib_
 
 bool StateGo::is_block_in_atari(INDEX i,INDEX j,INDEX &i_atari,INDEX &j_atari)
 {
-    if(*(Blocks[i][j]) >4)
+    if(Blocks[i][j]->adj >4)
       return false;
     Block *block=Blocks[i][j];
     bool res=false;
@@ -235,7 +236,11 @@ void StateGo::get_simulation_possible_moves(std::vector<DataGo>& v)
                 res=count_area(visited,i,j);
                 if((res & FLAG_B) && (res & FLAG_W))
                     continue;
-                if((res & NO_FLAG)<5 ||(res & NO_FLAG) >(_size*_size/2))
+                if((res & FLAG_B) && turn == White)
+                    continue;
+                if((res & FLAG_W) && turn == Black)
+                    continue;
+                if((res & NO_FLAG)==3 ||(res & NO_FLAG) >(_size*_size/3))
                     continue;
                 count_area(area_one_color,i,j);
             }
@@ -243,13 +248,11 @@ void StateGo::get_simulation_possible_moves(std::vector<DataGo>& v)
     for(INDEX i=0;i<_size;i++)
         for(INDEX j=0;j<_size;j++)
             if(Stones[i][j]==Empty
-               && ((!area_one_color[i][j] && no_ko_nor_suicide(i,j,turn))
-                   //(no_self_atari_nor_suicide(i,j,turn)
+               && ((!area_one_color[i][j]
+                    && no_self_atari_nor_suicide(i,j,turn))
                    || remove_opponent_block_and_no_ko(i,j,turn)))
                 v.push_back({turn,i,j});
-    //if(v.empty())
-        v.push_back(PASS(turn));
-
+    v.push_back(PASS(turn));
     for(int i=0;i<_size;i++){
         delete[] visited[i];
         delete[] area_one_color[i];
@@ -262,9 +265,10 @@ void StateGo::get_atari_escape_moves(std::vector<DataGo>& v)
 {
     if(IS_PASS(last_mov))
       return;
-    Block *b[4]={NULL,NULL,NULL,NULL},c=0;
+    Block *b[4]={NULL,NULL,NULL,NULL};
     INDEX i=last_mov.i,j=last_mov.j,t_i,t_j;
-    INDEX k,l;
+    INDEX k,l,m,n;
+    int sum=0,c=0;
     FOR_EACH_ADJ(i,j,k,l,
     {
         if(Stones[k][l]==turn
@@ -273,7 +277,14 @@ void StateGo::get_atari_escape_moves(std::vector<DataGo>& v)
            && Blocks[k][l]!=b[2]
            && is_block_in_atari(k,l,t_i,t_j)
            && no_self_atari_nor_suicide(t_i,t_j,turn)){
-           v.push_back({turn,t_i,t_j});
+           sum=0;
+           FOR_EACH_ADJ(t_i,t_j,m,n,
+           {
+              if(Stones[m][n]==Empty) sum++;
+           }
+           );
+           if(sum>2)
+            v.push_back({turn,t_i,t_j});
            b[c]=Blocks[k][l];
            c++;
         }
@@ -289,10 +300,12 @@ void StateGo::get_pattern_moves(std::vector<DataGo>& v)
         return;
     for(INDEX k=MAX(last_mov.i-1,0);k<= MIN(_size-1,last_mov.i+1);k++)
       for(INDEX l=MAX(last_mov.j-1,0);l<= MIN(_size-1,last_mov.j+1);l++)
-        if(Stones[k][l]==Empty && no_ko_nor_suicide(k,l,turn)){
+        if(Stones[k][l]==Empty){ //&& no_ko_nor_suicide(k,l,turn) 
           Stones[k][l]=turn;
           if(patterns->match(this,k,l))
-            v.push_back({turn,k,l});
+            if(no_self_atari_nor_suicide(k,l,turn)
+               || remove_opponent_block_and_no_ko(k,l,turn))
+                v.push_back({turn,k,l});
           Stones[k][l]=Empty;
         }
 }
@@ -301,10 +314,24 @@ void StateGo::get_capture_moves(std::vector<DataGo>& v)
 {
     if(pass==2)
         return;
+    if(IS_PASS(last_mov))
+        return;
+    int c=0;
+    for(INDEX i=0;i<_size;i++)
+      for(INDEX j=0;j<_size;j++)
+        if(Stones[i][j]==Empty && (c=remove_opponent_block_and_no_ko(i,j,turn)))
+          for(;c>0;c--){
+            v.push_back({turn,i,j});
+            v.push_back({turn,i,j});
+            v.push_back({turn,i,j});
+            v.push_back({turn,i,j});
+          }
+/*
     for(INDEX i=0;i<_size;i++)
         for(INDEX j=0;j<_size;j++)
             if(Stones[i][j]==Empty && remove_opponent_block_and_no_ko(i,j,turn))
                 v.push_back({turn,i,j});
+*/
 }
 
 bool StateGo::is_completely_empty(INDEX i,INDEX j)
@@ -378,6 +405,7 @@ inline float StateGo::final_value()
 inline void StateGo::apply(DataGo d)
 {
     assert(d.player == turn);
+    num_movs++;
     ko_unique=false;
     ko_flag=false;
     if(IS_PASS(d)){
@@ -390,9 +418,8 @@ inline void StateGo::apply(DataGo d)
         assert(d.j>=0 && d.j<_size);
         assert(Stones[d.i][d.j] == Empty);
         pass=0;
-        Block *adj = new Block;
-        *adj = 0;
-        Blocks[d.i][d.j] = adj;
+        Block *loc_block = new Block;
+        Blocks[d.i][d.j] = loc_block;
         Stones[d.i][d.j] = turn;
         int i=d.i,j=d.j,k,l;
         //Reduce adj of adjacent blocks.
@@ -401,9 +428,9 @@ inline void StateGo::apply(DataGo d)
         FOR_EACH_ADJ(i,j,k,l,
         {
           if(Stones[k][l]==Empty)
-            (*adj)++;
+            loc_block->adj++;
           else
-            if(! --(*Blocks[k][l]))//if no free adjacency.
+            if(! --(Blocks[k][l]->adj))//if no free adjacency.
               if(Stones[k][l]!=d.player){
                 delete Blocks[k][l];
                 eliminate_block(Blocks[k][l],k,l);
@@ -416,13 +443,13 @@ inline void StateGo::apply(DataGo d)
         {
           if(Stones[k][l]==d.player && Blocks[k][l]!=Blocks[i][j])
             if(first){
-              *Blocks[k][l]+=*adj;
-              delete adj;
+              Blocks[k][l]->join(loc_block);
+              delete loc_block;
               Blocks[i][j]=Blocks[k][l];
               first=false;
             }
             else{
-              *Blocks[i][j]+=*Blocks[k][l];
+              Blocks[i][j]->join(Blocks[k][l]);
               delete Blocks[k][l];
               update_block(Blocks[k][l],Blocks[i][j],k,l);
             }
@@ -455,10 +482,9 @@ void StateGo::show(){
     show(stdout);
 }
 
-inline bool StateGo::remove_opponent_block_and_no_ko(INDEX i,INDEX j,Player p)
+inline int StateGo::remove_opponent_block_and_no_ko(INDEX i,INDEX j,Player p)
 {
-    //Check if free block near position.
-    int sum=0,c=0;
+    int sum=0,c=0,remove_count=0;
     Block *b[4]={NULL,NULL,NULL,NULL};
     int sumb[4]={0,0,0,0},ib[4],jb[4];
     Player opp=CHANGE_PLAYER(turn);
@@ -475,7 +501,7 @@ inline bool StateGo::remove_opponent_block_and_no_ko(INDEX i,INDEX j,Player p)
         else if(Blocks[k][l]==b[2])
           sumb[2]-=1;
         else{
-          sumb[c]+=(*Blocks[k][l])-1;
+          sumb[c]+=(Blocks[k][l]->adj)-1;
           b[c]=Blocks[k][l];
           ib[c]=k;jb[c]=l;
           c++;
@@ -487,26 +513,22 @@ inline bool StateGo::remove_opponent_block_and_no_ko(INDEX i,INDEX j,Player p)
     int counter=0,i1,j1;
     for(int k=0;k<c;k++)
       if(sumb[k]==0){
+        remove_count+=b[k]->size;
         counter++;
         i1=ib[k];
         j1=jb[k];
       }
 
     if(counter==0)
-        return false;
+        return 0;
 
     //Check Ko situation.
     if(ko_flag && ko_unique && koi==i && koj==j && counter==1){
         //Check if block destroyed is size > 1
-        FOR_EACH_ADJ(i1,j1,k,l,
-        {
-            if(Blocks[k][l]==Blocks[i1][j1])
-                return true;
-        }
-        );
-        return false;
+        if(Blocks[i1][j1]->size == 1)
+            return 0;
     }
-    return true;
+    return remove_count;
 }
 
 inline bool StateGo::no_self_atari_nor_suicide(INDEX i,INDEX j,Player p)
@@ -574,7 +596,7 @@ inline bool StateGo::no_ko_nor_suicide(INDEX i,INDEX j,Player p)
     {
       if(Stones[k][l]==p){
         if(Blocks[k][l]!=b[0] && Blocks[k][l]!=b[1] && Blocks[k][l]!=b[2]){
-          sum+=*Blocks[k][l];
+          sum+=Blocks[k][l]->adj;
           b[c]=Blocks[k][l];
           c++;
         }
@@ -586,7 +608,9 @@ inline bool StateGo::no_ko_nor_suicide(INDEX i,INDEX j,Player p)
     if(sum!=0)
         return true;
 
-    return remove_opponent_block_and_no_ko(i,j,p);
+    if(remove_opponent_block_and_no_ko(i,j,p))
+        return true;
+    return false;
 }
 
 bool StateGo::valid_move(DataGo d)

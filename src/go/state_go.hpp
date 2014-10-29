@@ -9,7 +9,14 @@
 class PatternList;
 
 typedef double ValGo;
-typedef int Block;
+
+class Block{
+    public:
+      int adj;
+      int size;
+      void join(Block *b) {adj+=b->adj;size+=b->size;};
+      Block() : adj(0),size(1) {};
+};
 
 class StateGo : public States<ValGo,DataGo>
 {
@@ -39,7 +46,7 @@ class StateGo : public States<ValGo,DataGo>
         unsigned int count_area(bool **visited,INDEX i,INDEX j);
         bool no_ko_nor_suicide(INDEX i,INDEX j,Player p);
         bool no_self_atari_nor_suicide(INDEX i,INDEX j,Player p);
-        bool remove_opponent_block_and_no_ko(INDEX i,INDEX j,Player p);
+        int remove_opponent_block_and_no_ko(INDEX i,INDEX j,Player p);
         unsigned int get_liberty_block(Block *block,INDEX i,INDEX j,INDEX &lib_i,INDEX &lib_j);
         bool is_block_in_atari(INDEX i,INDEX j,INDEX &i_atari,INDEX &j_atari);
         float final_value();
@@ -48,6 +55,7 @@ class StateGo : public States<ValGo,DataGo>
         int captured_w;
 #endif
     public:
+        int num_movs;
         Player turn;
         StateGo(int size,float komi,PatternList *p);
         ~StateGo();
