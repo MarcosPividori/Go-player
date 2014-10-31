@@ -36,7 +36,7 @@ _sel(cfg_input.bandit_coeff)
     NodeUCTRave<ValGo,DataGo>::k_rave = cfg_input.amaf_coeff;
 #endif
     _state = new StateGo(_size,_komi,_patterns);
-    _root= new Nod(0,{CHANGE_PLAYER(_state->turn),0,0});
+    _root= new Nod(0,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
 }
 
 Game::~Game(){
@@ -58,7 +58,7 @@ void Game::set_boardsize(int size){
         _root->delete_tree();
         _size = size;
         _state = new StateGo(_size,_komi,_patterns);
-        _root= new Nod(0,{CHANGE_PLAYER(_state->turn),0,0});
+        _root= new Nod(0,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
     }
 }
 
@@ -66,7 +66,7 @@ void Game::clear_board(){
     delete _state;
     _root->delete_tree();
     _state = new StateGo(_size,_komi,_patterns);
-    _root= new Nod(0,{CHANGE_PLAYER(_state->turn),0,0});
+    _root= new Nod(0,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
 }
 
 void Game::set_komi(float komi){
@@ -75,7 +75,7 @@ void Game::set_komi(float komi){
         _root->delete_tree();
         _komi = komi;
         _state = new StateGo(_size,_komi,_patterns);
-        _root= new Nod(0,{CHANGE_PLAYER(_state->turn),0,0});
+        _root= new Nod(0,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
     }
 }
 

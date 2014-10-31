@@ -14,8 +14,11 @@ class Block{
     public:
       int adj;
       int size;
-      void join(Block *b) {adj+=b->adj;size+=b->size;};
-      Block() : adj(0),size(1) {};
+      DataGo atari;
+      inline bool is_atari() {return !IS_PASS(atari);};
+      inline void no_atari() {atari=PASS(Empty);};
+      inline void join(Block *b) {adj+=b->adj;size+=b->size;};
+      Block() : adj(0),size(1),atari(PASS(Empty)) {};
 };
 
 class StateGo : public States<ValGo,DataGo>
@@ -35,10 +38,7 @@ class StateGo : public States<ValGo,DataGo>
 #endif
         const int _size;
         const float _komi;
-        INDEX koi;
-        INDEX koj;
-        bool ko_flag;
-        bool ko_unique;
+        DataGo ko;
         DataGo last_mov;
         char pass;
         void eliminate_block(Block *block,INDEX i,INDEX j);
@@ -49,6 +49,8 @@ class StateGo : public States<ValGo,DataGo>
         int remove_opponent_block_and_no_ko(INDEX i,INDEX j,Player p);
         unsigned int get_liberty_block(Block *block,Block *flag,INDEX i,INDEX j,INDEX &lib_i,INDEX &lib_j);
         bool is_block_in_atari(INDEX i,INDEX j,INDEX &i_atari,INDEX &j_atari);
+        DataGo look_for_delete_atari(Block *block,Block *flag,INDEX i,INDEX j);
+        DataGo get_delete_atari(INDEX i,INDEX j);
         float final_value();
 #ifdef JAPANESE
         int captured_b;

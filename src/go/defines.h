@@ -1,6 +1,7 @@
 #ifndef __DEFINES__
 #define __DEFINES__
 
+#include <stdint.h>
 #define VERSION          "1.0"
 #define GTP_VERSION      2
 #define MAX_BOARD        19      
@@ -9,11 +10,11 @@
 
 #define PASSI            -1
 #define RESIGNI          -2
-#define PASS(player)     {player,PASSI,PASSI}
+#define PASS(player)     DataGo(PASSI,PASSI,player)
 #define IS_PASS(d)       (d.i==PASSI)
-#define RESIGN(player)   {player,RESIGNI,RESIGNI}
+#define RESIGN(player)   DataGo(RESIGNI,RESIGNI,player)
 #define IS_RESIGN(d)     d.i==RESIGNI
-#define MOVE(player,i,j) {player,i,j}
+#define MOVE(player,i,j) DataGo(i,j,player)
 #define CHANGE_PLAYER(p) (p==White ? Black : White)
 
 #define MIN(a,b)  ((a)<(b)? a : b)
@@ -27,17 +28,20 @@ typedef enum : char{
 
 typedef char INDEX;
 
-struct DataGo
+union DataGo
 {
-    Player player;
-    INDEX i;
-    INDEX j;
+    struct{
+        Player player;
+        INDEX i;
+        INDEX j;
+        INDEX flag;
+    };
+    uint32_t hash;
     bool operator==(DataGo a) {
-       if (a.i==i && a.j==j && a.player==player)
-          return true;
-       else
-          return false;
+       return a.hash==hash;
     }
+    DataGo(INDEX _i,INDEX _j,Player _p) : i(_i),j(_j),player(_p),flag(0) {}
+    DataGo() : flag(0) {}
 };
 
 #endif// __DEFINES__
