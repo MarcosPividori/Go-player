@@ -47,7 +47,7 @@ class Mcts{
              Simulation<Value,Data,State> *sim,
              Retropropagation<Value,Data,Nod> *ret,
              SelectRes<Value,Data,Nod> *sel_res,
-             std::mutex *mutex);
+             std::mutex *mutex=NULL);
         void run_time(double time_limit,
                  Nod *root,
                  State *init_state);
@@ -55,6 +55,7 @@ class Mcts{
                  Nod *root,
                  State *init_state);
         Data get_resultant_move(Nod *root);
+        void set_mutex(std::mutex *mutex) {_mutex=mutex;};
     private:
         void run_one_cycle(Nod *root,
                            State *init_state);
@@ -80,23 +81,41 @@ inline void Mcts<Value,Data,Nod,State>::run_one_cycle(Nod *root,
     Value res;
     State *actual_state=init_state->copy();
     node=root;
-    //Selection
-    _mutex->lock();
-    while((after=_sel->select(node))){
-        node=after;
-        actual_state->apply(node->data);
+    if(_mutex){
+        //Selection
+        _mutex->lock();
+        while((after=_sel->select(node))){
+            node=after;
+            actual_state->apply(node->data);
+        }
+        //Expansion
+        before=node;
+        if((node=_exp->expand(node,actual_state)) != before)
+            actual_state->apply(node->data);
+        _mutex->unlock();
+        //Simulation
+        res= _sim->simulate(actual_state);
+        //Retropropagation
+        _mutex->lock();
+        _ret->retro(node,res);
+        _mutex->unlock();
     }
-    //Expansion
-    before=node;
-    if((node=_exp->expand(node,actual_state)) != before)
-        actual_state->apply(node->data);
-    _mutex->unlock();
-    //Simulation
-    res= _sim->simulate(actual_state);
-    //Retropropagation
-    _mutex->lock();
-    _ret->retro(node,res);
-    _mutex->unlock();
+    else
+    {
+        //Selection
+        while((after=_sel->select(node))){
+            node=after;
+            actual_state->apply(node->data);
+        }
+        //Expansion
+        before=node;
+        if((node=_exp->expand(node,actual_state)) != before)
+            actual_state->apply(node->data);
+        //Simulation
+        res= _sim->simulate(actual_state);
+        //Retropropagation
+        _ret->retro(node,res);
+    }
     delete actual_state;
 }
 

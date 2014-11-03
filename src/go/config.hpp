@@ -10,6 +10,7 @@ struct Config
     int number_cycles_mcts;
     int num_threads_mcts;
     double resign_limit;
+    bool root_parallel;
     Config() : pattern_file(NULL),
                bandit_coeff(0.5),
                amaf_coeff(1000),
@@ -18,6 +19,7 @@ struct Config
                limit_expansion(2),
                number_cycles_mcts(75000),
                num_threads_mcts(5),
-               resign_limit(0.1)
+               resign_limit(0.1),
+               root_parallel(false)
     {}
 };

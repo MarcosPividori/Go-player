@@ -2,6 +2,7 @@
 #include "state_go.hpp"
 #include "mcts_utils.hpp"
 #include "mcts_uct.hpp"
+#include "mcts_parallel.hpp"
 #include "config.hpp"
 
 #define NUM_THREADS 5
@@ -28,13 +29,12 @@ class Game{
         StateGo *_state;
         float _komi;
         int _size;
-        Nod *_root;
         Config _cfg;
-        std::mutex _mutex;
         PatternList *_patterns;
         ExpansionAllChildren<ValGo,DataGo,StateGo,Nod> _exp;
         SelectResMostRobustOverLimit<Nod> _sel_res;
-        Mcts<ValGo,DataGo,Nod,StateGo> **_m;
+        std::vector<Mcts<ValGo,DataGo,Nod,StateGo> *> _m;
+        MctsParallel<ValGo,DataGo,Nod,StateGo> *_mcts;
 #ifdef RAVE
         SelectionUCTRave<ValGo,DataGo> _sel;
         SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo> **_sim_and_retro;

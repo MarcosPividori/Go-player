@@ -24,6 +24,7 @@ template <class Value,class Data> class NodeUCT{
         void delete_tree();
         NodeUCT<Value,Data> *move_root_to_child(Data child_data);
         void set_visits(unsigned long v);
+        void join(NodeUCT<Value,Data>* nod);
         void show();
 };
 
@@ -42,6 +43,13 @@ inline void NodeUCT<Value,Data>::set_visits(unsigned long v)
 {
     visits = v;
     sqrt_visits = sqrt((double) v);
+}
+
+template <class Value,class Data>
+inline void NodeUCT<Value,Data>::join(NodeUCT<Value,Data>* nod)
+{
+    value+=nod->value;
+    set_visits(visits+nod->visits);
 }
 
 template <class Value,class Data>

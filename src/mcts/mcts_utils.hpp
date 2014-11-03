@@ -1,3 +1,5 @@
+#ifndef __MCTS_UTILS__
+#define __MCTS_UTILS__
 
 #include "mcts.hpp"
 #include <cstddef>
@@ -98,3 +100,5 @@ Data SelectResMostRobust<Value,Data,Node>::select_res(Node *node)
         }
     return max_node->data;
 }
+
+#endif // __MCTS_UTILS__

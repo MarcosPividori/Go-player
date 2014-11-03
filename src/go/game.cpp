@@ -11,20 +11,21 @@ _sel(cfg_input.bandit_coeff,cfg_input.amaf_coeff)
 _sel(cfg_input.bandit_coeff)
 #endif
 {
-    _m= new Mcts<ValGo,DataGo,Nod,StateGo>*[_cfg.num_threads_mcts];
 #ifdef RAVE
     _sim_and_retro= new SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>*[_cfg.num_threads_mcts];
 #endif
+
     for(int i=0;i<_cfg.num_threads_mcts;i++){
 #ifdef RAVE
-#ifdef KNOWLEDGE
-        _sim_and_retro[i]=new SimulationWithDomainKnowledge<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>(cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff);
-#else
+    #ifdef KNOWLEDGE
+        _sim_and_retro[i]=new SimulationWithDomainKnowledge<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>(
+                                           cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff);
+    #else
         _sim_and_retro[i]=new SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>();
-#endif
-        _m[i]=new Mcts<ValGo,DataGo,Nod,StateGo>(&_sel,&_exp,_sim_and_retro[i],_sim_and_retro[i],&_sel_res,&_mutex);
+    #endif
+        _m.push_back(new Mcts<ValGo,DataGo,Nod,StateGo>(&_sel,&_exp,_sim_and_retro[i],_sim_and_retro[i],&_sel_res));
 #else
-        _m[i]=new Mcts<ValGo,DataGo,Nod,StateGo>(&_sel,&_exp,&_sim,&_ret,&_sel_res,&_mutex);
+        _m.push_back(new Mcts<ValGo,DataGo,Nod,StateGo>(&_sel,&_exp,&_sim,&_ret,&_sel_res));
 #endif
     }
     _patterns=NULL;
@@ -36,17 +37,21 @@ _sel(cfg_input.bandit_coeff)
     NodeUCTRave<ValGo,DataGo>::k_rave = cfg_input.amaf_coeff;
 #endif
     _state = new StateGo(_size,_komi,_patterns);
-    _root= new Nod(0,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
+    
+    if(cfg_input.root_parallel)
+        _mcts = new MctsParallel_Root<ValGo,DataGo,Nod,StateGo>(_m,_state,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
+    else
+        _mcts = new MctsParallel_GlobalMutex<ValGo,DataGo,Nod,StateGo>(_m,_state,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
 }
 
 Game::~Game(){
     delete _state;
-    _root->delete_tree();
-    for(int i=0;i<_cfg.num_threads_mcts;i++){
+    for(int i=0;i<_m.size();i++){
         delete _m[i];
         delete _sim_and_retro[i];
     }
-    delete[] _m;
+    delete &_m;
+    delete _mcts;
     delete[] _sim_and_retro;
     if(_patterns)
         delete _patterns;
@@ -55,27 +60,24 @@ Game::~Game(){
 void Game::set_boardsize(int size){
     if(size!= _size){
         delete _state;
-        _root->delete_tree();
         _size = size;
         _state = new StateGo(_size,_komi,_patterns);
-        _root= new Nod(0,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
+        _mcts->reinit(_state,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
     }
 }
 
 void Game::clear_board(){
     delete _state;
-    _root->delete_tree();
     _state = new StateGo(_size,_komi,_patterns);
-    _root= new Nod(0,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
+    _mcts->reinit(_state,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
 }
 
 void Game::set_komi(float komi){
     if(komi!= _komi){
         delete _state;
-        _root->delete_tree();
         _komi = komi;
         _state = new StateGo(_size,_komi,_patterns);
-        _root= new Nod(0,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
+        _mcts->reinit(_state,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
     }
 }
 
@@ -88,41 +90,33 @@ bool Game::play_move(DataGo pos){
         return true;
     if(!_state->valid_move(pos))
         return false;
-    _state->apply(pos);
-    Nod *next;
-    if(next=_root->move_root_to_child(pos)){
-        delete _root;
-        _root=next;
+    _mcts->apply_move(pos);
+
 #ifdef DEBUG
-        std::cerr << "STATS PLAYED NODE: vis=" << _root->visits << " win=" << _root->value
-                  << " vis_amaf=" << _root->amaf_visits << " win_amaf=" << _root->amaf_value << std::endl;
-        std::cerr << "                   rate=" << (_root->value / _root->visits) 
-                  << "  amaf_rate=" << (_root->amaf_value / _root->amaf_visits)
-                  << "  amaf_coeff="<< (sqrt(NodeUCTRave<ValGo,DataGo>::k_rave)/_root->sqrt_for_amaf) << std::endl;
+        std::cerr << "STATS PLAYED NODE: vis=" << _mcts->get_root()->visits << " win=" << _mcts->get_root()->value
+                  << " vis_amaf=" << _mcts->get_root()->amaf_visits << " win_amaf=" << _mcts->get_root()->amaf_value << std::endl;
+        std::cerr << "                   rate=" << (_mcts->get_root()->value / _mcts->get_root()->visits) 
+                  << "  amaf_rate=" << (_mcts->get_root()->amaf_value / _mcts->get_root()->amaf_visits)
+                  << "  amaf_coeff="<< (sqrt(NodeUCTRave<ValGo,DataGo>::k_rave)/_mcts->get_root()->sqrt_for_amaf) << std::endl;
 #endif
-    }else{
-        _root->delete_tree();
-        _root= new Nod(0,pos);
-    }
+
     return true;
 }
 
 DataGo Game::gen_move(Player p){
     assert(p==_state->turn);
-    std::thread *threads= new std::thread[_cfg.num_threads_mcts];
-    for(int i=0; i<_cfg.num_threads_mcts; i++)
-        threads[i] = std::thread(&Mcts<ValGo,DataGo,Nod,StateGo>::run_cycles,_m[i],_cfg.number_cycles_mcts/_cfg.num_threads_mcts,_root,_state);
-    for(int i=0;i<_cfg.num_threads_mcts;i++)
-        threads[i].join();
-    delete[] threads;
-    DataGo pos = _m[0]->get_resultant_move(_root);
+
+    _mcts->run_cycles(_cfg.number_cycles_mcts);
+    DataGo pos = _mcts->get_resultant_move();
+
 #ifdef DEBUG
-    _root->show();
+    _mcts->get_root()->show();
     std::cerr << "Resultado: " << " i=" << (int)pos.i << " j=" << (int)pos.j
-              << " vis=" << _root->visits << " win=" << _root->value
-              << " vis_amaf=" << _root->amaf_visits << " win_amaf=" << _root->amaf_value << std::endl;
+              << " vis=" << _mcts->get_root()->visits << " win=" << _mcts->get_root()->value
+              << " vis_amaf=" << _mcts->get_root()->amaf_visits << " win_amaf=" << _mcts->get_root()->amaf_value << std::endl;
     debug();
 #endif
+
     return pos;
 }
 
@@ -156,14 +150,14 @@ void Game::debug(){
     std::cerr<<"CELL MCTS VISITS:"<<std::endl;
     long visits[MAX_BOARD][MAX_BOARD];
     double coeffs[MAX_BOARD][MAX_BOARD];
-    double sqrt_log_parent = sqrt(log((double) _root->visits));
+    double sqrt_log_parent = sqrt(log((double) _mcts->get_root()->visits));
     for(int i = _size-1;i>=0;i--)
         for(int j=0;j<_size;j++)
             visits[i][j]=0;
-    for(int i=0;i<_root->children.size();i++)
-        if(!IS_PASS(_root->children[i]->data)){
-          visits[_root->children[i]->data.i][_root->children[i]->data.j]=_root->children[i]->visits;
-          coeffs[_root->children[i]->data.i][_root->children[i]->data.j]=_sel.get_uct_amaf_val(_root->children[i],sqrt_log_parent);
+    for(int i=0;i<_mcts->get_root()->children.size();i++)
+        if(!IS_PASS(_mcts->get_root()->children[i]->data)){
+          visits[_mcts->get_root()->children[i]->data.i][_mcts->get_root()->children[i]->data.j]=_mcts->get_root()->children[i]->visits;
+          coeffs[_mcts->get_root()->children[i]->data.i][_mcts->get_root()->children[i]->data.j]=_sel.get_uct_amaf_val(_mcts->get_root()->children[i],sqrt_log_parent);
         }
     for(int i = _size-1;i>=0;i--){
         for(int j=0;j<_size;j++)

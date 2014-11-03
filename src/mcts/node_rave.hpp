@@ -28,6 +28,7 @@ template <class Value,class Data> class NodeUCTRave{
         void delete_tree();
         NodeUCTRave<Value,Data> *move_root_to_child(Data child_data);
         void set_visits(unsigned long v);
+        void join(NodeUCTRave<Value,Data>* nod);
         void show();
 };
 
@@ -50,6 +51,15 @@ inline void NodeUCTRave<Value,Data>::set_visits(unsigned long v)
     visits = v;
     sqrt_visits = sqrt((double) v);
     sqrt_for_amaf = sqrt(3 * ((double) v)+k_rave);
+}
+
+template <class Value,class Data>
+inline void NodeUCTRave<Value,Data>::join(NodeUCTRave<Value,Data>* nod)
+{
+    value+=nod->value;
+    amaf_value+=nod->amaf_value;
+    amaf_visits+=nod->amaf_visits;
+    set_visits(visits+nod->visits);
 }
 
 template <class Value,class Data>
