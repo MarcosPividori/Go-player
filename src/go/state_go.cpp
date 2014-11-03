@@ -334,32 +334,6 @@ void StateGo::get_atari_escape_moves(std::vector<DataGo>& v)
         }
     }
     );
-    //if(v.empty() && c>0)
-      // get_capture_moves(v); 
-    /*
-    if(pass==2)
-        return;
-    int c=0,sum;
-    INDEX k,l;
-    Player opp=CHANGE_PLAYER(turn);
-    for(INDEX i=0;i<_size;i++)
-      for(INDEX j=0;j<_size;j++)
-        if(Stones[i][j]==Empty && (c=remove_opponent_block_and_no_ko(i,j,opp))){
-          sum=0;
-          FOR_EACH_ADJ(i,j,k,l,
-          {
-            if(Stones[k][l]==Empty)
-              sum++;
-          }
-          );
-          if(sum>=3)
-            for(;c>0;c--){
-              v.push_back(DataGo(i,j,turn));
-              v.push_back(DataGo(i,j,turn));
-              v.push_back(DataGo(i,j,turn));
-              v.push_back(DataGo(i,j,turn));
-            }
-        }*/
 }
 
 void StateGo::get_pattern_moves(std::vector<DataGo>& v)
