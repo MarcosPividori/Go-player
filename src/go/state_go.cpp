@@ -13,10 +13,12 @@
 #define FAIL_LIB  2
 
 #define FOR_EACH_ADJ(i,j,k,l,Code)  ( \
-             { if(i>0){ k=i-1;l=j;Code;} \
+            { \
+              if(i>0)      { k=i-1;l=j;Code;} \
               if(i<_size-1){ k=i+1;l=j;Code;} \
-              if(j>0){ k=i;l=j-1;Code;} \
-              if(j<_size-1){ k=i;l=j+1;Code;} })
+              if(j>0)      { k=i;l=j-1;Code;} \
+              if(j<_size-1){ k=i;l=j+1;Code;} \
+            })
 
 StateGo::StateGo(int size,float komi,PatternList *p) : _size(size),_komi(komi),patterns(p),num_movs(0)
 #ifdef JAPANESE
@@ -241,11 +243,12 @@ inline void StateGo::get_possible_moves(std::vector<DataGo>& v)
 }
 
 #ifdef KNOWLEDGE
+/*
 void StateGo::get_simulation_possible_moves(std::vector<DataGo>& v)
 {
     if(pass==2)
         return;
-/*
+
     unsigned int res;
     bool **visited= new bool*[_size];
     bool **area_one_color= new bool*[_size];
@@ -279,7 +282,7 @@ void StateGo::get_simulation_possible_moves(std::vector<DataGo>& v)
                     && no_self_atari_nor_suicide(i,j,turn))
                    || remove_opponent_block_and_no_ko(i,j,turn)))
                 v.push_back(DataGo(i,j,turn));
-*/
+
     for(INDEX i=0;i<_size;i++)
         for(INDEX j=0;j<_size;j++)
             if(Stones[i][j]==Empty
@@ -287,15 +290,15 @@ void StateGo::get_simulation_possible_moves(std::vector<DataGo>& v)
                    || remove_opponent_block_and_no_ko(i,j,turn)))
                 v.push_back(DataGo(i,j,turn));
     v.push_back(PASS(turn));
-/*
+
     for(int i=0;i<_size;i++){
         delete[] visited[i];
         delete[] area_one_color[i];
     }
     delete[] visited;
     delete[] area_one_color;
-*/
-}
+
+}*/
 
 void StateGo::get_atari_escape_moves(std::vector<DataGo>& v)
 {

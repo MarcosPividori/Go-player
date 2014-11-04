@@ -63,18 +63,17 @@ struct gtp_command {
   gtp_fn_ptr function;
 };
 
-void gtp_main_loop(struct gtp_command commands[],
-		   FILE *gtp_input, FILE *gtp_output, FILE *gtp_dump_commands);
+void gtp_main_loop(struct gtp_command commands[],FILE *gtp_input, FILE *gtp_output, FILE *gtp_dump_commands);
 void gtp_internal_set_boardsize(int size);
 void gtp_printf(const char *format, ...);
 void gtp_start_response(int status);
-int gtp_finish_response(void);
-int gtp_success(const char *format, ...);
-int gtp_failure(const char *format, ...);
+int  gtp_finish_response(void);
+int  gtp_success(const char *format, ...);
+int  gtp_failure(const char *format, ...);
 void gtp_panic(void);
-int gtp_decode_color(char *s, Player *color);
-int gtp_decode_coord(char *s, INDEX *m, INDEX *n);
-int gtp_decode_move(char *s, DataGo *move);
+int  gtp_decode_color(char *s, Player *color);
+int  gtp_decode_coord(char *s, INDEX *m, INDEX *n);
+int  gtp_decode_move(char *s, DataGo *move);
 void gtp_print_vertices(int n, INDEX movei[], INDEX movej[]);
 void gtp_print_vertex(INDEX i, INDEX j);
 

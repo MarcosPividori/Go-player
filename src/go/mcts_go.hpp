@@ -1,6 +1,6 @@
 
-#include "mcts_rave.hpp"
 #include <random>
+#include "mcts_rave.hpp"
 #include "state_go.hpp"
 
 template <class Value,class Data,class State,class EvalNode,class MoveRecorderT>
@@ -14,6 +14,17 @@ class SimulationWithDomainKnowledge: public SimulationAndRetropropagationRave<Va
         SimulationWithDomainKnowledge(int number_fill_board_attemps,double long_game_coeff): SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>(),_fill_board_n(number_fill_board_attemps), _long_game_coeff(long_game_coeff) {};
         Value simulate(State *state);
 };
+
+template <class Node>
+class SelectResMostRobustOverLimit: public SelectRes<ValGo,DataGo,Node> {
+    private:
+        double _limit;
+    public:
+        SelectResMostRobustOverLimit(double limit):_limit(limit){};
+        DataGo select_res(Node *node);
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////
 
 template <class Value,class Data,class State,class EvalNode,class MoveRecorderT>
 Value SimulationWithDomainKnowledge<Value,Data,State,EvalNode,MoveRecorderT>::simulate(State *state)
@@ -61,15 +72,6 @@ inline void SimulationWithDomainKnowledge<Value,Data,State,EvalNode,MoveRecorder
     state->get_possible_moves(v);
 }
 
-
-template <class Node>
-class SelectResMostRobustOverLimit: public SelectRes<ValGo,DataGo,Node> {
-    private:
-        double _limit;
-    public:
-        SelectResMostRobustOverLimit(double limit):_limit(limit){};
-        DataGo select_res(Node *node);
-};
 
 template <class Node>
 DataGo SelectResMostRobustOverLimit<Node>::select_res(Node *node)

@@ -40,7 +40,7 @@ class StateGo : public States<ValGo,DataGo>
         const float _komi;
         DataGo ko;
         DataGo last_mov;
-        char pass;
+        unsigned char pass;
         void eliminate_block(Block *block,INDEX i,INDEX j);
         void update_block(Block *block,Block *new_block,INDEX i,INDEX j);
         unsigned int count_area(bool **visited,INDEX i,INDEX j);
@@ -64,7 +64,7 @@ class StateGo : public States<ValGo,DataGo>
         StateGo *copy();
         void get_possible_moves(std::vector<DataGo>& v);
 #ifdef KNOWLEDGE
-        void get_simulation_possible_moves(std::vector<DataGo>& v);
+        //void get_simulation_possible_moves(std::vector<DataGo>& v);
         void get_atari_escape_moves(std::vector<DataGo>& v);
         void get_pattern_moves(std::vector<DataGo>& v);
         void get_capture_moves(std::vector<DataGo>& v);

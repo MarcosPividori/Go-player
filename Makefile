@@ -6,7 +6,6 @@ SRCDIR_GO = src/go
 SRCDIR_TATETI = src/tateti
 SRCDIR_CONNECT4 = src/connect4
 SRCDIR_HEXA = src/hexa
-SRCDIR_2048 = src/2048
 
 CC = g++
 CFLAGS = -std=c++0x -pthread -O2 -I $(SRCDIR_MCTS) 
@@ -33,7 +32,7 @@ $(OBJDIR)/%.o: $(SRCDIR_GO)/%.c
 clean:
 		$(RM) $(BINDIR)/* $(OBJDIR)/*.o
 
-all: go debug tateti connect4 2048 hexa
+all: go debug tateti connect4 hexa
 
 go: $(OBJS_GO)
 		$(CC) $(CFLAGS) $(CFLAGS_GO) $(SRCDIR_GO)/marcos_go.cpp -o $(BINDIR)/marcos_go $(OBJS_GO)
@@ -46,9 +45,6 @@ tateti:
 
 connect4:
 		$(CC) $(CFLAGS) $(SRCDIR_CONNECT4)/marcos_connect4.cpp $(SRCDIR_CONNECT4)/state_connect4.cpp -o $(BINDIR)/marcos_connect4
-
-2048:
-		$(CC) $(CFLAGS) $(SRCDIR_2048)/marcos_2048.cpp -o $(BINDIR)/marcos_2048
 
 hexa: 
 		$(CC) $(CFLAGS) $(CFLAGS_HEXA) $(SRCDIR_HEXA)/marcos_hexa.cpp $(SRCDIR_HEXA)/state_hexa.cpp -o $(BINDIR)/marcos_hexa

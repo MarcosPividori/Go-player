@@ -4,7 +4,6 @@
 #include <ctype.h>
 #include <string.h>
 #include <math.h>
-
 #include "gtp.h"
 #include "play_gtp.h"
 
