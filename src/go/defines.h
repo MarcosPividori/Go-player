@@ -2,12 +2,11 @@
 #define __DEFINES__
 
 #include <stdint.h>
+
 #define VERSION          "1.0"
 #define GTP_VERSION      2
 #define MAX_BOARD        19      
-
 #define UNUSED(x)        (void)x
-
 #define PASSI            -1
 #define RESIGNI          -2
 #define PASS(player)     DataGo(PASSI,PASSI,player)
@@ -15,10 +14,10 @@
 #define RESIGN(player)   DataGo(RESIGNI,RESIGNI,player)
 #define IS_RESIGN(d)     d.i==RESIGNI
 #define MOVE(player,i,j) DataGo(i,j,player)
+#define INIT_DATA(p)     PASS(p)
 #define CHANGE_PLAYER(p) (p==White ? Black : White)
-
-#define MIN(a,b)  ((a)<(b)? a : b)
-#define MAX(a,b)  ((a)>(b)? a : b)
+#define MIN(a,b)         ((a)<(b)? a : b)
+#define MAX(a,b)         ((a)>(b)? a : b)
 
 typedef enum : char{
     Black = -1,

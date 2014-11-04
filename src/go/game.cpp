@@ -13,10 +13,7 @@ _sel(cfg_input.bandit_coeff)
 {
 #ifdef RAVE
     _sim_and_retro= new SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>*[_cfg.num_threads_mcts];
-#endif
-
     for(int i=0;i<_cfg.num_threads_mcts;i++){
-#ifdef RAVE
     #ifdef KNOWLEDGE
         _sim_and_retro[i]=new SimulationWithDomainKnowledge<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>(
                                            cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff);
@@ -24,33 +21,34 @@ _sel(cfg_input.bandit_coeff)
         _sim_and_retro[i]=new SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>();
     #endif
         _m.push_back(new Mcts<ValGo,DataGo,Nod,StateGo>(&_sel,&_exp,_sim_and_retro[i],_sim_and_retro[i],&_sel_res));
+    }
+    NodeUCTRave<ValGo,DataGo>::k_rave = cfg_input.amaf_coeff;
 #else
+    for(int i=0;i<_cfg.num_threads_mcts;i++)
         _m.push_back(new Mcts<ValGo,DataGo,Nod,StateGo>(&_sel,&_exp,&_sim,&_ret,&_sel_res));
 #endif
-    }
+
     _patterns=NULL;
     if(cfg_input.pattern_file){
         _patterns= new PatternList();
         _patterns->read_file(cfg_input.pattern_file);
     }
-#ifdef RAVE
-    NodeUCTRave<ValGo,DataGo>::k_rave = cfg_input.amaf_coeff;
-#endif
+    
     _state = new StateGo(_size,_komi,_patterns);
     
     if(cfg_input.root_parallel)
-        _mcts = new MctsParallel_Root<ValGo,DataGo,Nod,StateGo>(_m,_state,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
+        _mcts = new MctsParallel_Root<ValGo,DataGo,Nod,StateGo>(_m,_state,INIT_DATA(CHANGE_PLAYER(_state->turn)));
     else
-        _mcts = new MctsParallel_GlobalMutex<ValGo,DataGo,Nod,StateGo>(_m,_state,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
+        _mcts = new MctsParallel_GlobalMutex<ValGo,DataGo,Nod,StateGo>(_m,_state,INIT_DATA(CHANGE_PLAYER(_state->turn)));
 }
 
 Game::~Game(){
-    delete _state;
     for(int i=0;i<_m.size();i++){
         delete _m[i];
         delete _sim_and_retro[i];
     }
     delete &_m;
+    delete _state;
     delete _mcts;
     delete[] _sim_and_retro;
     if(_patterns)
@@ -62,14 +60,14 @@ void Game::set_boardsize(int size){
         delete _state;
         _size = size;
         _state = new StateGo(_size,_komi,_patterns);
-        _mcts->reinit(_state,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
+        _mcts->reinit(_state,INIT_DATA(CHANGE_PLAYER(_state->turn)));
     }
 }
 
 void Game::clear_board(){
     delete _state;
     _state = new StateGo(_size,_komi,_patterns);
-    _mcts->reinit(_state,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
+    _mcts->reinit(_state,INIT_DATA(CHANGE_PLAYER(_state->turn)));
 }
 
 void Game::set_komi(float komi){
@@ -77,7 +75,7 @@ void Game::set_komi(float komi){
         delete _state;
         _komi = komi;
         _state = new StateGo(_size,_komi,_patterns);
-        _mcts->reinit(_state,DataGo(0,0,CHANGE_PLAYER(_state->turn)));
+        _mcts->reinit(_state,INIT_DATA(CHANGE_PLAYER(_state->turn)));
     }
 }
 

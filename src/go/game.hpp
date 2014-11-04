@@ -5,8 +5,6 @@
 #include "mcts_parallel.hpp"
 #include "config.hpp"
 
-#define NUM_THREADS 5
-
 #ifdef RAVE
  #include "mcts_go.hpp"
  #include "moverecorder_go.hpp"
