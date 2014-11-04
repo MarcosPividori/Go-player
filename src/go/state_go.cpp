@@ -172,35 +172,39 @@ inline bool StateGo::is_block_in_atari(INDEX i,INDEX j,INDEX &i_atari,INDEX &j_a
     return res;
 }
 
-DataGo StateGo::look_for_delete_atari(Block *block,Block *flag,INDEX i,INDEX j)
+DataGo StateGo::look_for_delete_atari(Block *block,Block *flag,INDEX i,INDEX j,int &max_size)
 {
     Blocks[i][j]= flag;
     INDEX k,l;
     Player opp=CHANGE_PLAYER(Stones[i][j]);
+    DataGo res=PASS(Empty);
     FOR_EACH_ADJ(i,j,k,l,
     {
       if(Blocks[k][l]==block){//If same block, propagate.
-        DataGo v=look_for_delete_atari(block,flag,k,l);
+        DataGo v=look_for_delete_atari(block,flag,k,l,max_size);
         if(!IS_PASS(v))
-          return v;
+          res=v;
       }
       else
         if(Stones[k][l]==opp)
-          if(Blocks[k][l]->is_atari()){
+          if(Blocks[k][l]->is_atari() && Blocks[k][l]->size>max_size){
             DataGo d=Blocks[k][l]->atari;
-            if(!(ko.flag && ko.i==d.i && ko.j==d.j))
-              return d;
+            if(!(ko.flag && ko.i==d.i && ko.j==d.j)){
+              max_size=Blocks[k][l]->size;
+              res=d;
+            }
           }
     }
     );
-    return PASS(Empty);
+    return res;
 }
 
-inline DataGo StateGo::get_delete_atari(INDEX i,INDEX j)
+inline DataGo StateGo::get_delete_atari(INDEX i,INDEX j,int &b_size)
 {
+    b_size=0;
     Block *block=Blocks[i][j];
     Block flag;
-    DataGo res=look_for_delete_atari(block,&flag,i,j);
+    DataGo res=look_for_delete_atari(block,&flag,i,j,b_size);
     update_block(&flag,block,i,j);
     return res;
 }
@@ -299,7 +303,7 @@ void StateGo::get_atari_escape_moves(std::vector<DataGo>& v)
       return;
     Block *b[4]={NULL,NULL,NULL,NULL};
     INDEX k,l,m,n,i=last_mov.i,j=last_mov.j;
-    int sum=0,c=0,count;
+    int sum=0,c=0,count,size;
     FOR_EACH_ADJ(i,j,k,l,
     {
         if(Stones[k][l]==turn
@@ -309,9 +313,9 @@ void StateGo::get_atari_escape_moves(std::vector<DataGo>& v)
            && Blocks[k][l]->is_atari()){
            b[c]=Blocks[k][l];
            c++;
-           DataGo e=get_delete_atari(k,l);
+           DataGo e=get_delete_atari(k,l,size);
            if(!IS_PASS(e))
-               for(int count=Blocks[k][l]->size;count>0;count--){
+               for(int count=Blocks[k][l]->size+size;count>0;count--){
                  v.push_back(DataGo(e.i,e.j,turn));
                  v.push_back(DataGo(e.i,e.j,turn));
                  v.push_back(DataGo(e.i,e.j,turn));

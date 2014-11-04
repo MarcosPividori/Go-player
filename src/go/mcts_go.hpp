@@ -25,7 +25,7 @@ Value SimulationWithDomainKnowledge<Value,Data,State,EvalNode,MoveRecorderT>::si
     mov_counter=0;
     get_possible_moves(state,v,mov_dist);
     while(!v.empty()){
-        std::uniform_int_distribution<int> dist(0, v.size()-1);
+        std::uniform_int_distribution<int> dist(0,v.size()-1);
         mov = v[dist(SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::mt)];
         state->apply(mov);
         SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::recorder.postMove(mov);
@@ -40,10 +40,11 @@ inline void SimulationWithDomainKnowledge<Value,Data,State,EvalNode,MoveRecorder
 {
     mov_counter++;
     INDEX i,j;
-    if(mov_counter>(state->size() * state->size() * 3))
+    if(mov_counter>(state->size() * state->size() * _long_game_coeff))
         return;
     if(state->get_atari_escape_moves(v),!v.empty())
-        return;
+        if(v.size()>16)
+            return;
     for(int c=0;c<_fill_board_n;c++){
         i=mov_dist(SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::mt);
         j=mov_dist(SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::mt);

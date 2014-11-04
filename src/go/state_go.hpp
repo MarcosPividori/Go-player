@@ -49,8 +49,8 @@ class StateGo : public States<ValGo,DataGo>
         int remove_opponent_block_and_no_ko(INDEX i,INDEX j,Player p);
         unsigned int get_liberty_block(Block *block,Block *flag,INDEX i,INDEX j,INDEX &lib_i,INDEX &lib_j);
         bool is_block_in_atari(INDEX i,INDEX j,INDEX &i_atari,INDEX &j_atari);
-        DataGo look_for_delete_atari(Block *block,Block *flag,INDEX i,INDEX j);
-        DataGo get_delete_atari(INDEX i,INDEX j);
+        DataGo look_for_delete_atari(Block *block,Block *flag,INDEX i,INDEX j,int &max_size);
+        DataGo get_delete_atari(INDEX i,INDEX j,int &b_size);
         float final_value();
 #ifdef JAPANESE
         int captured_b;
