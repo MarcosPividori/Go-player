@@ -41,12 +41,16 @@ class StateGo : public States<ValGo,DataGo>
         DataGo ko;
         DataGo last_mov;
         unsigned char pass;
+        std::vector<POS> b_atari;
+        std::vector<POS> w_atari;
+        void remove_atari_block(INDEX i,INDEX j);
+        void add_atari_block(INDEX i,INDEX j);
         void eliminate_block(Block *block,INDEX i,INDEX j);
         void update_block(Block *block,Block *new_block,INDEX i,INDEX j);
         unsigned int count_area(bool **visited,INDEX i,INDEX j);
         bool no_ko_nor_suicide(INDEX i,INDEX j,Player p);
         bool no_self_atari_nor_suicide(INDEX i,INDEX j,Player p);
-        int remove_opponent_block_and_no_ko(INDEX i,INDEX j,Player p);
+        bool remove_opponent_block_and_no_ko(INDEX i,INDEX j);
         unsigned int get_liberty_block(Block *block,Block *flag,INDEX i,INDEX j,INDEX &lib_i,INDEX &lib_j);
         bool is_block_in_atari(INDEX i,INDEX j,INDEX &i_atari,INDEX &j_atari);
         DataGo look_for_delete_atari(Block *block,Block *flag,INDEX i,INDEX j,int &max_size);
@@ -64,7 +68,6 @@ class StateGo : public States<ValGo,DataGo>
         StateGo *copy();
         void get_possible_moves(std::vector<DataGo>& v);
 #ifdef KNOWLEDGE
-        //void get_simulation_possible_moves(std::vector<DataGo>& v);
         void get_atari_escape_moves(std::vector<DataGo>& v);
         void get_pattern_moves(std::vector<DataGo>& v);
         void get_capture_moves(std::vector<DataGo>& v);

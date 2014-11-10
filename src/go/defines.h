@@ -27,6 +27,12 @@ typedef enum : char{
 
 typedef char INDEX;
 
+struct POS {
+    INDEX i;
+    INDEX j;
+    POS(INDEX _i,INDEX _j) : i(_i),j(_j) {}
+};
+
 union DataGo
 {
     struct{
