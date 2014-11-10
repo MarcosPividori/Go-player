@@ -104,6 +104,9 @@ def analyze_program(isWhite=False,
                         str(long_game_coeff),
                         str(cycles_mcts),
                         str(threads_mcts),
+                        str(limit_expansion),
+                        str(komi),
+                        str(root_parallel),
                         str(patterns)])
 
 write_row(output,['#','COL','WRATE','TOTAL','BCOEFF','ACOEFF','FBOARD','LGCOEF','CYCLES','THREADS','LEXP','KOMI','ROOT_P','PATT']);
@@ -148,8 +151,9 @@ write_row(output,['#','COL','WRATE','TOTAL','BCOEFF','ACOEFF','FBOARD','LGCOEF',
 
 #analyze_program(False,   'patterns.txt',  0,            2500,       6,          3,               70000,       5)
 
-analyze_program(True,     'patterns.txt',  0,             2500,      6,          3,               30000,       5, komi=5,root_parallel=True)
-analyze_program(True,     'patterns.txt',  0,             2500,      6,          3,               30000,       5, komi=5)
+analyze_program(False,     'patterns.txt',  0,            1000,       6,          3,              100000,       5, komi=5)#,root_parallel=True)
+analyze_program(False,     'patterns.txt',  0,            1000,       6,          3,              100000,       5, komi=0)#,root_parallel=True)
+#analyze_program(True,    'patterns.txt',  0,             2500,       6,          3,               30000,       5, komi=5)
 #analyze_program(True,    'patterns.txt',  0,             1000,       6,         3,                70000,       5)
 #analyze_program(False,   'patterns.txt',  0,             1000,       6,         3,                30000,       5)
 #analyze_program(False,   'patterns.txt',  0,             1000,       6,         3,                70000,       5)
