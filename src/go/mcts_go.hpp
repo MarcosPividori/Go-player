@@ -34,10 +34,20 @@ Value SimulationWithDomainKnowledge<Value,Data,State,EvalNode,MoveRecorderT>::si
     std::vector<Data> v;
     Data mov;
     mov_counter=0;
+    int n;
     get_possible_moves(state,v,mov_dist);
-    while(!v.empty()){
-        std::uniform_int_distribution<int> dist(0,v.size()-1);
-        mov = v[dist(SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::mt)];
+    while(1){
+        if(v.empty())
+          if(n=state->possible_moves_size()){
+            std::uniform_int_distribution<int> dist(0,n-1);
+            mov = state->get_possible_moves_by_index(dist(SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::mt));
+          }
+          else
+            break;
+        else{
+          std::uniform_int_distribution<int> dist(0,v.size()-1);
+          mov = v[dist(SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::mt)];
+        }
         state->apply(mov);
         SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::recorder.postMove(mov);
         v.clear();
@@ -64,12 +74,8 @@ inline void SimulationWithDomainKnowledge<Value,Data,State,EvalNode,MoveRecorder
             return;
         }
     }
-    if(state->get_pattern_moves(v),!v.empty()){
-      state->get_capture_moves(v);
-      return;
-    }
+    state->get_pattern_moves(v);
     state->get_capture_moves(v);
-    state->get_possible_moves(v);
 }
 
 

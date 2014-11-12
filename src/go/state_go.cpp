@@ -20,9 +20,14 @@
               if(j<_size-1){ k=i;l=j+1;Code;} \
             })
 
-StateGo::StateGo(int size,float komi,PatternList *p) : _size(size),_komi(komi),patterns(p),num_movs(0)
+StateGo::StateGo(int size,float komi,PatternList *p) : 
+         _size(size)
+        ,_komi(komi)
+        ,patterns(p)
+        ,num_movs(0)
 #ifdef JAPANESE
-        ,captured_b(0),captured_w(0)
+        ,captured_b(0)
+        ,captured_w(0)
 #endif
 {
     Stones = new Player*[_size];
@@ -37,44 +42,65 @@ StateGo::StateGo(int size,float komi,PatternList *p) : _size(size),_komi(komi),p
         for(int j=0;j<_size;j++){
             Stones[i][j]=Empty;
             Blocks[i][j]=NULL;
+            b_mov.insert(POS(i,j));
+            w_mov.insert(POS(i,j));
         }
+    b_mov.insert(POS(PASSI,PASSI));
+    w_mov.insert(POS(PASSI,PASSI));
     pass=0;
     turn=Black;
     last_mov=PASS(CHANGE_PLAYER(turn));
 }
 
-StateGo *StateGo::copy()
+StateGo::StateGo(StateGo *src) :
+         _size(src->_size)
+        ,_komi(src->_komi)
+        ,patterns(src->patterns)
+        ,num_movs(src->num_movs)
+        ,ko(src->ko)
+        ,pass(src->pass)
+        ,turn(src->turn)
+        ,last_mov(src->last_mov)
+        ,w_mov(&(src->w_mov))
+        ,b_mov(&(src->b_mov))
+#ifdef JAPANESE
+        ,captured_b(src->captured_b)
+        ,captured_w(src->captured_w)
+#endif
 {
-    StateGo *p= new StateGo(_size,_komi,patterns);
+    Stones = new Player*[_size];
+    for(int i=0;i<_size;i++)
+        Stones[i] = new Player[_size];
+
+    Blocks = new Block**[_size];
+    for(int i=0;i<_size;i++)
+        Blocks[i] = new Block*[_size];
+
     for(int i=0;i<_size;i++)
         for(int j=0;j<_size;j++){
-            p->Stones[i][j]=Stones[i][j];
-            p->Blocks[i][j]=Blocks[i][j];
+            Stones[i][j]=src->Stones[i][j];
+            Blocks[i][j]=src->Blocks[i][j];
         }
+
     for(int i=0;i<_size;i++)
         for(int j=0;j<_size;j++)
-            if(p->Stones[i][j]!=Empty && p->Blocks[i][j]==Blocks[i][j]){
-                p->Blocks[i][j]=new Block;
-                *(p->Blocks[i][j])=*Blocks[i][j];
-                p->update_block(Blocks[i][j],p->Blocks[i][j],i,j);
+            if(Stones[i][j]!=Empty && Blocks[i][j]==src->Blocks[i][j]){
+                Blocks[i][j]=new Block;
+                *(Blocks[i][j])=*(src->Blocks[i][j]);
+                update_block(src->Blocks[i][j],Blocks[i][j],i,j);
             }
-    p->ko=ko;
-    p->pass=pass;
-    p->turn=turn;
-    p->patterns=patterns;
-    p->last_mov=last_mov;
-#ifdef JAPANESE
-    p->captured_b=captured_b;
-    p->captured_w=captured_w;
-#endif 
-    p->num_movs=num_movs;
-    p->w_atari.reserve(w_atari.capacity());
-    for(int l=0;l<w_atari.size();l++)
-        p->w_atari.push_back(w_atari[l]);
-    p->b_atari.reserve(b_atari.capacity());
-    for(int l=0;l<b_atari.size();l++)
-        p->b_atari.push_back(b_atari[l]);
-    return p;
+
+    w_atari.reserve(src->w_atari.capacity());
+    for(int l=0;l<src->w_atari.size();l++)
+        w_atari.push_back(src->w_atari[l]);
+    b_atari.reserve(src->b_atari.capacity());
+    for(int l=0;l<src->b_atari.size();l++)
+        b_atari.push_back(src->b_atari[l]);
+}
+
+StateGo *StateGo::copy()
+{
+    return new StateGo(this);
 }
 
 StateGo::~StateGo()
@@ -103,6 +129,8 @@ void StateGo::eliminate_block(Block *block,INDEX i,INDEX j)
         captured_w++;
 #endif
     Stones[i][j]=Empty;
+    b_mov.insert(POS(i,j));
+    w_mov.insert(POS(i,j));
     INDEX k,l;
     FOR_EACH_ADJ(i,j,k,l,
     {
@@ -112,7 +140,10 @@ void StateGo::eliminate_block(Block *block,INDEX i,INDEX j)
         if(Stones[k][l]!=Empty){//Add a free adjacency.
           Blocks[k][l]->adj+=1;
           if(Blocks[k][l]->is_atari()){
+            INDEX a=Blocks[k][l]->atari.i;
+            INDEX b=Blocks[k][l]->atari.j;
             Blocks[k][l]->no_atari();
+            update_mov(a,b);
             remove_atari_block(k,l);
           }
         }
@@ -244,11 +275,30 @@ inline void StateGo::get_possible_moves(std::vector<DataGo>& v)
 {
     if(pass==2)
         return;
-    for(INDEX i=0;i<_size;i++)
-        for(INDEX j=0;j<_size;j++)
-            if(Stones[i][j]==Empty && no_ko_nor_suicide(i,j,turn))
-                v.push_back(DataGo(i,j,turn));
-    v.push_back(PASS(turn));
+    if(turn==White)
+      for(int i=0;i< w_mov.size();i++)
+        v.push_back(DataGo(w_mov[i],turn));
+    else
+      for(int i=0;i< b_mov.size();i++)
+        v.push_back(DataGo(b_mov[i],turn));
+}
+
+int StateGo::possible_moves_size()
+{
+    if(pass==2)
+      return 0;
+    if(turn==White)
+      return w_mov.size();
+    else
+      return b_mov.size();
+}
+
+DataGo StateGo::get_possible_moves_by_index(int i)
+{
+    if(turn==White)
+      return DataGo(w_mov[i],turn);
+    else
+      return DataGo(b_mov[i],turn);
 }
 
 #ifdef KNOWLEDGE
@@ -302,8 +352,14 @@ void StateGo::get_pattern_moves(std::vector<DataGo>& v)
           Stones[k][l]=turn;
           if(patterns->match(this,k,l))
             if(no_self_atari_nor_suicide(k,l,turn)
-               || remove_opponent_block_and_no_ko(k,l))
+               || remove_opponent_block_and_no_ko(k,l)){
                 v.push_back(DataGo(k,l,turn));
+                v.push_back(DataGo(k,l,turn));
+                v.push_back(DataGo(k,l,turn));
+                v.push_back(DataGo(k,l,turn));
+                v.push_back(DataGo(k,l,turn));
+                v.push_back(DataGo(k,l,turn));
+            }
           Stones[k][l]=Empty;
         }
 }
@@ -412,6 +468,14 @@ inline void StateGo::apply(DataGo d)
 {
     assert(d.player == turn);
     num_movs++;
+    if(ko.flag)
+      if(turn==White){
+        if(no_suicide(ko.i,ko.j,White))
+          w_mov.insert(POS(ko.i,ko.j));
+      }else{
+        if(no_suicide(ko.i,ko.j,Black))
+          b_mov.insert(POS(ko.i,ko.j));
+      }
     ko.flag=0;
     if(IS_PASS(d)){
         assert(pass<2);
@@ -444,9 +508,16 @@ inline void StateGo::apply(DataGo d)
                 else
                     ko.flag=0;
                 ko_flag=false;
+                bool flagi= (Blocks[k][l]->size==1);
                 remove_atari_block(k,l);
                 delete Blocks[k][l];
                 eliminate_block(Blocks[k][l],k,l);
+                if(flagi){
+                  if(!no_suicide(k,l,White))
+                    w_mov.remove(POS(k,l));
+                  if(!no_suicide(k,l,Black))
+                    b_mov.remove(POS(k,l));
+                }
               }
         }
         );
@@ -492,12 +563,31 @@ inline void StateGo::apply(DataGo d)
         if(is_block_in_atari(i,j,t_i,t_j)){
             Blocks[i][j]->atari=DataGo(t_i,t_j,CHANGE_PLAYER(turn));
             add_atari_block(i,j);
+            update_mov(t_i,t_j);
         }
         else
             if(Blocks[i][j]->is_atari()){
+              INDEX a=Blocks[i][j]->atari.i,b=Blocks[i][j]->atari.j;
               Blocks[i][j]->no_atari();
+              update_mov(a,b);
               remove_atari_block(i,j);
             }
+        //Refresh possible moves.
+        FOR_EACH_ADJ(i,j,k,l,
+        {
+            if(Stones[k][l]==Empty){
+              if(!no_suicide(k,l,White))
+                w_mov.remove(POS(k,l));
+              if(!no_suicide(k,l,Black))
+                b_mov.remove(POS(k,l));
+            }
+        }
+        );
+        for(int x=0;x<c;x++){
+          k=b[x]->atari.i;
+          l=b[x]->atari.j;
+          update_mov(k,l);
+        }
         //Finish checking for ko position.
         ko_flag=true;
         if(ko.flag){
@@ -511,6 +601,13 @@ inline void StateGo::apply(DataGo d)
             }
             );
         }
+        if(ko.flag)
+          if(turn==White)
+            b_mov.remove(POS(ko.i,ko.j));
+          else
+            w_mov.remove(POS(ko.i,ko.j));
+        b_mov.remove(POS(i,j));
+        w_mov.remove(POS(i,j));
     }
     turn=CHANGE_PLAYER(turn);
     last_mov=d;
@@ -556,6 +653,38 @@ void StateGo::show(FILE *output){
             fprintf(output," %c",c);
         }
     }
+#ifdef DEBUG
+    std::cout<<std::endl;
+    std::cout<<"WHITE MOVES:"<<std::endl;
+    fprintf(output,"   ");
+    for(int i=0;i<_size;i++)
+        fprintf(output," %c",'A'+i+(i>7));
+    for(int i=_size-1;i>=0;i--){
+        fprintf(output,"\n%2d ",i+1);
+        for(int j=0;j<_size;j++){
+            c='-';
+            for(int k=0;k<w_mov.size();k++)
+               if(w_mov[k].i == i && w_mov[k].j==j)
+                 {c='O';break;}
+            fprintf(output," %c",c);
+        }
+    }
+    std::cout<<std::endl;
+    std::cout<<"BLACK MOVES:"<<std::endl;
+    for(int i=0;i<_size;i++)
+        fprintf(output," %c",'A'+i+(i>7));
+    for(int i=_size-1;i>=0;i--){
+        fprintf(output,"\n%2d ",i+1);
+        for(int j=0;j<_size;j++){
+            c='-';
+            for(int k=0;k<b_mov.size();k++)
+               if(b_mov[k].i == i && b_mov[k].j==j)
+                 {c='X';break;}
+            fprintf(output," %c",c);
+        }
+    }
+    std::cout<<std::endl;
+#endif
 }
 
 void StateGo::show(){
@@ -627,11 +756,42 @@ inline bool StateGo::no_self_atari_nor_suicide(INDEX i,INDEX j,Player p)
     return false;
 }
 
+inline void StateGo::update_mov(INDEX i,INDEX j)
+{
+    if(no_suicide(i,j,White))
+      w_mov.insert(POS(i,j));
+    else
+      w_mov.remove(POS(i,j));
+    if(no_suicide(i,j,Black))
+      b_mov.insert(POS(i,j));
+    else
+      b_mov.remove(POS(i,j));
+}
+
+inline bool StateGo::no_suicide(INDEX i,INDEX j,Player p)
+{
+    INDEX k,l;
+    if(Stones[i][j]!=Empty)
+      return false;
+    FOR_EACH_ADJ(i,j,k,l,
+    {
+      if(Stones[k][l]==Empty)
+        return true;
+      if(Stones[k][l]==p){
+        if(!(Blocks[k][l]->is_atari()))
+          return true;
+      }else
+        if(Blocks[k][l]->is_atari())
+          return true;
+    }
+    );
+    return false;
+}
+
 inline bool StateGo::no_ko_nor_suicide(INDEX i,INDEX j,Player p)
 {
     if(ko.flag && ko.i==i && ko.j==j)
       return false;
-    //Check if free block near position.
     INDEX k,l;
     FOR_EACH_ADJ(i,j,k,l,
     {

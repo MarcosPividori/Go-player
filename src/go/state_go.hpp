@@ -5,6 +5,7 @@
 #include "defines.h"
 #include "states.hpp"
 #include "pattern_list.hpp"
+#include "avl_tree.hpp"
 
 class PatternList;
 
@@ -43,11 +44,15 @@ class StateGo : public States<ValGo,DataGo>
         unsigned char pass;
         std::vector<POS> b_atari;
         std::vector<POS> w_atari;
+        AVLTree<POS> b_mov;
+        AVLTree<POS> w_mov;
         void remove_atari_block(INDEX i,INDEX j);
         void add_atari_block(INDEX i,INDEX j);
         void eliminate_block(Block *block,INDEX i,INDEX j);
         void update_block(Block *block,Block *new_block,INDEX i,INDEX j);
         unsigned int count_area(bool **visited,INDEX i,INDEX j);
+        void update_mov(INDEX i,INDEX j);
+        bool no_suicide(INDEX i,INDEX j,Player p);
         bool no_ko_nor_suicide(INDEX i,INDEX j,Player p);
         bool no_self_atari_nor_suicide(INDEX i,INDEX j,Player p);
         bool remove_opponent_block_and_no_ko(INDEX i,INDEX j);
@@ -60,6 +65,7 @@ class StateGo : public States<ValGo,DataGo>
         int captured_b;
         int captured_w;
 #endif
+        StateGo(StateGo *src);
     public:
         int num_movs;
         Player turn;
@@ -68,6 +74,8 @@ class StateGo : public States<ValGo,DataGo>
         StateGo *copy();
         void get_possible_moves(std::vector<DataGo>& v);
 #ifdef KNOWLEDGE
+        int possible_moves_size();
+        DataGo get_possible_moves_by_index(int i);
         void get_atari_escape_moves(std::vector<DataGo>& v);
         void get_pattern_moves(std::vector<DataGo>& v);
         void get_capture_moves(std::vector<DataGo>& v);

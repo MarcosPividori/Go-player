@@ -27,10 +27,23 @@ typedef enum : char{
 
 typedef char INDEX;
 
-struct POS {
-    INDEX i;
-    INDEX j;
+union POS {
+    struct{
+      INDEX i;
+      INDEX j;
+    };
+    uint16_t hash;
     POS(INDEX _i,INDEX _j) : i(_i),j(_j) {}
+    POS() {}
+    bool operator==(POS a) {
+       return a.hash==hash;
+    }
+    bool operator>(POS a) {
+       return a.hash<hash;
+    }
+    bool operator<(POS a) {
+       return a.hash>hash;
+    }
 };
 
 union DataGo
@@ -46,6 +59,7 @@ union DataGo
        return a.hash==hash;
     }
     DataGo(INDEX _i,INDEX _j,Player _p) : i(_i),j(_j),player(_p),flag(0) {}
+    DataGo(POS _pos,Player _p) : i(_pos.i),j(_pos.j),player(_p),flag(0) {}
     DataGo() : flag(0) {}
 };
 
