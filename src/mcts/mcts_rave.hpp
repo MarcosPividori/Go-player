@@ -1,3 +1,5 @@
+#ifndef __MCTS_RAVE__
+#define __MCTS_RAVE__
 
 #include "mcts.hpp"
 #include "node_rave.hpp"
@@ -131,3 +133,4 @@ void SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>:
     }while((node=node->parent)!=NULL);
 }
 
+#endif // __MCTS_RAVE__

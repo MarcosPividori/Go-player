@@ -1,3 +1,5 @@
+#ifndef __MCTS_GO__
+#define __MCTS_GO__
 
 #include <random>
 #include "mcts_rave.hpp"
@@ -83,14 +85,16 @@ template <class Node>
 DataGo SelectResMostRobustOverLimit<Node>::select_res(Node *node)
 {
     assert(!node->children.empty());
-    unsigned long max_visits = node->children[0]->visits;
-    Node *max_node = node->children[0];
-    for(int i=1;i<node->children.size();i++)
-        if(node->children[i]->visits > max_visits){
-            max_node = node->children[i];
-            max_visits = node->children[i]->visits;
+    Node *max_node = *(node->children.begin());
+    unsigned long max_visits = max_node->visits;
+    for(auto it=node->children.begin();it!=node->children.end();++it)
+        if((*it)->visits > max_visits){
+            max_node = *it;
+            max_visits = (*it)->visits;
         }
     if(max_node->visits!=0 && (max_node->value / max_node->visits) < _limit)
         return RESIGN(max_node->data.player);
     return max_node->data;
 }
+
+#endif // __MCTS_GO__

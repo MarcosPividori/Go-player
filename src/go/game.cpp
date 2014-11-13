@@ -6,23 +6,46 @@
 
 Game::Game(int size,Config &cfg_input) : _komi(0),_size(size),_exp(cfg_input.limit_expansion,0),_cfg(cfg_input),_sel_res(cfg_input.resign_limit),
 #ifdef RAVE
+ #ifndef NEXP
 _sel(cfg_input.bandit_coeff,cfg_input.amaf_coeff)
+ #else
+_sel()
+ #endif
 #else
 _sel(cfg_input.bandit_coeff)
 #endif
+
 {
+
 #ifdef RAVE
+  #ifdef NEXP
+    _sim_and_retro= new SimulationAndRetropropagationRaveNExp<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>*[_cfg.num_threads_mcts];
+  #else
     _sim_and_retro= new SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>*[_cfg.num_threads_mcts];
+  #endif
     for(int i=0;i<_cfg.num_threads_mcts;i++){
     #ifdef KNOWLEDGE
+      #ifdef NEXP
+        _sim_and_retro[i]=new SimulationWithDomainKnowledgeNExp<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>(
+                                           cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff);
+      #else
         _sim_and_retro[i]=new SimulationWithDomainKnowledge<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>(
                                            cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff);
+      #endif
     #else
+      #ifdef NEXP
+        _sim_and_retro[i]=new SimulationAndRetropropagationRaveNExp<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>();
+      #else
         _sim_and_retro[i]=new SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>();
+      #endif
     #endif
         _m.push_back(new Mcts<ValGo,DataGo,Nod,StateGo>(&_sel,&_exp,_sim_and_retro[i],_sim_and_retro[i],&_sel_res));
     }
+  #ifdef NEXP
+    NodeUCTRaveNExp<ValGo,DataGo>::k_rave = cfg_input.amaf_coeff;
+  #else
     NodeUCTRave<ValGo,DataGo>::k_rave = cfg_input.amaf_coeff;
+  #endif
 #else
     for(int i=0;i<_cfg.num_threads_mcts;i++)
         _m.push_back(new Mcts<ValGo,DataGo,Nod,StateGo>(&_sel,&_exp,&_sim,&_ret,&_sel_res));
@@ -152,10 +175,15 @@ void Game::debug(){
     for(int i = _size-1;i>=0;i--)
         for(int j=0;j<_size;j++)
             visits[i][j]=0;
-    for(int i=0;i<_mcts->get_root()->children.size();i++)
-        if(!IS_PASS(_mcts->get_root()->children[i]->data)){
-          visits[_mcts->get_root()->children[i]->data.i][_mcts->get_root()->children[i]->data.j]=_mcts->get_root()->children[i]->visits;
-          coeffs[_mcts->get_root()->children[i]->data.i][_mcts->get_root()->children[i]->data.j]=_sel.get_uct_amaf_val(_mcts->get_root()->children[i],sqrt_log_parent);
+    Nod *root_now=_mcts->get_root();
+    for(auto it=root_now->children.begin();it!=root_now->children.end();++it)
+        if(!IS_PASS((*it)->data)){
+          visits[(*it)->data.i][(*it)->data.j]=(*it)->visits;
+          #ifndef NEXP
+          coeffs[(*it)->data.i][(*it)->data.j]=_sel.get_uct_amaf_val((*it),sqrt_log_parent);
+          #else
+          coeffs[(*it)->data.i][(*it)->data.j]=(*it)->rate;
+          #endif
         }
     for(int i = _size-1;i>=0;i--){
         for(int j=0;j<_size;j++)

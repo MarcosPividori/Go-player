@@ -6,9 +6,14 @@
 #include "config.hpp"
 
 #ifdef RAVE
+ #include "mcts_go_nexp.hpp"
  #include "mcts_go.hpp"
  #include "moverecorder_go.hpp"
- typedef NodeUCTRave<ValGo,DataGo> Nod;
+ #ifdef NEXP
+   typedef NodeUCTRaveNExp<ValGo,DataGo> Nod;
+ #else
+   typedef NodeUCTRave<ValGo,DataGo> Nod;
+ #endif
 #else
  typedef NodeUCT<ValGo,DataGo> Nod;
 #endif
@@ -34,8 +39,13 @@ class Game{
         std::vector<Mcts<ValGo,DataGo,Nod,StateGo> *> _m;
         MctsParallel<ValGo,DataGo,Nod,StateGo> *_mcts;
 #ifdef RAVE
+  #ifdef NEXP
+        SelectionUCTRaveNExp<ValGo,DataGo> _sel;
+        SimulationAndRetropropagationRaveNExp<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo> **_sim_and_retro;
+  #else
         SelectionUCTRave<ValGo,DataGo> _sel;
         SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo> **_sim_and_retro;
+  #endif
 #else
         SelectionUCT<ValGo,DataGo> _sel;
         SimulationTotallyRandom<ValGo,DataGo,StateGo> _sim;

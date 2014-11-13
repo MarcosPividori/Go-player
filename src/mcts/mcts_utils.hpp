@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <cassert>
 #include <random>
+#include <iterator>
 
 template <class Value,class Data,class State,class Node>
 class ExpansionAllChildren: public Expansion<Value,Data,Node,State> {
@@ -61,7 +62,7 @@ Node* ExpansionAllChildren<Value,Data,State,Node>::expand(Node *nod,
         for(int i=0;i<v.size();i++)
             nod->create_child(_val,v[i]);
         //TODO: Make this selection randomly!
-        return nod->children[0];
+        return *(nod->children.begin());
     }
     return nod;
 }
@@ -91,12 +92,12 @@ template <class Value,class Data,class Node>
 Data SelectResMostRobust<Value,Data,Node>::select_res(Node *node)
 {
     assert(!node->children.empty());
-    unsigned long max_visits = node->children[0]->visits;
-    Node *max_node = node->children[0];
-    for(int i=1;i<node->children.size();i++)
-        if(node->children[i]->visits > max_visits){
-            max_node = node->children[i];
-            max_visits = node->children[i]->visits;
+    Node *max_node = (*(node->children.begin()));
+    unsigned long max_visits = max_node->visits;
+    for(std::iterator<std::input_iterator_tag, Node* > it=node->children.begin();it!=node->children.end();++it)
+        if((*it)->visits > max_visits){
+            max_node = *it;
+            max_visits = (*it)->visits;
         }
     return max_node->data;
 }

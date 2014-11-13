@@ -35,13 +35,13 @@ union POS {
     uint16_t hash;
     POS(INDEX _i,INDEX _j) : i(_i),j(_j) {}
     POS() {}
-    bool operator==(POS a) {
+    bool operator==(const POS a) const {
        return a.hash==hash;
     }
-    bool operator>(POS a) {
+    bool operator>(const POS a) const {
        return a.hash<hash;
     }
-    bool operator<(POS a) {
+    bool operator<(const POS a) const {
        return a.hash>hash;
     }
 };
@@ -55,8 +55,14 @@ union DataGo
         INDEX flag;
     };
     uint32_t hash;
-    bool operator==(DataGo a) {
+    bool operator==(const DataGo a) const {
        return a.hash==hash;
+    }
+    bool operator<(const DataGo a) const {
+       return a.hash<hash;
+    }
+    bool operator>(const DataGo a) const {
+       return a.hash>hash;
     }
     DataGo(INDEX _i,INDEX _j,Player _p) : i(_i),j(_j),player(_p),flag(0) {}
     DataGo(POS _pos,Player _p) : i(_pos.i),j(_pos.j),player(_p),flag(0) {}
