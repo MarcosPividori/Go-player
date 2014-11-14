@@ -45,8 +45,6 @@ StateGo::StateGo(int size,float komi,PatternList *p) :
             b_mov.insert(POS(i,j));
             w_mov.insert(POS(i,j));
         }
-    b_mov.insert(POS(PASSI,PASSI));
-    w_mov.insert(POS(PASSI,PASSI));
     pass=0;
     turn=Black;
     last_mov=PASS(CHANGE_PLAYER(turn));
@@ -468,6 +466,10 @@ inline void StateGo::apply(DataGo d)
 {
     assert(d.player == turn);
     num_movs++;
+    if(num_movs = int(_size*_size * 0.4)){
+        w_mov.insert(POS(PASSI,PASSI));
+        b_mov.insert(POS(PASSI,PASSI));
+    }
     if(ko.flag)
       if(turn==White){
         if(no_suicide(ko.i,ko.j,White))
