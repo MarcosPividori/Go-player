@@ -7,6 +7,7 @@ template <class Value,class Data,class State,class EvalNode,class MoveRecorderT>
 class SimulationWithDomainKnowledge: public SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT> {
     protected:
         int mov_counter;
+        int mov_limit;
         int _fill_board_n;
         double _long_game_coeff;
         void get_possible_moves(State *state,std::vector<Data> &v,std::uniform_int_distribution<int> &mov_dist);
@@ -34,11 +35,12 @@ Value SimulationWithDomainKnowledge<Value,Data,State,EvalNode,MoveRecorderT>::si
     std::vector<Data> v;
     Data mov;
     mov_counter=0;
+    mov_limit= state->size() * state->size() * _long_game_coeff;
     int n;
     get_possible_moves(state,v,mov_dist);
     while(1){
         if(v.empty())
-          if(n=state->possible_moves_size()){
+          if((n=state->possible_moves_size()) &&  mov_counter<mov_limit){
             std::uniform_int_distribution<int> dist(0,n-1);
             mov = state->get_possible_moves_by_index(dist(SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::mt));
           }
@@ -61,7 +63,7 @@ inline void SimulationWithDomainKnowledge<Value,Data,State,EvalNode,MoveRecorder
 {
     mov_counter++;
     INDEX i,j;
-    if(mov_counter>(state->size() * state->size() * _long_game_coeff))
+    if(mov_counter>=mov_limit)
         return;
     if(state->get_atari_escape_moves(v),!v.empty())
         if(v.size()>16)

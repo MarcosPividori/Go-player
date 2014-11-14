@@ -466,7 +466,7 @@ inline void StateGo::apply(DataGo d)
 {
     assert(d.player == turn);
     num_movs++;
-    if(num_movs = int(_size*_size * 0.4)){
+    if(num_movs == int(_size*_size * 0.4)){
         w_mov.insert(POS(PASSI,PASSI));
         b_mov.insert(POS(PASSI,PASSI));
     }
