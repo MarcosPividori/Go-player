@@ -43,6 +43,7 @@ _sel(cfg_input.bandit_coeff)
     }
   #ifdef NEXP
     NodeUCTRaveNExp<ValGo,DataGo>::k_rave = cfg_input.amaf_coeff;
+    NodeUCTRaveNExp<ValGo,DataGo>::sqrt_k_rave = sqrt(cfg_input.amaf_coeff);
   #else
     NodeUCTRave<ValGo,DataGo>::k_rave = cfg_input.amaf_coeff;
   #endif
