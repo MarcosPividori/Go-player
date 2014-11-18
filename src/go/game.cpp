@@ -49,7 +49,6 @@ Game::~Game(){
         delete _m[i];
         delete _sim_and_retro[i];
     }
-    delete &_m;
     delete _state;
     delete _mcts;
     delete[] _sim_and_retro;
