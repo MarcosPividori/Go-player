@@ -35,7 +35,9 @@ _sel(cfg_input.bandit_coeff)
     }
     
     _state = new StateGo(_size,_komi,_patterns);
-    
+   
+    StateGo::japanese_rules=_cfg.japanese_rules;
+ 
     if(cfg_input.root_parallel)
         _mcts = new MctsParallel_Root<ValGo,DataGo,Nod,StateGo>(_m,_state,INIT_DATA(CHANGE_PLAYER(_state->turn)));
     else

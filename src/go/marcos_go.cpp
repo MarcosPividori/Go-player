@@ -33,10 +33,13 @@ int main(int argc,char *argv[])
             cfg_input.resign_limit=std::stod(argv[++c]);
           else if(strncmp(argv[c],"--root_parallel",15)==0)
             cfg_input.root_parallel=true;
+          else if(strncmp(argv[c],"--japanese_rules",16)==0)
+            cfg_input.japanese_rules=true;
           else if(strncmp(argv[c],"--help",6)==0){
             std::cout<<"usage: marcos_go [--patterns file] [--bandit_coeff double] [--amaf_coeff double] [--help]\n"
                      <<"                 [--fill_board double] [--long_game_coeff double] [--limit_expansion int]\n"
-                     <<"                 [--cycles_mcts int] [--threads_mcts int] [--resign_limit double] [--root_parallel]\n";
+                     <<"                 [--cycles_mcts int] [--threads_mcts int] [--resign_limit double]\n"
+                     <<"                 [--root_parallel] [--japanese_rules]\n";
             return 0;
           }
           else{

@@ -25,10 +25,8 @@ StateGo::StateGo(int size,float komi,PatternList *p) :
         ,_komi(komi)
         ,patterns(p)
         ,num_movs(0)
-#ifdef JAPANESE
         ,captured_b(0)
         ,captured_w(0)
-#endif
 {
     Stones = new Player*[_size];
     for(int i=0;i<_size;i++)
@@ -61,10 +59,8 @@ StateGo::StateGo(StateGo *src) :
         ,last_mov(src->last_mov)
         ,w_mov(&(src->w_mov))
         ,b_mov(&(src->b_mov))
-#ifdef JAPANESE
         ,captured_b(src->captured_b)
         ,captured_w(src->captured_w)
-#endif
 {
     Stones = new Player*[_size];
     for(int i=0;i<_size;i++)
@@ -120,12 +116,10 @@ StateGo::~StateGo()
 void StateGo::eliminate_block(Block *block,INDEX i,INDEX j)
 {
     Blocks[i][j]=NULL;
-#ifdef JAPANESE
     if(Stones[i][j]==Black)
         captured_b++;
     else
         captured_w++;
-#endif
     Stones[i][j]=Empty;
     b_mov.insert(POS(i,j));
     w_mov.insert(POS(i,j));
@@ -442,23 +436,24 @@ inline float StateGo::final_value()
                 if(res & FLAG_W)
                     numw+=(res & NO_FLAG);
             }
-#ifndef JAPANESE
-             else if(Stones[i][j]==White)
-                countw++;
-             else if(Stones[i][j]==Black)
-                countb++;
-#endif
-    for(int i=0;i<_size;i++){
+            else 
+                if(!japanese_rules)
+                  if(Stones[i][j]==White)
+                    countw++;
+                  else 
+                    if(Stones[i][j]==Black)
+                      countb++;
+    for(int i=0;i<_size;i++)
         delete[] visited[i];
-    }
     delete[] visited;
-#ifdef JAPANESE
-    countb=float(numb)-float(captured_b);
-    countw=float(numw)+_komi-float(captured_w);
-#else
-    countb+=float(numb);
-    countw+=float(numw)+_komi;
-#endif
+    if(japanese_rules){
+        countb=float(numb)-float(captured_b);
+        countw=float(numw)+_komi-float(captured_w);
+    }
+    else{
+        countb+=float(numb);
+        countw+=float(numw)+_komi;
+    }
     return countw-countb; 
 }
 

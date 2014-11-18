@@ -27,6 +27,7 @@ class StateGo : public States<ValGo,DataGo>
     friend class PatternList;
     private:
         PatternList *patterns;
+        static bool japanese_rules;
 //#ifdef DEBUG
     public:
         Player **Stones;
@@ -61,10 +62,8 @@ class StateGo : public States<ValGo,DataGo>
         DataGo look_for_delete_atari(Block *block,Block *flag,INDEX i,INDEX j,int &max_size);
         DataGo get_delete_atari(INDEX i,INDEX j,int &b_size);
         float final_value();
-#ifdef JAPANESE
         int captured_b;
         int captured_w;
-#endif
         StateGo(StateGo *src);
     public:
         int num_movs;
