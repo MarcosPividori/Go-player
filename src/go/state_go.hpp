@@ -27,11 +27,11 @@ class StateGo : public States<ValGo,DataGo>
     friend class PatternList;
     private:
         PatternList *patterns;
-        static bool japanese_rules;
 //#ifdef DEBUG
     public:
         Player **Stones;
         Block ***Blocks;
+        static bool japanese_rules;
     private:
 /*#else
     private:

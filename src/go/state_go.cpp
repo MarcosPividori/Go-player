@@ -20,6 +20,8 @@
               if(j<_size-1){ k=i;l=j+1;Code;} \
             })
 
+bool StateGo::japanese_rules;
+
 StateGo::StateGo(int size,float komi,PatternList *p) : 
          _size(size)
         ,_komi(komi)

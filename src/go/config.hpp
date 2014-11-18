@@ -21,7 +21,7 @@ struct Config
                number_cycles_mcts(75000),
                num_threads_mcts(5),
                resign_limit(0.1),
-               root_parallel(false)
-               japanese_rules(false),
+               root_parallel(false),
+               japanese_rules(false)
     {}
 };
