@@ -12,7 +12,7 @@ struct Config
     double resign_limit;
     bool root_parallel;
     Config() : pattern_file(NULL),
-               bandit_coeff(0.5),
+               bandit_coeff(0),
                amaf_coeff(1000),
                number_fill_board_attemps(6),
                long_game_coeff(3),

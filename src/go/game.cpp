@@ -91,9 +91,9 @@ bool Game::play_move(DataGo pos){
     _mcts->apply_move(pos);
 
 #ifdef DEBUG
-        std::cerr << "STATS PLAYED NODE: vis=" << _mcts->get_root()->visits << " win=" << _mcts->get_root()->value
+        std::cout << "STATS PLAYED NODE: vis=" << _mcts->get_root()->visits << " win=" << _mcts->get_root()->value
                   << " vis_amaf=" << _mcts->get_root()->amaf_visits << " win_amaf=" << _mcts->get_root()->amaf_value << std::endl;
-        std::cerr << "                   rate=" << (_mcts->get_root()->value / _mcts->get_root()->visits) 
+        std::cout << "                   rate=" << (_mcts->get_root()->value / _mcts->get_root()->visits) 
                   << "  amaf_rate=" << (_mcts->get_root()->amaf_value / _mcts->get_root()->amaf_visits)
                   << "  amaf_coeff="<< (sqrt(NodeUCTRave<ValGo,DataGo>::k_rave)/_mcts->get_root()->sqrt_for_amaf) << std::endl;
 #endif
@@ -106,15 +106,15 @@ DataGo Game::gen_move(Player p){
 
     _mcts->run_cycles(_cfg.number_cycles_mcts);
     DataGo pos = _mcts->get_resultant_move();
-
+/*
 #ifdef DEBUG
     _mcts->get_root()->show();
-    std::cerr << "Resultado: " << " i=" << (int)pos.i << " j=" << (int)pos.j
+    std::cout << "Resultado: " << " i=" << (int)pos.i << " j=" << (int)pos.j
               << " vis=" << _mcts->get_root()->visits << " win=" << _mcts->get_root()->value
               << " vis_amaf=" << _mcts->get_root()->amaf_visits << " win_amaf=" << _mcts->get_root()->amaf_value << std::endl;
     debug();
 #endif
-
+*/
     return pos;
 }
 
@@ -124,28 +124,26 @@ void Game::show_board(FILE *output){
 
 #ifdef DEBUG
 void Game::debug(){
-    std::cerr<<"VALUE: "<<_state->get_final_value()<<std::endl;
-    std::cerr<<"BLOCKS:"<<std::endl;
+    std::cout<<"VALUE: "<<_state->get_final_value()<<std::endl;
+    std::cout<<"BLOCKS:"<<std::endl;
     for(int i = _size-1;i>=0;i--){
         for(int j=0;j<_size;j++)
             if(_state->Blocks[i][j]==NULL)
-              std::cerr<<std::setw(5)<<"----";
+              std::cout<<std::setw(5)<<"----";
             else
-              std::cerr<<std::setw(5)<<(((long) _state->Blocks[i][j])%10000);
-        std::cerr<<std::endl;
+              std::cout<<std::setw(5)<<(((long) _state->Blocks[i][j])%10000);
+        std::cout<<std::endl;
     }
-    std::cerr<<std::endl;
-    std::cerr<<"BLOCKS'S VALUES:"<<std::endl;
+    std::cout<<"BLOCKS'S VALUES:"<<std::endl;
     for(int i = _size-1;i>=0;i--){
         for(int j=0;j<_size;j++)
             if(_state->Blocks[i][j] == NULL)
-              std::cerr<<std::setw(3)<<"--";
+              std::cout<<std::setw(3)<<"--";
             else
-              std::cerr<<std::setw(3)<<(_state->Blocks[i][j]->adj);
-        std::cerr<<std::endl;
+              std::cout<<std::setw(3)<<(_state->Blocks[i][j]->adj);
+        std::cout<<std::endl;
     }
-    std::cerr<<std::endl;
-    std::cerr<<"CELL MCTS VISITS:"<<std::endl;
+    std::cout<<"CELL MCTS VISITS:"<<std::endl;
     long visits[MAX_BOARD][MAX_BOARD];
     double coeffs[MAX_BOARD][MAX_BOARD];
     double sqrt_log_parent = sqrt(log((double) _mcts->get_root()->visits));
@@ -160,40 +158,40 @@ void Game::debug(){
     for(int i = _size-1;i>=0;i--){
         for(int j=0;j<_size;j++)
             if(visits[i][j] == 0){
-              std::cerr<<std::setw(4)<<"---";
+              std::cout<<std::setw(4)<<"---";
               switch(_state->Stones[i][j]){
-                case Black: std::cerr<<"X";break;
-                case White: std::cerr<<"O";break;
-                default: std::cerr<<"-";break;
+                case Black: std::cout<<"X";break;
+                case White: std::cout<<"O";break;
+                default: std::cout<<"-";break;
               }
-              std::cerr<<"---";
+              std::cout<<"---";
             }
             else
-              std::cerr<<std::setw(8)<<visits[i][j];
-        std::cerr<<std::endl;
+              std::cout<<std::setw(8)<<visits[i][j];
+        std::cout<<std::endl;
         for(int j=0;j<_size;j++)
             if(visits[i][j] == 0)
-              std::cerr<<std::setw(8)<<" ";
+              std::cout<<std::setw(8)<<" ";
             else
-              std::cerr<<std::setw(8)<<std::setprecision(5)<<coeffs[i][j];
-        std::cerr<<std::endl;
-        std::cerr<<std::endl;
+              std::cout<<std::setw(8)<<std::setprecision(5)<<coeffs[i][j];
+        std::cout<<std::endl;
+        std::cout<<" "<<std::endl;
     }
 }
 
 void Game::match_patterns(){
     std::vector<DataGo> v;
-    std::cerr<<"ESCAPE ATARI: "<<std::endl;
+    std::cout<<"ESCAPE ATARI: "<<std::endl;
     _state->get_atari_escape_moves(v);
     for(int i=0;i<v.size();i++)
         std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;
-    std::cerr<<"PATTERNS: "<<std::endl;
+    std::cout<<"PATTERNS: "<<std::endl;
     v.clear();
     _state->get_pattern_moves(v);
     for(int i=0;i<v.size();i++)
         std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;
     v.clear();
-    std::cerr<<"CAPTURES: "<<std::endl;
+    std::cout<<"CAPTURES: "<<std::endl;
     _state->get_capture_moves(v);
     for(int i=0;i<v.size();i++)
         std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;

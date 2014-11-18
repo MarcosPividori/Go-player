@@ -47,6 +47,7 @@ void PatternList::add(Pattern pattern){
     if(border_sum)
         sum+= 19683+border_sum*729;
     list[sum]=true;
+/*
 #ifdef DEBUG
     std::cout<<"-----------"<<std::endl;
     for(int i=0;i<3;i++){
@@ -54,7 +55,7 @@ void PatternList::add(Pattern pattern){
             std::cout<<pattern.x[i][j]<<" ";
         std::cout<<std::endl;
     }
-#endif
+#endif*/
 }
 
 void PatternList::mirror_pattern(Pattern &pattern){
@@ -142,9 +143,9 @@ void PatternList::read_file(const char *file_name){
         i=k/3;
         j=k%3;
         myfile>>c;
-#ifdef DEBUG
+/*#ifdef DEBUG
         std::cout<<c;
-#endif
+#endif*/
         switch(c){
           case '-': pat.x[i][j]=p_empty;k++;break;
           case 'w': pat.x[i][j]=p_white;k++;break;
@@ -160,9 +161,9 @@ void PatternList::read_file(const char *file_name){
             mirror_pattern(pat);
             add_pattern(pat);
             k=0;
-#ifdef DEBUG
+/*#ifdef DEBUG
             std::cout<<std::endl<<"add"<<std::endl;
-#endif
+#endif*/
         }
     }
     myfile.close();

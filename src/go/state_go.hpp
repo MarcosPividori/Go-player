@@ -27,16 +27,16 @@ class StateGo : public States<ValGo,DataGo>
     friend class PatternList;
     private:
         PatternList *patterns;
-#ifdef DEBUG
+//#ifdef DEBUG
     public:
         Player **Stones;
         Block ***Blocks;
     private:
-#else
+/*#else
     private:
         Player **Stones;
         Block ***Blocks;
-#endif
+#endif*/
         const int _size;
         const float _komi;
         DataGo ko;
