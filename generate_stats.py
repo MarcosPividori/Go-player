@@ -3,8 +3,8 @@
 import subprocess
 import os.path
 
-output = open('stats.txt','a')
-col_sizes = [3,4,10,6,8,7,7,7,7,8,5,5,7,20]
+output = open('stats.txt','a',0)
+col_sizes = [3,4,10,6,8,7,7,7,7,8,5,5,7,7,20]
 counter=0
 
 def write_row(files,l):
@@ -44,14 +44,18 @@ def analyze_program(isWhite=False,
                     threads_mcts=None,
                     limit_expansion=None,
                     komi=5,
-                    root_parallel=False):
+                    root_parallel=False,
+                    chinese_rules=False):
     if isWhite:
       prog='WHITE'
       gnu='BLACK'
     else:
       prog='BLACK'
       gnu='WHITE'
-    os.environ[gnu]="gnugo --mode gtp --capture-all-dead"
+    if chinese_rules:
+      os.environ[gnu]="gnugo --mode gtp --capture-all-dead --chinese-rules"
+    else:
+      os.environ[gnu]="gnugo --mode gtp --capture-all-dead"
     command="./bin/marcos_go "
     if patterns!=None:
         command+=" --patterns " + patterns
@@ -71,8 +75,10 @@ def analyze_program(isWhite=False,
         command+=" --limit_expansion " + str(limit_expansion)
     if root_parallel:
         command+=" --root_parallel "
+    if ~chinese_rules:
+        command+=" --japanese_rules "
     os.environ[prog]=command
-    twogtp="gogui-twogtp -black \"$BLACK\" -white \"$WHITE\" -games 100 -size 9 -komi "+str(komi)+" -auto -sgffile ./game/stats"
+    twogtp="gogui-twogtp -black \"$BLACK\" -white \"$WHITE\" -games 1 -size 9 -komi "+str(komi)+" -auto -sgffile ./game/stats"
     if os.path.isfile('./game/stats.dat'):
        subprocess.Popen("rm ./game/stats*",shell=True)
     p=subprocess.Popen(twogtp,shell=True)
@@ -92,6 +98,7 @@ def analyze_program(isWhite=False,
                         str(limit_expansion),
                         str(komi),
                         str(root_parallel),
+                        str(chinese_rules),
                         str(patterns)])
     else:
       write_row(output,[str(counter),
@@ -107,9 +114,10 @@ def analyze_program(isWhite=False,
                         str(limit_expansion),
                         str(komi),
                         str(root_parallel),
+                        str(chinese_rules),
                         str(patterns)])
 
-write_row(output,['#','COL','WRATE','TOTAL','BCOEFF','ACOEFF','FBOARD','LGCOEF','CYCLES','THREADS','LEXP','KOMI','ROOT_P','PATT']);
+write_row(output,['#','COL','WRATE','TOTAL','BCOEFF','ACOEFF','FBOARD','LGCOEF','CYCLES','THREADS','LEXP','KOMI','ROOT_P','CHIN_R','PATT']);
 #               isWhite  patterns         bandit_coeff  amaf_coeff  fill_board  long_game_coeff  cycles_mcts  threads_mcts)
 #analyze_program(True,    'patterns.txt',  0,            1000,       6,          3,               30000,       5)
 #analyze_program(True,    'patterns.txt',  0.2,          1000,       6,          3,               30000,       5)
@@ -151,9 +159,21 @@ write_row(output,['#','COL','WRATE','TOTAL','BCOEFF','ACOEFF','FBOARD','LGCOEF',
 
 #analyze_program(False,   'patterns.txt',  0,            2500,       6,          3,               70000,       5)
 
-analyze_program(False,     'patterns.txt',  0,            1000,       6,          3,              100000,       5, komi=5)#,root_parallel=True)
-analyze_program(False,     'patterns.txt',  0,            1000,       6,          3,              100000,       5, komi=0)#,root_parallel=True)
-#analyze_program(True,    'patterns.txt',  0,             2500,       6,          3,               30000,       5, komi=5)
+analyze_program(False,    'patterns.txt',  0,            1000,       1,          3,               70000,       5,
+                komi=5, limit_expansion=1, chinese_rules = True)
+analyze_program(False,    'patterns.txt',  0.5,          1000,       1,          3,               70000,       5,
+                komi=5, limit_expansion=1, chinese_rules = True)
+analyze_program(False,    'patterns.txt',  1,            1000,       1,          3,               70000,       5,
+                komi=5, limit_expansion=1, chinese_rules = True)
+analyze_program(True,     'patterns.txt',  0,            2500,       1,          3,               70000,       5,
+                komi=5, limit_expansion=1, chinese_rules = True)
+analyze_program(False,    'patterns.txt',  0.5,          1000,       1,          3,               70000,       5,
+                komi=5, limit_expansion=1)
+analyze_program(False,    'patterns.txt',  1,            1000,       1,          3,               70000,       5,
+                komi=5, limit_expansion=1)
+analyze_program(True,     'patterns.txt',  0,            2500,       1,          3,               70000,       5,
+                komi=5, limit_expansion=1)
+#analyze_program(True,    'patterns.txt',  0,             2500,       6,         3,               30000,       5, komi=5)
 #analyze_program(True,    'patterns.txt',  0,             1000,       6,         3,                70000,       5)
 #analyze_program(False,   'patterns.txt',  0,             1000,       6,         3,                30000,       5)
 #analyze_program(False,   'patterns.txt',  0,             1000,       6,         3,                70000,       5)
