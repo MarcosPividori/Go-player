@@ -4,12 +4,14 @@
 
 class StateHexa: public States<ValHexa,DataHexa>{
     private:
-        CELL A[11][11];
-        bool check_vertical(int i,int j,CELL p,bool visited[][11]);
-        bool check_horizontal(int i,int j,CELL p,bool visited[][11]);
+        int _size;
+        CELL **A;
+        bool check_vertical(int i,int j,CELL p,bool **visited);
+        bool check_horizontal(int i,int j,CELL p,bool **visited);
     public:
         Player turn;
-        StateHexa();
+        StateHexa(int size);
+        ~StateHexa();
         virtual StateHexa *copy();
         virtual void get_possible_moves(std::vector<DataHexa>& v);
         virtual void apply(DataHexa);

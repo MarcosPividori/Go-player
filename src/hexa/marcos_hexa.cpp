@@ -55,7 +55,7 @@ DataHexa insert_mov(Player player,StateHexa *state)
 int main()
 {
     Nod *nod=new Nod(0,0),*next;
-    StateHexa state;
+    StateHexa state(7);
     DataHexa res;
     std::vector<DataHexa> v;
     
@@ -63,7 +63,7 @@ int main()
     ExpansionAllChildren<ValHexa,DataHexa,StateHexa,Nod> exp(2,0);
     SelectResMostRobust<ValHexa,DataHexa,Nod> sel_res;
 #ifdef RAVE
-    SelectionUCTRave<ValHexa,DataHexa> sel(1,100);
+    SelectionUCTRave<ValHexa,DataHexa> sel(0,100);
     Mcts<ValHexa,DataHexa,Nod,StateHexa> *m[NUM_THREADS];
     SimulationAndRetropropagationRave<ValHexa,DataHexa,StateHexa,EvalNod,MoveRecorderHexa> sim_and_retro[NUM_THREADS];
     for(int i=0;i<NUM_THREADS;i++)

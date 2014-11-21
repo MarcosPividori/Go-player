@@ -2,101 +2,116 @@
 #include "state_hexa.hpp"
 #include <iomanip>
 
-StateHexa::StateHexa()
+#define FOR_EACH_ADJ(i,j,k,l,Code)  ( \
+            { \
+              if(i>0){ \
+                       { k=i-1;l=j;Code;} \
+                       if(j<_size-1) { k=i-1;l=j+1;Code;} \
+                     } \
+              if(i<_size-1){ \
+                             { k=i+1;l=j;Code;} \
+                             if(j>0) { k=i+1;l=j-1;Code;} \
+                           } \
+              if(j>0)      { k=i;l=j-1;Code;} \
+              if(j<_size-1){ k=i;l=j+1;Code;} \
+            })
+
+using namespace std;
+
+StateHexa::StateHexa(int size) : _size(size)
 {
-    for(int i=0;i<11;i++)
-        for(int j=0;j<11;j++)
+    A = new CELL*[size];
+    for(int i=0;i<size;i++){
+        A[i] = new CELL[size];
+        for(int j=0;j<size;j++)
             A[i][j]=EMPTY;
+    }
     turn=Cross;
+}
+
+StateHexa::~StateHexa()
+{
+    for(int i=0;i<_size;i++)
+        delete[] A[i];
+    delete[] A;
 }
 
 StateHexa *StateHexa::copy()
 {
-    StateHexa *s = new StateHexa();
-    *s = *this;
+    StateHexa *s = new StateHexa(_size);
+    for(int i=0;i<_size;i++)
+       for(int j=0;j<_size;j++)
+          s->A[i][j]=A[i][j];
+    s->turn = turn;
     return s;
 }
 
-void StateHexa::get_possible_moves(std::vector<DataHexa>& v)
+void StateHexa::get_possible_moves(vector<DataHexa>& v)
 {
     if(get_final_value() !=0)
         return;
-    bool empty=true;
-    for(int i=0;i<11;i++){
-        for(int j=0;j<11;j++)
-            if(A[i][j]==PlayerToCell(turn)){
-                empty=false;
-                break;
-            }
-        if(!empty)break;    
-    }
-    for(int i=0;i<11;i++)
-        for(int j=0;j<11;j++)
-            if(A[i][j]==EMPTY && (empty || (i>0 && A[i-1][j]!=EMPTY)
-                                        || (i<10 && A[i+1][j]!=EMPTY)
-                                        || (j>0 && A[i][j-1]!=EMPTY)
-                                        || (j<10 && A[i][j+1]!=EMPTY)
-                                        || (i>0 && j<10 && A[i-1][j+1]!=EMPTY)
-                                        || (i<10 && j>0 && A[i+1][j-1]!=EMPTY)))
+    for(int i=0;i<_size;i++)
+        for(int j=0;j<_size;j++)
+            if(A[i][j]==EMPTY)
                 v.push_back(MOVE(i,j,turn));
 }
 
-bool StateHexa::check_vertical(int i,int j,CELL p,bool visited[][11])
+bool StateHexa::check_vertical(int i,int j,CELL p,bool **visited)
 {
     visited[i][j]=true;
-    if(i==10)
+    if(i==_size-1)
         return true;
-    if(j>0 && A[i][j-1]==p && !visited[i][j-1])
-        if(check_vertical(i,j-1,p,visited))
+    int k,l;
+    FOR_EACH_ADJ(i,j,k,l,
+    {
+      if(A[k][l]==p && !visited[k][l])
+        if(check_vertical(k,l,p,visited))
             return true;
-    if(j<10 && A[i][j+1]==p && !visited[i][j+1])
-        if(check_vertical(i,j+1,p,visited))
-            return true;
-    if(i<10 && A[i+1][j]==p && !visited[i+1][j])
-        if(check_vertical(i+1,j,p,visited))
-            return true;
-    if(i<10 && j>0 && A[i+1][j-1]==p && !visited[i+1][j-1])
-        if(check_vertical(i+1,j-1,p,visited))
-            return true;
+    }
+    );
     return false;
 }
 
-bool StateHexa::check_horizontal(int i,int j,CELL p,bool visited[][11])
+bool StateHexa::check_horizontal(int i,int j,CELL p,bool **visited)
 {
     visited[i][j]=true;
-    if(j==10)
+    if(j==_size-1)
         return true;
-    if(i>0 && A[i-1][j]==p && !visited[i-1][j])
-        if(check_horizontal(i-1,j,p,visited))
+    int k,l;
+    FOR_EACH_ADJ(i,j,k,l,
+    {
+      if(A[k][l]==p && !visited[k][l])
+        if(check_horizontal(k,l,p,visited))
             return true;
-    if(i<10 && A[i+1][j]==p && !visited[i+1][j])
-        if(check_horizontal(i+1,j,p,visited))
-            return true;
-    if(j<10 && A[i][j+1]==p && !visited[i][j+1])
-        if(check_horizontal(i,j+1,p,visited))
-            return true;
-    if(j<10 && i>0 && A[i-1][j+1]==p && !visited[i-1][j+1])
-        if(check_horizontal(i-1,j+1,p,visited))
-            return true;
+    }
+    );
     return false;
 }
 
 ValHexa StateHexa::get_final_value()
 {
-    bool visited[11][11];
-    for(int i=0;i<11;i++)
-        for(int j=0;j<11;j++)
+    bool **visited=new bool*[_size];
+    for(int i=0;i<_size;i++){
+        visited[i]=new bool[_size];
+        for(int j=0;j<_size;j++)
             visited[i][j]=false;
-    for(int i=0;i<11;i++)
+    }
+    ValHexa res= EMPTY;
+    for(int i=0;i<_size;i++)
         if(A[i][0]==CROSS && !visited[i][0] && check_horizontal(i,0,CROSS,visited))
-            return CROSS;
-    for(int i=0;i<11;i++)
-        for(int j=0;j<11;j++)
-            visited[i][j]=false;
-    for(int j=0;j<11;j++)
-        if(A[0][j]==CIRCLE && !visited[0][j] && check_vertical(0,j,CIRCLE,visited))
-            return CIRCLE;
-    return EMPTY;
+            {res=CROSS;break;}
+    if(res==EMPTY){
+        for(int i=0;i<_size;i++)
+            for(int j=0;j<_size;j++)
+                visited[i][j]=false;
+        for(int j=0;j<_size;j++)
+            if(A[0][j]==CIRCLE && !visited[0][j] && check_vertical(0,j,CIRCLE,visited))
+                {res=CIRCLE;break;}
+    }
+    for(int i=0;i<_size;i++)
+        delete[] visited[i];
+    delete[] visited;
+    return res;
 }
 
 void StateHexa::apply(DataHexa d)
@@ -109,37 +124,37 @@ void StateHexa::apply(DataHexa d)
 
 void StateHexa::show()
 {
-    std::cout<<"    ";
-    for(int j=0;j<9;j++)
-        std::cout<<" "<<(j+1)<<"  ";
-    std::cout<<" 10  11 "<<std::endl;
-    std::cout<<"     ";
-    for(int j=0;j<11;j++)
-        std::cout<<" oo ";
-    std::cout<<std::endl;
-    for(int i=0;i<11;i++){
+    cout<<"    ";
+    for(int j=0;j<_size;j++)
+        cout<<setw(3)<<j+1<<" ";
+    cout<<endl;
+    cout<<"     ";
+    for(int j=0;j<_size;j++)
+        cout<<" oo ";
+    cout<<endl;
+    for(int i=0;i<_size;i++){
         if(i!=0)
-            std::cout<<" ";
+            cout<<" ";
         if(i!=0)
-            std::cout<<" ";
+            cout<<" ";
         for(int j=i;j>1;j--)
-            std::cout<<"  ";
+            cout<<"  ";
         if(i>=9)
-            std::cout<<" ";
-        std::cout<<std::setw(2)<<(i+1);
+            cout<<" ";
+        cout<<setw(2)<<(i+1);
         if(i<9)
-            std::cout<<" ";
-        std::cout<<" ++";
-        for(int j=0;j<11;j++)
-            std::cout<<"("<<(A[i][j] == EMPTY ? "  " : (A[i][j]==CROSS ? "++" : "oo"))<<")";
-        std::cout<<"++"<<std::endl;
+            cout<<" ";
+        cout<<" ++";
+        for(int j=0;j<_size;j++)
+            cout<<"("<<(A[i][j] == EMPTY ? "  " : (A[i][j]==CROSS ? "++" : "oo"))<<")";
+        cout<<"++"<<endl;
     }
-    std::cout<<"       ";
-    for(int j=1;j<11;j++)
-        std::cout<<"  ";
-    for(int j=0;j<11;j++)
-        std::cout<<" oo ";
-    std::cout<<std::endl;
+    cout<<"       ";
+    for(int j=1;j<_size;j++)
+        cout<<"  ";
+    for(int j=0;j<_size;j++)
+        cout<<" oo ";
+    cout<<endl;
 }
 
 bool StateHexa::valid_move(DataHexa d)
