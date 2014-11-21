@@ -4,7 +4,7 @@ import subprocess
 import os.path
 
 output = open('stats.txt','a',0)
-col_sizes = [3,4,10,6,8,7,7,7,7,8,5,5,7,7,20]
+col_sizes = [3,4,10,6,5,8,7,7,7,7,8,5,5,7,7,6,6,20]
 counter=0
 
 def write_row(files,l):
@@ -44,8 +44,12 @@ def analyze_program(isWhite=False,
                     threads_mcts=None,
                     limit_expansion=None,
                     komi=5,
+                    size=9,
+                    num_games=100,
                     root_parallel=False,
-                    chinese_rules=False):
+                    chinese_rules=False,
+                    rave=True,
+                    totally_random=False):
     if isWhite:
       prog='WHITE'
       gnu='BLACK'
@@ -75,10 +79,14 @@ def analyze_program(isWhite=False,
         command+=" --limit_expansion " + str(limit_expansion)
     if root_parallel:
         command+=" --root_parallel "
-    if ~chinese_rules:
+    if not chinese_rules:
         command+=" --japanese_rules "
+    if totally_random:
+        command+=" --totally_random_sim "
+    if not rave:
+        command+=" --no_rave "
     os.environ[prog]=command
-    twogtp="gogui-twogtp -black \"$BLACK\" -white \"$WHITE\" -games 1 -size 9 -komi "+str(komi)+" -auto -sgffile ./game/stats"
+    twogtp="gogui-twogtp -black \"$BLACK\" -white \"$WHITE\" -games "+str(num_games)+" -size "+str(size)+" -komi "+str(komi)+" -auto -sgffile ./game/stats"
     if os.path.isfile('./game/stats.dat'):
        subprocess.Popen("rm ./game/stats*",shell=True)
     p=subprocess.Popen(twogtp,shell=True)
@@ -89,6 +97,7 @@ def analyze_program(isWhite=False,
                         prog[0],
                         "{0:.4f}".format(wrate),
                         str(total),
+                        str(size),
                         str(bandit_coeff),
                         str(amaf_coeff),
                         str(fill_board),
@@ -99,12 +108,15 @@ def analyze_program(isWhite=False,
                         str(komi),
                         str(root_parallel),
                         str(chinese_rules),
+                        str(totally_random),
+                        str(rave),
                         str(patterns)])
     else:
       write_row(output,[str(counter),
                         prog[0],
                         'ERROR:',
                         'COD'+str(p.returncode),
+                        str(size),
                         str(bandit_coeff),
                         str(amaf_coeff),
                         str(fill_board),
@@ -115,9 +127,11 @@ def analyze_program(isWhite=False,
                         str(komi),
                         str(root_parallel),
                         str(chinese_rules),
+                        str(totally_random),
+                        str(rave),
                         str(patterns)])
 
-write_row(output,['#','COL','WRATE','TOTAL','BCOEFF','ACOEFF','FBOARD','LGCOEF','CYCLES','THREADS','LEXP','KOMI','ROOT_P','CHIN_R','PATT']);
+write_row(output,['#','COL','WRATE','TOTAL','SIZE','BCOEFF','ACOEFF','FBOARD','LGCOEF','CYCLES','THREADS','LEXP','KOMI','ROOT_P','CHIN_R','TRAND','RAVE','PATT']);
 #               isWhite  patterns         bandit_coeff  amaf_coeff  fill_board  long_game_coeff  cycles_mcts  threads_mcts)
 #analyze_program(True,    'patterns.txt',  0,            1000,       6,          3,               30000,       5)
 #analyze_program(True,    'patterns.txt',  0.2,          1000,       6,          3,               30000,       5)
@@ -159,8 +173,8 @@ write_row(output,['#','COL','WRATE','TOTAL','BCOEFF','ACOEFF','FBOARD','LGCOEF',
 
 #analyze_program(False,   'patterns.txt',  0,            2500,       6,          3,               70000,       5)
 
-analyze_program(False,    'patterns.txt',  0,            1000,       1,          3,               70000,       5,
-                komi=5, limit_expansion=1, chinese_rules = True)
+analyze_program(False,    'patterns.txt',  0,            1000,       1,          3,               30000,       5,
+                komi=5, limit_expansion=1, chinese_rules = True,num_games=1,totally_random=True,rave=False)
 analyze_program(False,    'patterns.txt',  0.5,          1000,       1,          3,               70000,       5,
                 komi=5, limit_expansion=1, chinese_rules = True)
 analyze_program(False,    'patterns.txt',  1,            1000,       1,          3,               70000,       5,
@@ -173,6 +187,7 @@ analyze_program(False,    'patterns.txt',  1,            1000,       1,         
                 komi=5, limit_expansion=1)
 analyze_program(True,     'patterns.txt',  0,            2500,       1,          3,               70000,       5,
                 komi=5, limit_expansion=1)
+
 #analyze_program(True,    'patterns.txt',  0,             2500,       6,         3,               30000,       5, komi=5)
 #analyze_program(True,    'patterns.txt',  0,             1000,       6,         3,                70000,       5)
 #analyze_program(False,   'patterns.txt',  0,             1000,       6,         3,                30000,       5)
