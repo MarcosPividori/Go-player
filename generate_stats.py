@@ -34,7 +34,7 @@ def winning_rate(prog):
     else:
       return (bcount/float(wcount+bcount),wcount+bcount)
 
-def analyze_program(isWhite=False,
+def marcos_go_command(
                     patterns=None,
                     bandit_coeff=None,
                     amaf_coeff=None,
@@ -43,23 +43,10 @@ def analyze_program(isWhite=False,
                     cycles_mcts=None,
                     threads_mcts=None,
                     limit_expansion=None,
-                    komi=5,
-                    size=9,
-                    num_games=100,
                     root_parallel=False,
                     chinese_rules=False,
                     rave=True,
                     totally_random=False):
-    if isWhite:
-      prog='WHITE'
-      gnu='BLACK'
-    else:
-      prog='BLACK'
-      gnu='WHITE'
-    if chinese_rules:
-      os.environ[gnu]="gnugo --mode gtp --capture-all-dead --chinese-rules"
-    else:
-      os.environ[gnu]="gnugo --mode gtp --capture-all-dead"
     command="./bin/marcos_go "
     if patterns!=None:
         command+=" --patterns " + patterns
@@ -85,6 +72,51 @@ def analyze_program(isWhite=False,
         command+=" --totally_random_sim "
     if not rave:
         command+=" --no_rave "
+    return command
+
+def analyze_program(isWhite=False,
+                    patterns=None,
+                    bandit_coeff=None,
+                    amaf_coeff=None,
+                    fill_board=None,
+                    long_game_coeff=None,
+                    cycles_mcts=None,
+                    threads_mcts=None,
+                    limit_expansion=None,
+                    root_parallel=False,
+                    chinese_rules=False,
+                    rave=True,
+                    totally_random=False,
+                    opponent_command=None,
+                    komi=5,
+                    size=9,
+                    num_games=100):
+    if isWhite:
+      prog='WHITE'
+      opp='BLACK'
+    else:
+      prog='BLACK'
+      opp='WHITE'
+    if opponent_command:
+      os.environ[opp]=opponent_command
+    else:
+      if chinese_rules:
+        os.environ[opp]="gnugo --mode gtp --capture-all-dead --chinese-rules"
+      else:
+        os.environ[opp]="gnugo --mode gtp --capture-all-dead"
+    command= marcos_go_command(
+                    patterns,
+                    bandit_coeff,
+                    amaf_coeff,
+                    fill_board,
+                    long_game_coeff,
+                    cycles_mcts,
+                    threads_mcts,
+                    limit_expansion,
+                    root_parallel,
+                    chinese_rules,
+                    rave,
+                    totally_random)
     os.environ[prog]=command
     twogtp="gogui-twogtp -black \"$BLACK\" -white \"$WHITE\" -games "+str(num_games)+" -size "+str(size)+" -komi "+str(komi)+" -auto -sgffile ./game/stats"
     if os.path.isfile('./game/stats.dat'):
@@ -173,20 +205,123 @@ write_row(output,['#','COL','WRATE','TOTAL','SIZE','BCOEFF','ACOEFF','FBOARD','L
 
 #analyze_program(False,   'patterns.txt',  0,            2500,       6,          3,               70000,       5)
 
-analyze_program(False,    'patterns.txt',  0,            1000,       1,          3,               30000,       5,
-                komi=5, limit_expansion=1, chinese_rules = True,num_games=1,totally_random=True,rave=False)
-analyze_program(False,    'patterns.txt',  0.5,          1000,       1,          3,               70000,       5,
-                komi=5, limit_expansion=1, chinese_rules = True)
-analyze_program(False,    'patterns.txt',  1,            1000,       1,          3,               70000,       5,
-                komi=5, limit_expansion=1, chinese_rules = True)
-analyze_program(True,     'patterns.txt',  0,            2500,       1,          3,               70000,       5,
-                komi=5, limit_expansion=1, chinese_rules = True)
-analyze_program(False,    'patterns.txt',  0.5,          1000,       1,          3,               70000,       5,
-                komi=5, limit_expansion=1)
-analyze_program(False,    'patterns.txt',  1,            1000,       1,          3,               70000,       5,
-                komi=5, limit_expansion=1)
-analyze_program(True,     'patterns.txt',  0,            2500,       1,          3,               70000,       5,
-                komi=5, limit_expansion=1)
+#RAVE vs NO-RAVE
+analyze_program(isWhite=False, komi=5, num_games=100,
+  patterns='patterns.txt',
+  bandit_coeff=0,
+  amaf_coeff=1000,
+  fill_board=1,
+  long_game_coeff=3,
+  cycles_mcts=70000,
+  threads_mcts=5,
+  limit_expansion=1,
+  root_parallel=False,
+  chinese_rules=True,
+  rave=True,
+  totally_random=True,
+opponent_command=marcos_go_command(
+  patterns='patterns.txt',
+  bandit_coeff=0,
+  amaf_coeff=2500,
+  fill_board=1,
+  long_game_coeff=3,
+  cycles_mcts=70000,
+  threads_mcts=5,
+  limit_expansion=1,
+  root_parallel=False,
+  chinese_rules=True,
+  rave=False,
+  totally_random=True
+)
+)
+
+analyze_program(isWhite=True, komi=5, num_games=100,
+  patterns='patterns.txt',
+  bandit_coeff=0,
+  amaf_coeff=2500,
+  fill_board=1,
+  long_game_coeff=3,
+  cycles_mcts=70000,
+  threads_mcts=5,
+  limit_expansion=1,
+  root_parallel=False,
+  chinese_rules=True,
+  rave=True,
+  totally_random=True,
+opponent_command=marcos_go_command(
+  patterns='patterns.txt',
+  bandit_coeff=0,
+  amaf_coeff=1000,
+  fill_board=1,
+  long_game_coeff=3,
+  cycles_mcts=70000,
+  threads_mcts=5,
+  limit_expansion=1,
+  root_parallel=False,
+  chinese_rules=True,
+  rave=False,
+  totally_random=True
+)
+)
+
+#RAVE-KNOWLEDGE vs RAVE-RANDOM
+analyze_program(isWhite=False, komi=5, num_games=100,
+  patterns='patterns.txt',
+  bandit_coeff=0,
+  amaf_coeff=1000,
+  fill_board=1,
+  long_game_coeff=3,
+  cycles_mcts=70000,
+  threads_mcts=5,
+  limit_expansion=1,
+  root_parallel=False,
+  chinese_rules=True,
+  rave=True,
+  totally_random=False,
+opponent_command=marcos_go_command(
+  patterns='patterns.txt',
+  bandit_coeff=0,
+  amaf_coeff=2500,
+  fill_board=1,
+  long_game_coeff=3,
+  cycles_mcts=70000,
+  threads_mcts=5,
+  limit_expansion=1,
+  root_parallel=False,
+  chinese_rules=True,
+  rave=True,
+  totally_random=True
+)
+)
+
+analyze_program(isWhite=True, komi=5, num_games=100,
+  patterns='patterns.txt',
+  bandit_coeff=0,
+  amaf_coeff=2500,
+  fill_board=1,
+  long_game_coeff=3,
+  cycles_mcts=70000,
+  threads_mcts=5,
+  limit_expansion=1,
+  root_parallel=False,
+  chinese_rules=True,
+  rave=True,
+  totally_random=False,
+opponent_command=marcos_go_command(
+  patterns='patterns.txt',
+  bandit_coeff=0,
+  amaf_coeff=1000,
+  fill_board=1,
+  long_game_coeff=3,
+  cycles_mcts=70000,
+  threads_mcts=5,
+  limit_expansion=1,
+  root_parallel=False,
+  chinese_rules=True,
+  rave=True,
+  totally_random=True
+)
+)
 
 #analyze_program(True,    'patterns.txt',  0,             2500,       6,         3,               30000,       5, komi=5)
 #analyze_program(True,    'patterns.txt',  0,             1000,       6,         3,                70000,       5)
