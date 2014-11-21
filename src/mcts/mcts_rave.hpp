@@ -7,7 +7,7 @@
 #include <climits>
 
 template <class Value,class Data>
-class SelectionUCTRave: public Selection<Value,Data,NodeUCTRave<Value,Data> >{
+class SelectionUCTRave: public Selection<NodeUCTRave<Value,Data> >{
     private:
         const double _coeff;
         const double _amaf_coeff;
@@ -30,8 +30,8 @@ class MoveRecorder{
 };
 
 template <class Value,class Data,class State,class EvalNode,class MoveRecorderT>
-class SimulationAndRetropropagationRave: public Simulation<Value,Data,State>,
-                                         public Retropropagation<Value,Data, NodeUCTRave<Value,Data> >
+class SimulationAndRetropropagationRave: public Simulation<Value,State>,
+                                         public Retropropagation<Value, NodeUCTRave<Value,Data> >
 {
     protected:
         std::mt19937 mt;

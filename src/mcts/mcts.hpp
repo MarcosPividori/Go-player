@@ -7,27 +7,27 @@
 #include <mutex>
 #include "states.hpp"
 
-template <class Value,class Data,class Nod> class Selection{
+template <class Nod> class Selection{
     public:
         virtual Nod *select(const Nod *nod)=0;
 };
 
-template <class Value,class Data,class Nod,class State> class Expansion{
+template <class Nod,class State> class Expansion{
     public:
         virtual Nod *expand(Nod *nod,State *state)=0;
 };
 
-template <class Value,class Data,class State> class Simulation{
+template <class Value,class State> class Simulation{
     public:
         virtual Value simulate(State *state)=0;
 };
 
-template <class Value,class Data,class Nod> class Retropropagation{
+template <class Value,class Nod> class Retropropagation{
     public:
         virtual void retro(Nod *node,Value value)=0;
 };
 
-template <class Value,class Data,class Nod> class SelectRes{
+template <class Data,class Nod> class SelectRes{
     public:
         virtual Data select_res(Nod *node)=0;
 };
@@ -35,18 +35,18 @@ template <class Value,class Data,class Nod> class SelectRes{
 template <class Value,class Data,class Nod,class State>
 class Mcts{
     private:
-        Selection<Value,Data,Nod> *_sel;
-        Expansion<Value,Data,Nod,State> *_exp;
-        Simulation<Value,Data,State> *_sim;
-        Retropropagation<Value,Data,Nod> *_ret;
-        SelectRes<Value,Data,Nod> *_sel_res;
+        Selection<Nod> *_sel;
+        Expansion<Nod,State> *_exp;
+        Simulation<Value,State> *_sim;
+        Retropropagation<Value,Nod> *_ret;
+        SelectRes<Data,Nod> *_sel_res;
         std::mutex *_mutex;
     public:
-        Mcts(Selection<Value,Data,Nod> *sel,
-             Expansion<Value,Data,Nod,State> *exp,
-             Simulation<Value,Data,State> *sim,
-             Retropropagation<Value,Data,Nod> *ret,
-             SelectRes<Value,Data,Nod> *sel_res,
+        Mcts(Selection<Nod> *sel,
+             Expansion<Nod,State> *exp,
+             Simulation<Value,State> *sim,
+             Retropropagation<Value,Nod> *ret,
+             SelectRes<Data,Nod> *sel_res,
              std::mutex *mutex=NULL);
         void run_time(double time_limit,
                  Nod *root,
@@ -64,11 +64,11 @@ class Mcts{
 ///////////////////////////////////////////////////////////////////
 
 template <class Value,class Data,class Nod,class State>
-Mcts<Value,Data,Nod,State>::Mcts(Selection<Value,Data,Nod> *sel,
-                           Expansion<Value,Data,Nod,State> *exp,
-                           Simulation<Value,Data,State> *sim,
-                           Retropropagation<Value,Data,Nod> *ret,
-                           SelectRes<Value,Data,Nod> *sel_res,
+Mcts<Value,Data,Nod,State>::Mcts(Selection<Nod> *sel,
+                           Expansion<Nod,State> *exp,
+                           Simulation<Value,State> *sim,
+                           Retropropagation<Value,Nod> *ret,
+                           SelectRes<Data,Nod> *sel_res,
                            std::mutex *mutex)
                          : _sel(sel),_exp(exp),_sim(sim),_ret(ret),_sel_res(sel_res),_mutex(mutex)
 {}

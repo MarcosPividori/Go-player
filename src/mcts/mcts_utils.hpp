@@ -7,7 +7,7 @@
 #include <random>
 
 template <class Value,class Data,class State,class Node>
-class ExpansionAllChildren: public Expansion<Value,Data,Node,State> {
+class ExpansionAllChildren: public Expansion<Node,State> {
     private:
         int _lim;
         Value _val;
@@ -20,7 +20,7 @@ class ExpansionAllChildren: public Expansion<Value,Data,Node,State> {
 };
 
 template <class Value,class Data,class State>
-class SimulationTotallyRandom: public Simulation<Value,Data,State> {
+class SimulationTotallyRandom: public Simulation<Value,State> {
     private:
         std::mt19937 mt;
     public:
@@ -29,7 +29,7 @@ class SimulationTotallyRandom: public Simulation<Value,Data,State> {
 };
 
 template <class Value,class Data,class Node>
-class SelectResMostRobust: public SelectRes<Value,Data,Node> {
+class SelectResMostRobust: public SelectRes<Data,Node> {
     public:
         Data select_res(Node *node);
 };

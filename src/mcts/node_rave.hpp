@@ -30,6 +30,7 @@ template <class Value,class Data> class NodeUCTRave{
         void set_visits(unsigned long v);
         void join(NodeUCTRave<Value,Data>* nod);
         void show();
+        void debug();
 };
 
 template <class Value,class Data>
@@ -111,6 +112,12 @@ void NodeUCTRave<Value,Data>::show(){
     for(int k=0;k<20 && size[k]!=0;k++)
         std::cout<<"Level "<<k<<": "<<size[k]<<std::endl;
     std::cout<<"============="<<std::endl;
+}
+
+template <class Value,class Data>
+void NodeUCTRave<Value,Data>::debug(){
+    std::cout << "DEBUG STATS NODE: vis=" << visits << " win=" << value<< " vis_amaf=" << amaf_visits << " win_amaf=" << amaf_value << std::endl;
+    std::cout << "                  rate=" << (value / visits) << "  amaf_rate=" << (amaf_value / amaf_visits) << "  amaf_coeff="<< (sqrt(k_rave)/sqrt_for_amaf) << std::endl;
 }
 
 #endif //__NODE_RAVE__

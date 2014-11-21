@@ -7,9 +7,12 @@
 #include <climits>
 
 template <class Value,class Data>
-class SelectionUCT: public Selection<Value,Data, NodeUCT<Value,Data> >{
+class SelectionUCT: public Selection< NodeUCT<Value,Data> >{
     private:
         double _coeff;
+#ifdef DEBUG
+    public:
+#endif
         double get_uct_val(const NodeUCT<Value,Data> *nod,double log_parent);
     public:
         SelectionUCT(double coeff);
@@ -22,7 +25,7 @@ struct EvalNode{
 }; 
 
 template <class Value,class Data,class EvalNode>
-class RetropropagationSimple: public Retropropagation<Value,Data, NodeUCT<Value,Data> > {
+class RetropropagationSimple: public Retropropagation<Value, NodeUCT<Value,Data> > {
     private:
         EvalNode _eval_fun;
     public:

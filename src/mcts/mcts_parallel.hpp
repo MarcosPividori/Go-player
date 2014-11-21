@@ -7,11 +7,11 @@
 #include <mutex>
 
 
-template <class Value,class Data,class Nod,class State>
+template <class Value,class Data,class State>
 class MctsParallel{
     public:
 #ifdef DEBUG
-        virtual Nod *get_root()=0;
+        virtual void *get_root()=0;
 #endif
         virtual void run_time(double time_limit)=0;
         virtual void run_cycles(unsigned long cycles_limit)=0;
@@ -21,11 +21,11 @@ class MctsParallel{
         virtual ~MctsParallel();
 };
 
-template <class Value,class Data,class Nod,class State>
-MctsParallel<Value,Data,Nod,State>::~MctsParallel(){}
+template <class Value,class Data,class State>
+MctsParallel<Value,Data,State>::~MctsParallel(){}
 
 template <class Value,class Data,class Nod,class State>
-class MctsParallel_GlobalMutex : public MctsParallel<Value,Data,Nod,State> {
+class MctsParallel_GlobalMutex : public MctsParallel<Value,Data,State> {
     private:
         std::mutex _mutex;
         std::vector<Mcts<Value,Data,Nod,State>* >& _m;
@@ -35,19 +35,19 @@ class MctsParallel_GlobalMutex : public MctsParallel<Value,Data,Nod,State> {
         MctsParallel_GlobalMutex(std::vector<Mcts<Value,Data,Nod,State>* >& m,
              State *init_state,
              Data init_data);
+        ~MctsParallel_GlobalMutex();
         void run_time(double time_limit);
         void run_cycles(unsigned long cycles_limit);
         Data get_resultant_move();
         void apply_move(Data mov);
         void reinit(State *init_state,Data init_data);
 #ifdef DEBUG
-        Nod *get_root();
+        void *get_root();
 #endif
-        ~MctsParallel_GlobalMutex();
 };
 
 template <class Value,class Data,class Nod,class State>
-class MctsParallel_Root : public MctsParallel<Value,Data,Nod,State> {
+class MctsParallel_Root : public MctsParallel<Value,Data,State> {
     private:
         std::vector<Mcts<Value,Data,Nod,State>* >& _m;
         ExpansionAllChildren<Value,Data,State,Nod> _exp;
@@ -59,15 +59,15 @@ class MctsParallel_Root : public MctsParallel<Value,Data,Nod,State> {
         MctsParallel_Root(std::vector<Mcts<Value,Data,Nod,State>* >& m,
              State *init_state,
              Data init_data);
+        ~MctsParallel_Root();
         void run_time(double time_limit);
         void run_cycles(unsigned long cycles_limit);
         Data get_resultant_move();
         void apply_move(Data mov);
         void reinit(State *init_state,Data init_data);
 #ifdef DEBUG
-        Nod *get_root();
+        void *get_root();
 #endif
-        ~MctsParallel_Root();
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -142,7 +142,7 @@ MctsParallel_GlobalMutex<Value,Data,Nod,State>::~MctsParallel_GlobalMutex()
 
 #ifdef DEBUG
 template <class Value,class Data,class Nod,class State>
-Nod *MctsParallel_GlobalMutex<Value,Data,Nod,State>::get_root()
+void *MctsParallel_GlobalMutex<Value,Data,Nod,State>::get_root()
 {
     return _root;
 }
@@ -252,7 +252,7 @@ MctsParallel_Root<Value,Data,Nod,State>::~MctsParallel_Root()
 
 #ifdef DEBUG
 template <class Value,class Data,class Nod,class State>
-Nod *MctsParallel_Root<Value,Data,Nod,State>::get_root()
+void *MctsParallel_Root<Value,Data,Nod,State>::get_root()
 {
     return _root;
 }

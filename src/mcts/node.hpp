@@ -26,6 +26,9 @@ template <class Value,class Data> class NodeUCT{
         void set_visits(unsigned long v);
         void join(NodeUCT<Value,Data>* nod);
         void show();
+#ifdef DEBUG
+        void debug();
+#endif
 };
 
 template <class Value,class Data>
@@ -103,4 +106,11 @@ void NodeUCT<Value,Data>::show(){
     std::cout<<"============="<<std::endl;
 }
 
+#ifdef DEBUG
+template <class Value,class Data>
+void NodeUCT<Value,Data>::debug(){
+    std::cout << "DEBUG STATS NODE: vis=" << visits << " win=" << value << std::endl;
+    std::cout << "                  rate=" << (value / visits) << std::endl;
+}
+#endif
 #endif //__NODE__
