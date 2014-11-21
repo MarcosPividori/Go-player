@@ -25,19 +25,15 @@ class Block{
 class StateGo : public States<ValGo,DataGo>
 {
     friend class PatternList;
+    public:
+        static bool japanese_rules;
+#ifndef DEBUG
+    private:
+#endif
+        Player **Stones;
     private:
         PatternList *patterns;
-//#ifdef DEBUG
-    public:
-        Player **Stones;
         Block ***Blocks;
-        static bool japanese_rules;
-    private:
-/*#else
-    private:
-        Player **Stones;
-        Block ***Blocks;
-#endif*/
         const int _size;
         const float _komi;
         DataGo ko;
@@ -72,14 +68,12 @@ class StateGo : public States<ValGo,DataGo>
         ~StateGo();
         StateGo *copy();
         void get_possible_moves(std::vector<DataGo>& v);
-#ifdef KNOWLEDGE
         int possible_moves_size();
         DataGo get_possible_moves_by_index(int i);
         void get_atari_escape_moves(std::vector<DataGo>& v);
         void get_pattern_moves(std::vector<DataGo>& v);
         void get_capture_moves(std::vector<DataGo>& v);
         bool is_completely_empty(INDEX i,INDEX j);
-#endif
         inline int size(){return _size;};
         void apply(DataGo);
         ValGo get_final_value();
@@ -87,6 +81,9 @@ class StateGo : public States<ValGo,DataGo>
         bool valid_move(DataGo);
         void show(FILE *output);
         void show();
+#ifdef DEBUG
+        void debug();
+#endif
 };
 
 #endif // __STATE_GO__

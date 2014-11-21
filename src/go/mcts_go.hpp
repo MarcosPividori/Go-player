@@ -17,7 +17,7 @@ class SimulationWithDomainKnowledge: public SimulationAndRetropropagationRave<Va
 };
 
 template <class Node>
-class SelectResMostRobustOverLimit: public SelectRes<ValGo,DataGo,Node> {
+class SelectResMostRobustOverLimit: public SelectRes<DataGo,Node> {
     private:
         double _limit;
     public:

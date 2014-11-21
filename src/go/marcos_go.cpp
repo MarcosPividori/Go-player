@@ -35,11 +35,15 @@ int main(int argc,char *argv[])
             cfg_input.root_parallel=true;
           else if(strncmp(argv[c],"--japanese_rules",16)==0)
             cfg_input.japanese_rules=true;
+          else if(strncmp(argv[c],"--totally_random_sim",20)==0)
+            cfg_input.knowledge=false;
+          else if(strncmp(argv[c],"--no_rave",9)==0)
+            cfg_input.rave=false;
           else if(strncmp(argv[c],"--help",6)==0){
             std::cout<<"usage: marcos_go [--patterns file] [--bandit_coeff double] [--amaf_coeff double] [--help]\n"
                      <<"                 [--fill_board double] [--long_game_coeff double] [--limit_expansion int]\n"
                      <<"                 [--cycles_mcts int] [--threads_mcts int] [--resign_limit double]\n"
-                     <<"                 [--root_parallel] [--japanese_rules]\n";
+                     <<"                 [--root_parallel] [--japanese_rules] [--totally_random_sim] [--no_rave]\n";
             return 0;
           }
           else{

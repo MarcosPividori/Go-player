@@ -1,5 +1,6 @@
 
 #include "state_go.hpp"
+#include <iomanip>
 #include <cassert>
 #include <queue>
 
@@ -295,7 +296,6 @@ DataGo StateGo::get_possible_moves_by_index(int i)
       return DataGo(b_mov[i],turn);
 }
 
-#ifdef KNOWLEDGE
 void StateGo::get_atari_escape_moves(std::vector<DataGo>& v)
 {
     if(IS_PASS(last_mov))
@@ -398,7 +398,6 @@ bool StateGo::is_completely_empty(INDEX i,INDEX j)
             return false;
     return true;
 }
-#endif
 
 inline ValGo StateGo::get_final_value()
 {
@@ -689,6 +688,31 @@ void StateGo::show(FILE *output){
 void StateGo::show(){
     show(stdout);
 }
+
+#ifdef DEBUG
+void StateGo::debug(){
+    std::cout<<"VALUE: "<<get_final_value()<<std::endl;
+    std::cout<<"BLOCKS:"<<std::endl;
+    for(int i = _size-1;i>=0;i--){
+        for(int j=0;j<_size;j++)
+            if(Blocks[i][j]==NULL)
+              std::cout<<std::setw(5)<<"----";
+            else
+              std::cout<<std::setw(5)<<(((long) Blocks[i][j])%10000);
+        std::cout<<std::endl;
+    }
+    std::cout<<"BLOCKS'S VALUES:"<<std::endl;
+    for(int i = _size-1;i>=0;i--){
+        for(int j=0;j<_size;j++)
+            if(Blocks[i][j] == NULL)
+              std::cout<<std::setw(3)<<"--";
+            else
+              std::cout<<std::setw(3)<<(Blocks[i][j]->adj);
+        std::cout<<std::endl;
+    }
+
+}
+#endif
 
 inline bool StateGo::remove_opponent_block_and_no_ko(INDEX i,INDEX j)
 {

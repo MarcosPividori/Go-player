@@ -4,14 +4,8 @@
 #include "mcts_uct.hpp"
 #include "mcts_parallel.hpp"
 #include "config.hpp"
-
-#ifdef RAVE
- #include "mcts_go.hpp"
- #include "moverecorder_go.hpp"
- typedef NodeUCTRave<ValGo,DataGo> Nod;
-#else
- typedef NodeUCT<ValGo,DataGo> Nod;
-#endif
+#include "mcts_go.hpp"
+#include "moverecorder_go.hpp"
 
 struct EvalNod : EvalNode<ValGo,DataGo> {
     ValGo operator()(ValGo v_nodo,ValGo v_final,DataGo dat_nodo)
@@ -29,18 +23,7 @@ class Game{
         int _size;
         Config _cfg;
         PatternList *_patterns;
-        ExpansionAllChildren<ValGo,DataGo,StateGo,Nod> _exp;
-        SelectResMostRobustOverLimit<Nod> _sel_res;
-        std::vector<Mcts<ValGo,DataGo,Nod,StateGo> *> _m;
-        MctsParallel<ValGo,DataGo,Nod,StateGo> *_mcts;
-#ifdef RAVE
-        SelectionUCTRave<ValGo,DataGo> _sel;
-        SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo> **_sim_and_retro;
-#else
-        SelectionUCT<ValGo,DataGo> _sel;
-        SimulationTotallyRandom<ValGo,DataGo,StateGo> _sim;
-        RetropropagationSimple<ValGo,DataGo,EvalNod> _ret;
-#endif
+        MctsParallel<ValGo,DataGo,StateGo> *_mcts;
     public:
         Game(int size,Config &cfg_input);
         ~Game();
@@ -55,6 +38,54 @@ class Game{
 #ifdef DEBUG
         void debug();
         void match_patterns();
+#endif
+};
+
+class RaveEnv : public MctsParallel<ValGo,DataGo,StateGo>
+{
+    private:
+        typedef NodeUCTRave<ValGo,DataGo> Nod;
+        Selection<Nod> *_sel;
+        Expansion<Nod,StateGo> *_exp;
+        SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo> **_sim_and_retro;
+        Retropropagation<ValGo,Nod> **_ret;
+        SelectRes<DataGo,Nod> *_sel_res;
+        std::vector<Mcts<ValGo,DataGo,Nod,StateGo> *> _m;
+        MctsParallel<ValGo,DataGo,StateGo> *_mcts;
+    public:
+        RaveEnv(Config &cfg_input,StateGo *state);
+        ~RaveEnv();
+        void run_time(double time_limit) {_mcts->run_time(time_limit);};
+        void run_cycles(unsigned long cycles_limit) {_mcts->run_cycles(cycles_limit);};
+        DataGo get_resultant_move() {return _mcts->get_resultant_move();};
+        void apply_move(DataGo mov) {_mcts->apply_move(mov);};
+        void reinit(StateGo *init_state,DataGo init_data) {_mcts->reinit(init_state,init_data);};
+#ifdef DEBUG
+        void *get_root() {_mcts->get_root();};
+#endif
+};
+
+class UCTEnv : public MctsParallel<ValGo,DataGo,StateGo>
+{
+    private:
+        typedef NodeUCT<ValGo,DataGo> Nod;
+        Selection<Nod> *_sel;
+        Expansion<Nod,StateGo> *_exp;
+        Simulation<ValGo,StateGo> **_sim;
+        Retropropagation<ValGo,Nod> *_ret;
+        SelectRes<DataGo,Nod> *_sel_res;
+        std::vector<Mcts<ValGo,DataGo,Nod,StateGo> *> _m;
+        MctsParallel<ValGo,DataGo,StateGo> *_mcts;
+    public:
+        UCTEnv(Config &cfg_input,StateGo *state);
+        ~UCTEnv();
+        void run_time(double time_limit) {_mcts->run_time(time_limit);};
+        void run_cycles(unsigned long cycles_limit) {_mcts->run_cycles(cycles_limit);};
+        DataGo get_resultant_move() {return _mcts->get_resultant_move();};
+        void apply_move(DataGo mov) {_mcts->apply_move(mov);};
+        void reinit(StateGo *init_state,DataGo init_data) {_mcts->reinit(init_state,init_data);};
+#ifdef DEBUG
+        void *get_root() {_mcts->get_root();};
 #endif
 };
 
