@@ -12,10 +12,10 @@ RaveEnv::RaveEnv(Config &cfg_input,StateGo *state)
     _sel= new SelectionUCTRave<ValGo,DataGo>(cfg_input.bandit_coeff,cfg_input.amaf_coeff);
     for(int i=0;i<cfg_input.num_threads_mcts;i++){
         if(cfg_input.knowledge)
-            _sim_and_retro[i]= new SimulationWithDomainKnowledge<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>(
+            _sim_and_retro[i]= new SimulationWithDomainKnowledge(
                                            cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff);
         else
-            _sim_and_retro[i]= new SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>();
+            _sim_and_retro[i]= new SimulationAndRetropropagationRaveGo(cfg_input.long_game_coeff);
         _m.push_back(new Mcts<ValGo,DataGo,Nod,StateGo>(_sel,_exp,_sim_and_retro[i],_sim_and_retro[i],_sel_res));
     }
     NodeUCTRave<ValGo,DataGo>::k_rave = cfg_input.amaf_coeff;
@@ -47,10 +47,9 @@ UCTEnv::UCTEnv(Config &cfg_input,StateGo *state)
     _ret= new RetropropagationSimple<ValGo,DataGo,EvalNod>();
     for(int i=0;i<cfg_input.num_threads_mcts;i++){
         if(cfg_input.knowledge)
-            _sim[i]= new SimulationWithDomainKnowledge<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>(
-                                           cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff);
+            _sim[i]= new SimulationWithDomainKnowledge(cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff);
         else
-            _sim[i]= new SimulationTotallyRandom<ValGo,DataGo,StateGo>();
+            _sim[i]= new SimulationTotallyRandomGo(cfg_input.long_game_coeff);
         _m.push_back(new Mcts<ValGo,DataGo,Nod,StateGo>(_sel,_exp,_sim[i],_ret,_sel_res));
     }
     if(cfg_input.root_parallel)

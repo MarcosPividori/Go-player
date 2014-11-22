@@ -5,16 +5,6 @@
 #include "mcts_parallel.hpp"
 #include "config.hpp"
 #include "mcts_go.hpp"
-#include "moverecorder_go.hpp"
-
-struct EvalNod : EvalNode<ValGo,DataGo> {
-    ValGo operator()(ValGo v_nodo,ValGo v_final,DataGo dat_nodo)
-    {
-        if(v_final == dat_nodo.player)
-            return v_nodo+1;
-        return v_nodo;
-    }
-};
 
 class Game{
     private:

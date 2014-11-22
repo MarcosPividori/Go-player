@@ -10,26 +10,31 @@
 template <class Nod> class Selection{
     public:
         virtual Nod *select(const Nod *nod)=0;
+        virtual ~Selection() {};
 };
 
 template <class Nod,class State> class Expansion{
     public:
         virtual Nod *expand(Nod *nod,State *state)=0;
+        virtual ~Expansion() {};
 };
 
 template <class Value,class State> class Simulation{
     public:
         virtual Value simulate(State *state)=0;
+        virtual ~Simulation() {};
 };
 
 template <class Value,class Nod> class Retropropagation{
     public:
         virtual void retro(Nod *node,Value value)=0;
+        virtual ~Retropropagation() {};
 };
 
 template <class Data,class Nod> class SelectRes{
     public:
         virtual Data select_res(Nod *node)=0;
+        virtual ~SelectRes() {};
 };
 
 template <class Value,class Data,class Nod,class State>

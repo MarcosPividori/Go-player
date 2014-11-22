@@ -1,3 +1,5 @@
+#ifndef __MCTS_UCT__
+#define __MCTS_UCT__
 
 #include "node.hpp"
 #include "mcts.hpp"
@@ -79,3 +81,4 @@ void RetropropagationSimple<Value,Data,EvalNode>::retro(NodeUCT<Value,Data> *nod
     }while((node=node->parent)!=NULL);
 }
 
+#endif // __MCTS_UCT__

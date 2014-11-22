@@ -1,19 +1,49 @@
+#ifndef __MCTS_GO__
+
+#define __MCTS_GO__
 
 #include <random>
+#include "mcts_uct.hpp"
 #include "mcts_rave.hpp"
 #include "state_go.hpp"
+#include "moverecorder_go.hpp"
 
-template <class Value,class Data,class State,class EvalNode,class MoveRecorderT>
-class SimulationWithDomainKnowledge: public SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT> {
+struct EvalNod : EvalNode<ValGo,DataGo> {
+    ValGo operator()(ValGo v_nodo,ValGo v_final,DataGo dat_nodo)
+    {
+        if(v_final == dat_nodo.player)
+            return v_nodo+1;
+        return v_nodo;
+    }
+};
+
+class SimulationWithDomainKnowledge: public SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo> {
     protected:
         int mov_counter;
         int mov_limit;
         int _fill_board_n;
         double _long_game_coeff;
-        void get_possible_moves(State *state,std::vector<Data> &v,std::uniform_int_distribution<int> &mov_dist);
+        void get_possible_moves(StateGo *state,std::vector<DataGo> &v,std::uniform_int_distribution<int> &mov_dist);
     public:
-        SimulationWithDomainKnowledge(int number_fill_board_attemps,double long_game_coeff): SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>(),_fill_board_n(number_fill_board_attemps), _long_game_coeff(long_game_coeff) {};
-        Value simulate(State *state);
+        SimulationWithDomainKnowledge(int number_fill_board_attemps,double long_game_coeff): SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>(),_fill_board_n(number_fill_board_attemps), _long_game_coeff(long_game_coeff) {};
+        ValGo simulate(StateGo *state);
+};
+
+class SimulationAndRetropropagationRaveGo: public SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo> {
+    protected:
+        double _long_game_coeff;
+    public:
+        SimulationAndRetropropagationRaveGo(double long_game_coeff): SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>(), _long_game_coeff(long_game_coeff) {};
+        ValGo simulate(StateGo *state);
+};
+
+class SimulationTotallyRandomGo: public Simulation<ValGo,StateGo> {
+    private:
+        double _long_game_coeff;
+        std::mt19937 mt;
+    public:
+        SimulationTotallyRandomGo(double long_game_coeff);
+        ValGo simulate(StateGo *state);
 };
 
 template <class Node>
@@ -26,59 +56,6 @@ class SelectResMostRobustOverLimit: public SelectRes<DataGo,Node> {
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
-
-template <class Value,class Data,class State,class EvalNode,class MoveRecorderT>
-Value SimulationWithDomainKnowledge<Value,Data,State,EvalNode,MoveRecorderT>::simulate(State *state)
-{
-    std::uniform_int_distribution<int> mov_dist(0, state->size()-1);
-    SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::recorder.clear();
-    std::vector<Data> v;
-    Data mov;
-    mov_counter=0;
-    mov_limit= state->size() * state->size() * _long_game_coeff;
-    int n;
-    get_possible_moves(state,v,mov_dist);
-    while(1){
-        if(v.empty())
-          if((n=state->possible_moves_size()) &&  mov_counter<mov_limit){
-            std::uniform_int_distribution<int> dist(0,n-1);
-            mov = state->get_possible_moves_by_index(dist(SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::mt));
-          }
-          else
-            break;
-        else{
-          std::uniform_int_distribution<int> dist(0,v.size()-1);
-          mov = v[dist(SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::mt)];
-        }
-        state->apply(mov);
-        SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::recorder.postMove(mov);
-        v.clear();
-        get_possible_moves(state,v,mov_dist);
-    }
-    return state->get_final_value();
-}
-
-template <class Value,class Data,class State,class EvalNode,class MoveRecorderT>
-inline void SimulationWithDomainKnowledge<Value,Data,State,EvalNode,MoveRecorderT>::get_possible_moves(State *state,std::vector<Data> &v,std::uniform_int_distribution<int> &mov_dist)
-{
-    mov_counter++;
-    INDEX i,j;
-    if(mov_counter>=mov_limit)
-        return;
-    if(state->get_atari_escape_moves(v),!v.empty())
-        if(v.size()>16)
-            return;
-    for(int c=0;c<_fill_board_n;c++){
-        i=mov_dist(SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::mt);
-        j=mov_dist(SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::mt);
-        if(state->is_completely_empty(i,j)){
-            v.push_back(DataGo(i,j,state->turn));
-            return;
-        }
-    }
-    state->get_pattern_moves(v);
-    state->get_capture_moves(v);
-}
 
 
 template <class Node>
@@ -96,3 +73,5 @@ DataGo SelectResMostRobustOverLimit<Node>::select_res(Node *node)
         return RESIGN(max_node->data.player);
     return max_node->data;
 }
+
+#endif //__MCTS_GO__
