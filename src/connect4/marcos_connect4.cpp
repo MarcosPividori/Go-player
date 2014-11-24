@@ -1,4 +1,5 @@
 
+#include "mcts_parallel.hpp"
 #include "mcts_utils.hpp"
 #include "mcts_uct.hpp"
 #include <iostream>
@@ -46,18 +47,18 @@ DataConnect4 insert_mov(Player player,StateConnect4 *state)
 
 int main()
 {
-    Nod *nod=new Nod(0,MOVE(Circle,0)),*next;
     StateConnect4 state;
     DataConnect4 res;
     std::vector<DataConnect4> v;
     
-    std::mutex mutex;
     SelectionUCT<ValConnect4,DataConnect4> sel(1);
     ExpansionAllChildren<ValConnect4,DataConnect4,StateConnect4,Nod> exp(2,0);
     SimulationTotallyRandom<ValConnect4,DataConnect4,StateConnect4> sim;
     RetropropagationSimple<ValConnect4,DataConnect4,EvalNod> ret;
     SelectResMostRobust<ValConnect4,DataConnect4,Nod> sel_res;
-    Mcts<ValConnect4,DataConnect4,Nod,StateConnect4> m(&sel,&exp,&sim,&ret,&sel_res,&mutex);
+    Mcts<ValConnect4,DataConnect4,Nod,StateConnect4> m(&sel,&exp,&sim,&ret,&sel_res);
+    std::vector<Mcts<ValConnect4,DataConnect4,Nod,StateConnect4> *> m_vector(NUM_THREADS,&m);
+    MctsParallel_GlobalMutex<ValConnect4,DataConnect4,Nod,StateConnect4> mcts(m_vector,&state,MOVE(Circle,0));
     
     std::cout<< "CONNNECT4:"<<std::endl;
     Player us_player=insert_player();
@@ -70,41 +71,15 @@ int main()
             std::cout<<std::endl;
             std::cout<<"-You play---------"<<std::endl<<std::endl;
             res=insert_mov(us_player,&state);
-#ifdef DEBUG
-            nod->show();
-#endif
         }
         else{
             std::cout<<std::endl;
             std::cout<<"-Computer plays---"<<std::endl<<std::endl;
-#ifdef DEBUG
-            nod->show();
-            exp.counter=0;
-#endif
-            std::thread threads[NUM_THREADS];
-            for(int i=0; i<NUM_THREADS; i++)
-                threads[i] = std::thread(&Mcts<ValConnect4,DataConnect4,Nod,StateConnect4>::run_cycles,m,NUM_CYCLES/NUM_THREADS,nod,&state);
-            for(std::thread& th : threads)
-                th.join();
-#ifdef DEBUG
-            std::cout<<"Expansion counter: "<<exp.counter<<std::endl;
-            nod->show();
-#endif
-            res = m.get_resultant_move(nod);
-#ifdef DEBUG
-            std::cout << "Resultado: " << res << " i=" << res/6 << " j=" << (res%6)/2
-                      << " vis=" << nod->visits << " win=" << nod->value << std::endl;
-#endif
+            mcts.run_cycles(NUM_CYCLES);
+            res=mcts.get_resultant_move();
         }
-        state.apply(res);
 
-        if((next=nod->move_root_to_child(res))){
-            delete nod;
-            nod=next;
-        }else{
-            nod->delete_tree();
-            nod= new Nod(0,res);
-        }
+        mcts.apply_move(res);
 
         state.show();
     }

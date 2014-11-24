@@ -4,13 +4,13 @@
 #include "node.hpp"
 
 #define MOVE(pos,player) (pos*2+player)
-#define Pos(m) m/2
-#define Player(m) m%2
-#define PlayerToCell(p) (p==Circle ? CIRCLE : CROSS)
-#define CellToPlayer(p) (p==CIRCLE ? Circle : (p==CROSS ? Cross : assert(0)))
-#define ChangePlayer(p) (p==Circle ? Cross  : Circle)
-#define NUM_THREADS 5
-#define NUM_CYCLES 50000
+#define Pos(m)           m/2
+#define Player(m)        m%2
+#define PlayerToCell(p)  (p==Circle ? CIRCLE : CROSS)
+#define CellToPlayer(p)  (p==CIRCLE ? Circle : (p==CROSS ? Cross : assert(0)))
+#define ChangePlayer(p)  (p==Circle ? Cross  : Circle)
+#define NUM_THREADS      5
+#define NUM_CYCLES       50000
 
 typedef long DataConnect4;
 typedef double ValConnect4;
