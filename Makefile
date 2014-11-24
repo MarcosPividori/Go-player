@@ -1,11 +1,12 @@
 
 BINDIR = bin
 OBJDIR = obj
-SRCDIR_MCTS = src/mcts
-SRCDIR_GO = src/go
-SRCDIR_TATETI = src/tateti
-SRCDIR_CONNECT4 = src/connect4
-SRCDIR_HEXA = src/hexa
+SRCDIR = src
+SRCDIR_MCTS = $(SRCDIR)/mcts
+SRCDIR_GO = $(SRCDIR)/go
+SRCDIR_TATETI = $(SRCDIR)/tateti
+SRCDIR_CONNECT4 = $(SRCDIR)/connect4
+SRCDIR_HEXA = $(SRCDIR)/hexa
 
 CC = g++
 CFLAGS = -std=c++0x -pthread -O2 -I $(SRCDIR_MCTS) 

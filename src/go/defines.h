@@ -18,6 +18,7 @@
 #define CHANGE_PLAYER(p) (p==White ? Black : White)
 #define MIN(a,b)         ((a)<(b)? a : b)
 #define MAX(a,b)         ((a)>(b)? a : b)
+#define POS_TO_LETTER(p) (char('A'+((p<('I'-'A'))?p:p+1)))
 
 typedef enum : char{
     Black = -1,

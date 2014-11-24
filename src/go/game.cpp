@@ -224,16 +224,16 @@ void Game::match_patterns(){
     std::cout<<"ESCAPE ATARI: "<<std::endl;
     _state->get_atari_escape_moves(v);
     for(int i=0;i<v.size();i++)
-        std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;
+        std::cout<<"Position: "<<POS_TO_LETTER(v[i].j)<<" "<<int(1+v[i].i)<<std::endl;
     std::cout<<"PATTERNS: "<<std::endl;
     v.clear();
     _state->get_pattern_moves(v);
     for(int i=0;i<v.size();i++)
-        std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;
+        std::cout<<"Position: "<<POS_TO_LETTER(v[i].j)<<" "<<int(1+v[i].i)<<std::endl;
     v.clear();
     std::cout<<"CAPTURES: "<<std::endl;
     _state->get_capture_moves(v);
     for(int i=0;i<v.size();i++)
-        std::cout<<"Position: "<<(int)v[i].i<<" "<<(int)v[i].j<<std::endl;
+        std::cout<<"Position: "<<POS_TO_LETTER(v[i].j)<<" "<<int(1+v[i].i)<<std::endl;
 }
 #endif
