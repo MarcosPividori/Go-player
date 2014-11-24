@@ -1,0 +1,25 @@
+#!/bin/bash
+
+BLACK="gnugo --mode gtp --capture-all-dead --chinese-rules"
+
+WHITE="./bin/marcos_go \
+    --patterns patterns.txt \
+    --bandit_coeff 0 \
+    --cycles_mcts 30000 \
+    --amaf_coeff 2500 \
+    --fill_board 1 \
+    --limit_expansion 1 \
+    --long_game_coeff 3 \
+    --resign_limit 0.1 "
+
+TWOGTP="gogui-twogtp \
+    -black \"$BLACK\" \
+    -white \"$WHITE\" \
+    -games 100 \
+    -size 9 \
+    -komi 5 \
+    -sgffile ./game/stats"
+
+rm ./game/stats* 
+
+gogui -size 9 -program "$TWOGTP" -komi 5 -computer-both -auto
