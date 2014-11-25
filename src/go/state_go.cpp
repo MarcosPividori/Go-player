@@ -271,11 +271,17 @@ inline void StateGo::get_possible_moves(std::vector<DataGo>& v)
     if(pass==2)
         return;
     if(turn==White)
-      for(int i=0;i< w_mov.size();i++)
-        v.push_back(DataGo(w_mov[i],turn));
+      for(int i=0;i< w_mov.size();i++){
+        DataGo mov= DataGo(w_mov[i],turn);
+        if(is_useful_move(mov))
+          v.push_back(mov);
+      }  
     else
-      for(int i=0;i< b_mov.size();i++)
-        v.push_back(DataGo(b_mov[i],turn));
+      for(int i=0;i< b_mov.size();i++){
+        DataGo mov= DataGo(b_mov[i],turn);
+        if(is_useful_move(mov))
+          v.push_back(mov);
+      }
 }
 
 int StateGo::possible_moves_size()
@@ -397,6 +403,14 @@ bool StateGo::is_completely_empty(INDEX i,INDEX j)
         if(Stones[k][l]!=Empty)
             return false;
     return true;
+}
+
+bool StateGo::is_useful_move(DataGo mov)
+{
+    if(IS_PASS(mov))
+        return true;
+    return (no_self_atari_nor_suicide(mov.i,mov.j,turn)
+         || remove_opponent_block_and_no_ko(mov.i,mov.j));
 }
 
 inline ValGo StateGo::get_final_value()
