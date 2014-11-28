@@ -23,6 +23,16 @@ int main(int argc,char *argv[])
             cfg_input.number_fill_board_attemps=std::stod(argv[++c]);
           else if(c<argc-1 && (strncmp(argv[c],"--long_game_coeff",17)==0))
             cfg_input.long_game_coeff=std::stod(argv[++c]);
+          else if(c<argc-1 && (strncmp(argv[c],"--pattern_coeff",15)==0))
+            cfg_input.pattern_coeff=std::stod(argv[++c]);
+          else if(c<argc-1 && (strncmp(argv[c],"--capture_coeff",15)==0))
+            cfg_input.capture_coeff=std::stod(argv[++c]);
+          else if(c<argc-1 && (strncmp(argv[c],"--atari_delete_coeff",20)==0))
+            cfg_input.atari_delete_coeff=std::stod(argv[++c]);
+          else if(c<argc-1 && (strncmp(argv[c],"--atari_escape_coeff",20)==0))
+            cfg_input.atari_escape_coeff=std::stod(argv[++c]);
+          else if(c<argc-1 && (strncmp(argv[c],"--limit_atari",13)==0))
+            cfg_input.limit_atari=std::stoi(argv[++c]);
           else if(c<argc-1 && (strncmp(argv[c],"--limit_expansion",17)==0))
             cfg_input.limit_expansion=std::stoi(argv[++c]);
           else if(c<argc-1 && (strncmp(argv[c],"--cycles_mcts",13)==0))

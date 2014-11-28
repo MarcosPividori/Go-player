@@ -13,7 +13,7 @@ RaveEnv::RaveEnv(Config &cfg_input,StateGo *state)
     for(int i=0;i<cfg_input.num_threads_mcts;i++){
         if(cfg_input.knowledge)
             _sim_and_retro[i]= new SimulationWithDomainKnowledge(
-                                           cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff);
+                                           cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff,cfg_input.limit_atari);
         else
             _sim_and_retro[i]= new SimulationAndRetropropagationRaveGo(cfg_input.long_game_coeff);
         _m.push_back(new Mcts<ValGo,DataGo,Nod,StateGo>(_sel,_exp,_sim_and_retro[i],_sim_and_retro[i],_sel_res));
@@ -47,7 +47,7 @@ UCTEnv::UCTEnv(Config &cfg_input,StateGo *state)
     _ret= new RetropropagationSimple<ValGo,DataGo,EvalNod>();
     for(int i=0;i<cfg_input.num_threads_mcts;i++){
         if(cfg_input.knowledge)
-            _sim[i]= new SimulationWithDomainKnowledge(cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff);
+            _sim[i]= new SimulationWithDomainKnowledge(cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff,cfg_input.limit_atari);
         else
             _sim[i]= new SimulationTotallyRandomGo(cfg_input.long_game_coeff);
         _m.push_back(new Mcts<ValGo,DataGo,Nod,StateGo>(_sel,_exp,_sim[i],_ret,_sel_res));
@@ -87,6 +87,10 @@ Game::Game(int size,Config &cfg_input) : _komi(0),_size(size),_cfg(cfg_input),_p
         _mcts = new UCTEnv(cfg_input,_state);
 
     StateGo::japanese_rules=_cfg.japanese_rules;
+    StateGo::pattern_coeff=_cfg.pattern_coeff;
+    StateGo::capture_coeff=_cfg.capture_coeff;
+    StateGo::atari_delete_coeff=_cfg.atari_delete_coeff;
+    StateGo::atari_escape_coeff=_cfg.atari_escape_coeff;
 }
 
 Game::~Game()

@@ -27,6 +27,10 @@ class StateGo : public States<ValGo,DataGo>
     friend class PatternList;
     public:
         static bool japanese_rules;
+        static double pattern_coeff;
+        static double capture_coeff;
+        static double atari_delete_coeff;
+        static double atari_escape_coeff;
 #ifndef DEBUG
     private:
 #endif

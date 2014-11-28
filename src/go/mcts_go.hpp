@@ -23,9 +23,10 @@ class SimulationWithDomainKnowledge: public SimulationAndRetropropagationRave<Va
         int mov_limit;
         int _fill_board_n;
         double _long_game_coeff;
+        int _limit_atari;
         void get_possible_moves(StateGo *state,std::vector<DataGo> &v,std::uniform_int_distribution<int> &mov_dist);
     public:
-        SimulationWithDomainKnowledge(int number_fill_board_attemps,double long_game_coeff): SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>(),_fill_board_n(number_fill_board_attemps), _long_game_coeff(long_game_coeff) {};
+        SimulationWithDomainKnowledge(int number_fill_board_attemps,double long_game_coeff,int limit_atari): SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>(),_fill_board_n(number_fill_board_attemps), _long_game_coeff(long_game_coeff), _limit_atari(limit_atari) {};
         ValGo simulate(StateGo *state);
 };
 

@@ -22,6 +22,10 @@
             })
 
 bool StateGo::japanese_rules;
+double StateGo::pattern_coeff;
+double StateGo::capture_coeff;
+double StateGo::atari_delete_coeff;
+double StateGo::atari_escape_coeff;
 
 StateGo::StateGo(int size,float komi,PatternList *p) : 
          _size(size)
@@ -318,12 +322,8 @@ void StateGo::get_atari_escape_moves(std::vector<DataGo>& v)
         l=(*atari_blocks)[i].j;
         DataGo e=get_delete_atari(k,l,size);
         if(!IS_PASS(e))
-            for(int count=Blocks[k][l]->size+size;count>0;count--){
+            for(int count=(Blocks[k][l]->size+size)*atari_delete_coeff;count>0;count--)
                 v.push_back(DataGo(e.i,e.j,turn));
-                v.push_back(DataGo(e.i,e.j,turn));
-                v.push_back(DataGo(e.i,e.j,turn));
-                v.push_back(DataGo(e.i,e.j,turn));
-            }
         DataGo d=Blocks[k][l]->atari;
         if(no_self_atari_nor_suicide(d.i,d.j,turn)){
             sum=0;
@@ -334,7 +334,7 @@ void StateGo::get_atari_escape_moves(std::vector<DataGo>& v)
             }
             );
             if(sum>2)
-              for(int count=Blocks[k][l]->size;count>0;count--)
+              for(int count=(Blocks[k][l]->size * atari_escape_coeff);count>0;count--)
                   v.push_back(DataGo(d.i,d.j,turn));
         }
     }
@@ -353,12 +353,8 @@ void StateGo::get_pattern_moves(std::vector<DataGo>& v)
           if(patterns->match(this,k,l))
             if(no_self_atari_nor_suicide(k,l,turn)
                || remove_opponent_block_and_no_ko(k,l)){
-                v.push_back(DataGo(k,l,turn));
-                v.push_back(DataGo(k,l,turn));
-                v.push_back(DataGo(k,l,turn));
-                v.push_back(DataGo(k,l,turn));
-                v.push_back(DataGo(k,l,turn));
-                v.push_back(DataGo(k,l,turn));
+                for(int i=0;i<pattern_coeff;i++)
+                  v.push_back(DataGo(k,l,turn));
             }
           Stones[k][l]=Empty;
         }
@@ -375,24 +371,16 @@ void StateGo::get_capture_moves(std::vector<DataGo>& v)
         block = Blocks[b_atari[i].i][b_atari[i].j];
         if(ko.flag && ko.i==block->atari.i && ko.j==block->atari.j)
             continue;
-        for(c=0;c<block->size;c++){
+        for(c=0;c<(block->size * capture_coeff);c++)
           v.push_back(block->atari);
-          v.push_back(block->atari);
-          v.push_back(block->atari);
-          v.push_back(block->atari);
-        }
       }
     else
       for(int i=0;i<w_atari.size();i++){
         block = Blocks[w_atari[i].i][w_atari[i].j];
         if(ko.flag && ko.i==block->atari.i && ko.j==block->atari.j)
             continue;
-        for(c=0;c<block->size;c++){
+        for(c=0;c<(block->size * capture_coeff);c++)
           v.push_back(block->atari);
-          v.push_back(block->atari);
-          v.push_back(block->atari);
-          v.push_back(block->atari);
-        }
       }
 }
 

@@ -38,7 +38,7 @@ inline void SimulationWithDomainKnowledge::get_possible_moves(StateGo *state,std
     if(mov_counter>=mov_limit)
         return;
     if(state->get_atari_escape_moves(v),!v.empty())
-        if(v.size()>16)
+        if(v.size()>_limit_atari)
             return;
     for(int c=0;c<_fill_board_n;c++){
         i=mov_dist(SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>::mt);
