@@ -2,6 +2,7 @@
 struct Config
 {
     const char *pattern_file; 
+    const char *opening_file; 
     double bandit_coeff;
     double amaf_coeff;
     double number_fill_board_attemps;
@@ -20,6 +21,7 @@ struct Config
     bool rave;
     bool knowledge;
     Config() : pattern_file(NULL),
+               opening_file(NULL),
                bandit_coeff(0),
                amaf_coeff(1000),
                number_fill_board_attemps(1),

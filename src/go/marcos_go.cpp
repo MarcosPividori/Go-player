@@ -15,6 +15,8 @@ int main(int argc,char *argv[])
       {
           if(c<argc-1 && (strncmp(argv[c],"--patterns",10)==0))
             cfg_input.pattern_file=argv[++c];
+          else if(c<argc-1 && (strncmp(argv[c],"--opening",9)==0))
+            cfg_input.opening_file=argv[++c];
           else if(c<argc-1 && (strncmp(argv[c],"--bandit_coeff",14)==0))
             cfg_input.bandit_coeff=std::stod(argv[++c]);
           else if(c<argc-1 && (strncmp(argv[c],"--amaf_coeff",12)==0))

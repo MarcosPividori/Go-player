@@ -72,11 +72,16 @@ UCTEnv::~UCTEnv()
     delete _mcts;
 }
 
-Game::Game(int size,Config &cfg_input) : _komi(0),_size(size),_cfg(cfg_input),_patterns(NULL)
+Game::Game(int size,Config &cfg_input) : _komi(0),_size(size),_cfg(cfg_input),_patterns(NULL),_opening(NULL)
 {
     if(cfg_input.knowledge && cfg_input.pattern_file){
         _patterns= new PatternList();
         _patterns->read_file(cfg_input.pattern_file);
+    }
+
+    if(cfg_input.knowledge && cfg_input.opening_file){
+        _opening= new OpeningBook();
+        _opening->read_file(cfg_input.opening_file,size);
     }
 
     _state= new StateGo(_size,_komi,_patterns);
@@ -99,6 +104,8 @@ Game::~Game()
     delete _mcts;
     if(_patterns)
         delete _patterns;
+    if(_opening)
+        delete _opening;
 }
 
 void Game::set_boardsize(int size){
@@ -107,6 +114,11 @@ void Game::set_boardsize(int size){
         _size = size;
         _state = new StateGo(_size,_komi,_patterns);
         _mcts->reinit(_state,INIT_DATA(CHANGE_PLAYER(_state->turn)));
+        if(_opening){
+            delete _opening;
+            _opening= new OpeningBook();
+            _opening->read_file(_cfg.opening_file,_size);
+        }
     }
 }
 
@@ -114,6 +126,11 @@ void Game::clear_board(){
     delete _state;
     _state = new StateGo(_size,_komi,_patterns);
     _mcts->reinit(_state,INIT_DATA(CHANGE_PLAYER(_state->turn)));
+    if(_opening){
+        delete _opening;
+        _opening= new OpeningBook();
+        _opening->read_file(_cfg.opening_file,_size);
+    }
 }
 
 void Game::set_komi(float komi){
@@ -122,6 +139,11 @@ void Game::set_komi(float komi){
         _komi = komi;
         _state = new StateGo(_size,_komi,_patterns);
         _mcts->reinit(_state,INIT_DATA(CHANGE_PLAYER(_state->turn)));
+        if(_opening){
+            delete _opening;
+            _opening= new OpeningBook();
+            _opening->read_file(_cfg.opening_file,_size);
+        }
     }
 }
 
@@ -134,7 +156,11 @@ bool Game::play_move(DataGo pos){
         return true;
     if(!_state->valid_move(pos))
         return false;
-    _mcts->apply_move(pos);
+
+    _mcts->apply_move(pos); 
+
+    if(_opening)
+        _opening->apply_move(pos);
 
 #ifdef DEBUG
     if(_cfg.rave)
@@ -148,9 +174,14 @@ bool Game::play_move(DataGo pos){
 
 DataGo Game::gen_move(Player p){
     assert(p==_state->turn);
-
-    _mcts->run_cycles(_cfg.number_cycles_mcts);
-    DataGo pos = _mcts->get_resultant_move();
+    POS mov;
+    DataGo pos;
+    if(_opening && _opening->get_move(mov))
+        pos = DataGo(mov,p);
+    else{
+        _mcts->run_cycles(_cfg.number_cycles_mcts);
+        pos = _mcts->get_resultant_move();
+    }
 /*
 #ifdef DEBUG
     _mcts->get_root()->show();

@@ -14,7 +14,7 @@ CFLAGS_GO =
 DEBUGFLAGS = -DDEBUG -g
 
 SOURCESC_GO = play_gtp.c gtp.c
-SOURCESCPP_GO = state_go.cpp game.cpp pattern_list.cpp mcts_go.cpp
+SOURCESCPP_GO = state_go.cpp game.cpp pattern_list.cpp opening_book.cpp mcts_go.cpp
 OBJS_GO = $(SOURCESCPP_GO:%.cpp=$(OBJDIR)/%.o) $(SOURCESC_GO:%.c=$(OBJDIR)/%.o)
 OBJS_DEBUG_GO = $(SOURCESCPP_GO:%.cpp=$(OBJDIR)/%_debug.o) $(SOURCESC_GO:%.c=$(OBJDIR)/%_debug.o)
 
