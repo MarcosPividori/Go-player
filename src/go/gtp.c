@@ -351,9 +351,3 @@ gtp_decode_move(char *s, DataGo* move)
   return n1 + n2;
 }
 
-/*
- * Local Variables:
- * tab-width: 8
- * c-basic-offset: 2
- * End:
- */

@@ -79,9 +79,3 @@ void gtp_print_vertex(INDEX i, INDEX j);
 
 extern FILE *gtp_output_file;
 
-/*
- * Local Variables:
- * tab-width: 8
- * c-basic-offset: 2
- * End:
- */

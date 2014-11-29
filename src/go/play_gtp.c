@@ -55,9 +55,6 @@ Game *game;
 void
 play_gtp(FILE *gtp_input, FILE *gtp_output, FILE *gtp_dump_commands, Game *g)
 {
-  /* Make sure `gtp_output' is unbuffered. (Line buffering is also
-   * okay but not necessary. Block buffering breaks GTP mode.)
-   */
   setbuf(gtp_output, NULL);
 
   game = g;
@@ -67,11 +64,6 @@ play_gtp(FILE *gtp_input, FILE *gtp_output, FILE *gtp_dump_commands, Game *g)
 
   gtp_main_loop(commands, gtp_input, gtp_output, gtp_dump_commands);
 }
-
-
-/****************************
- * Administrative commands. *
- ****************************/
 
 /* Function:  Quit
  * Arguments: none
@@ -88,7 +80,6 @@ gtp_quit(char *s)
   return GTP_QUIT;
 }
 
-
 /* Function:  Report protocol version.
  * Arguments: none
  * Fails:     never
@@ -102,11 +93,6 @@ gtp_protocol_version(char *s)
   UNUSED(s);
   return gtp_success("%d", GTP_VERSION);
 }
-
-
-/****************************
- * Program identity.        *
- ****************************/
 
 /* Function:  Report the name of the program.
  * Arguments: none
@@ -122,7 +108,6 @@ gtp_name(char *s)
   return gtp_success("Marcos Go");
 }
 
-
 /* Function:  Report the version number of the program.
  * Arguments: none
  * Fails:     never
@@ -136,11 +121,6 @@ gtp_program_version(char *s)
   UNUSED(s);
   return gtp_success(VERSION);
 }
-
-
-/***************************
- * Setting the board size. *
- ***************************/
 
 /* Function:  Set the board size to NxN and clear the board.
  * Arguments: integer
@@ -170,10 +150,6 @@ gtp_set_boardsize(char *s)
   return gtp_success("");
 }
 
-/***********************
- * Clearing the board. *
- ***********************/
-
 /* Function:  Clear the board.
  * Arguments: none
  * Fails:     never
@@ -190,10 +166,6 @@ gtp_clear_board(char *s)
 
   return gtp_success("");
 }
-
-/***************************
- * Setting komi.           *
- ***************************/
 
 /* Function:  Set the komi.
  * Arguments: float
@@ -215,11 +187,6 @@ gtp_set_komi(char *s)
   return gtp_success("");
 }
 
-
-/******************
- * Playing moves. *
- ******************/
-
 /* Function:  Play a stone of the given color at the given vertex.
  * Arguments: color, vertex
  * Fails:     invalid vertex, illegal move
@@ -240,7 +207,6 @@ gtp_play(char *s)
 
   return gtp_success("");
 }
-
 
 /* Function:  Generate and play the supposedly best move for either color.
  * Arguments: color to move
@@ -369,7 +335,6 @@ gtp_list_commands(char *s)
   return GTP_OK;
 }
 
-
 /* Function:  Tell whether a command is known.
  * Arguments: command name
  * Fails:     never
@@ -392,9 +357,3 @@ gtp_known_command(char *s)
   return gtp_success("false");
 }
 
-/*
- * Local Variables:
- * tab-width: 8
- * c-basic-offset: 2
- * End:
- */
