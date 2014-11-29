@@ -13,43 +13,43 @@ int main(int argc,char *argv[])
     for(int c=1;c<argc;c++){
       try
       {
-          if(c<argc-1 && (strncmp(argv[c],"--patterns",10)==0))
+          if(c<argc-1 && !strcmp(argv[c],"--patterns"))
             cfg_input.pattern_file=argv[++c];
-          else if(c<argc-1 && (strncmp(argv[c],"--bandit_coeff",14)==0))
+          else if(c<argc-1 && !strcmp(argv[c],"--bandit_coeff"))
             cfg_input.bandit_coeff=std::stod(argv[++c]);
-          else if(c<argc-1 && (strncmp(argv[c],"--amaf_coeff",12)==0))
+          else if(c<argc-1 && !strcmp(argv[c],"--amaf_coeff"))
             cfg_input.amaf_coeff=std::stod(argv[++c]);
-          else if(c<argc-1 && (strncmp(argv[c],"--fill_board",12)==0))
+          else if(c<argc-1 && !strcmp(argv[c],"--fill_board"))
             cfg_input.number_fill_board_attemps=std::stod(argv[++c]);
-          else if(c<argc-1 && (strncmp(argv[c],"--long_game_coeff",17)==0))
+          else if(c<argc-1 && !strcmp(argv[c],"--long_game_coeff"))
             cfg_input.long_game_coeff=std::stod(argv[++c]);
-          else if(c<argc-1 && (strncmp(argv[c],"--pattern_coeff",15)==0))
+          else if(c<argc-1 && !strcmp(argv[c],"--pattern_coeff"))
             cfg_input.pattern_coeff=std::stod(argv[++c]);
-          else if(c<argc-1 && (strncmp(argv[c],"--capture_coeff",15)==0))
+          else if(c<argc-1 && !strcmp(argv[c],"--capture_coeff"))
             cfg_input.capture_coeff=std::stod(argv[++c]);
-          else if(c<argc-1 && (strncmp(argv[c],"--atari_delete_coeff",20)==0))
+          else if(c<argc-1 && !strcmp(argv[c],"--atari_delete_coeff"))
             cfg_input.atari_delete_coeff=std::stod(argv[++c]);
-          else if(c<argc-1 && (strncmp(argv[c],"--atari_escape_coeff",20)==0))
+          else if(c<argc-1 && !strcmp(argv[c],"--atari_escape_coeff"))
             cfg_input.atari_escape_coeff=std::stod(argv[++c]);
-          else if(c<argc-1 && (strncmp(argv[c],"--limit_atari",13)==0))
+          else if(c<argc-1 && !strcmp(argv[c],"--limit_atari"))
             cfg_input.limit_atari=std::stoi(argv[++c]);
-          else if(c<argc-1 && (strncmp(argv[c],"--limit_expansion",17)==0))
+          else if(c<argc-1 && !strcmp(argv[c],"--limit_expansion"))
             cfg_input.limit_expansion=std::stoi(argv[++c]);
-          else if(c<argc-1 && (strncmp(argv[c],"--cycles_mcts",13)==0))
+          else if(c<argc-1 && !strcmp(argv[c],"--cycles_mcts"))
             cfg_input.number_cycles_mcts=std::stoi(argv[++c]);
-          else if(c<argc-1 && (strncmp(argv[c],"--threads_mcts",14)==0))
+          else if(c<argc-1 && !strcmp(argv[c],"--threads_mcts"))
             cfg_input.num_threads_mcts=std::stoi(argv[++c]);
-          else if(c<argc-1 && (strncmp(argv[c],"--resign_limit",14)==0))
+          else if(c<argc-1 && !strcmp(argv[c],"--resign_limit"))
             cfg_input.resign_limit=std::stod(argv[++c]);
-          else if(strncmp(argv[c],"--root_parallel",15)==0)
+          else if(!strcmp(argv[c],"--root_parallel"))
             cfg_input.root_parallel=true;
-          else if(strncmp(argv[c],"--japanese_rules",16)==0)
+          else if(!strcmp(argv[c],"--japanese_rules"))
             cfg_input.japanese_rules=true;
-          else if(strncmp(argv[c],"--totally_random_sim",20)==0)
+          else if(!strcmp(argv[c],"--totally_random_sim"))
             cfg_input.knowledge=false;
-          else if(strncmp(argv[c],"--no_rave",9)==0)
+          else if(!strcmp(argv[c],"--no_rave"))
             cfg_input.rave=false;
-          else if(strncmp(argv[c],"--help",6)==0){
+          else if(!strcmp(argv[c],"--help")){
             std::cout<<"usage: marcos_go [--patterns file] [--bandit_coeff double] [--amaf_coeff double] [--help]\n"
                      <<"                 [--fill_board double] [--long_game_coeff double] [--limit_expansion int]\n"
                      <<"                 [--cycles_mcts int] [--threads_mcts int] [--resign_limit double]\n"
@@ -67,7 +67,7 @@ int main(int argc,char *argv[])
       }
     }
 
-    Game game(19,cfg_input);
+    Game game(9,cfg_input);
 
     play_gtp(gtp_input_FILE, gtp_output_FILE, gtp_dump_commands_FILE, &game);
 

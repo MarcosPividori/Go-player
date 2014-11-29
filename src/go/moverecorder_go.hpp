@@ -34,7 +34,7 @@ inline void MoveRecorderGo::prevMove(DataGo move)
 inline bool MoveRecorderGo::isMove(DataGo move)
 {
     if(IS_PASS(move))
-        return false;//TODO:REVISAR!!
+        return false;
     if(Stones[move.i][move.j]==move.player)
         return true;
     return false;

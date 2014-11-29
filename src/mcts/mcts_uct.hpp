@@ -52,7 +52,6 @@ inline double SelectionUCT<Value,Data>::get_uct_val(const NodeUCT<Value,Data> *n
 template <class Value,class Data>
 NodeUCT<Value,Data>* SelectionUCT<Value,Data>::select(const NodeUCT<Value,Data> *nod)
 {
-    //TODO: Make the selection of no visited nodes randomly!
     if(nod->children.empty())
         return NULL;
     NodeUCT<Value,Data> *max_nod= nod->children[0];

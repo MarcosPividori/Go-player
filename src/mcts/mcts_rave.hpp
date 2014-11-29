@@ -67,7 +67,6 @@ inline double SelectionUCTRave<Value,Data>::get_uct_amaf_val(const NodeUCTRave<V
 template <class Value,class Data>
 NodeUCTRave<Value,Data>* SelectionUCTRave<Value,Data>::select(const NodeUCTRave<Value,Data> *nod)
 {
-    //TODO: Make the selection of no visited nodes randomly!
     if(nod->children.empty())
         return NULL;
     NodeUCTRave<Value,Data> *max_nod= nod->children[0];

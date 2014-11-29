@@ -60,7 +60,6 @@ Node* ExpansionAllChildren<Value,Data,State,Node>::expand(Node *nod,
         }
         for(int i=0;i<v.size();i++)
             nod->create_child(_val,v[i]);
-        //TODO: Make this selection randomly!
         return nod->children[0];
     }
     return nod;
