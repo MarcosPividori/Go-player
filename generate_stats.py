@@ -195,10 +195,10 @@ def analyze_program(isWhite=False,
                         str(rave),
                         str(patterns)])
 
-write_row(output,['COL','WRATE','TOTAL','SIZE','BCOEFF','ACOEFF','FBOARD','LGCOEF','PCF','CCF','ADC','AEC','LAT','CYCLES','THREADS','LEXP','KOMI','ROOT_P','CHIN_R','TRAND','RAVE','PATT','BOOK']);
+write_row(output,['COL','WRATE','TOTAL','SIZE','BCOEFF','ACOEFF','FBOARD','LGCOEF','PCF','CCF','ADC','AEC','LAT','CYCLES','THREADS','LEXP','KOMI','ROOT_P','CHIN_R','TRAND','RAVE','PATT']);
 
 #RAVE-KNOWLEDGE vs GNU
-analyze_program(isWhite=False, komi=5, num_games=100,
+analyze_program(isWhite=False, komi=5, num_games=300,
   patterns='patterns.txt',
   bandit_coeff=0,
   amaf_coeff=1000,
@@ -207,8 +207,8 @@ analyze_program(isWhite=False, komi=5, num_games=100,
   pattern_coeff=6,
   capture_coeff=4,
   atari_delete_coeff=4,
-  atari_escape_coeff=1,
-  limit_atari=24,
+  atari_escape_coeff=4,
+  limit_atari=20,
   cycles_mcts=30000,
   threads_mcts=5,
   limit_expansion=1,
@@ -218,7 +218,7 @@ analyze_program(isWhite=False, komi=5, num_games=100,
   totally_random=False,
 )
 
-analyze_program(isWhite=False, komi=5, num_games=100,
+analyze_program(isWhite=True, komi=5, num_games=300,
   patterns='patterns.txt',
   bandit_coeff=0,
   amaf_coeff=2500,
@@ -227,8 +227,8 @@ analyze_program(isWhite=False, komi=5, num_games=100,
   pattern_coeff=6,
   capture_coeff=4,
   atari_delete_coeff=4,
-  atari_escape_coeff=1,
-  limit_atari=24,
+  atari_escape_coeff=4,
+  limit_atari=20,
   cycles_mcts=30000,
   threads_mcts=5,
   limit_expansion=1,
