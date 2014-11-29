@@ -5,7 +5,6 @@
 #include "mcts_parallel.hpp"
 #include "config.hpp"
 #include "mcts_go.hpp"
-#include "opening_book.hpp"
 
 class Game{
     private:
@@ -14,7 +13,6 @@ class Game{
         int _size;
         Config _cfg;
         PatternList *_patterns;
-        OpeningBook *_opening;
         MctsParallel<ValGo,DataGo,StateGo> *_mcts;
     public:
         Game(int size,Config &cfg_input);
