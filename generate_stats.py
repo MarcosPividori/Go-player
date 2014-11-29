@@ -4,8 +4,7 @@ import subprocess
 import os.path
 
 output = open('stats.txt','a',0)
-col_sizes = [3,4,10,6,5,8,7,7,7,7,8,5,5,7,7,6,6,20]
-counter=0
+col_sizes = [4,10,6,5,8,7,7,7,4,4,4,4,4,7,8,5,5,7,7,6,6,15]
 
 def write_row(files,l):
     for i in range(0,len(l)):
@@ -40,6 +39,11 @@ def marcos_go_command(
                     amaf_coeff=None,
                     fill_board=None,
                     long_game_coeff=None,
+                    pattern_coeff=None,
+                    capture_coeff=None,
+                    atari_delete_coeff=None,
+                    atari_escape_coeff=None,
+                    limit_atari=None,
                     cycles_mcts=None,
                     threads_mcts=None,
                     limit_expansion=None,
@@ -58,6 +62,16 @@ def marcos_go_command(
         command+=" --fill_board " + str(fill_board)
     if long_game_coeff!=None:
         command+=" --long_game_coeff " + str(long_game_coeff)
+    if pattern_coeff!=None:
+        command+=" --pattern_coeff " + str(pattern_coeff)
+    if capture_coeff!=None:
+        command+=" --capture_coeff " + str(capture_coeff)
+    if atari_delete_coeff!=None:
+        command+=" --atari_delete_coeff " + str(atari_delete_coeff)
+    if atari_escape_coeff!=None:
+        command+=" --atari_escape_coeff " + str(atari_escape_coeff)
+    if limit_atari!=None:
+        command+=" --limit_atari " + str(limit_atari)
     if cycles_mcts!=None:
         command+=" --cycles_mcts " + str(cycles_mcts)
     if threads_mcts!=None:
@@ -80,6 +94,11 @@ def analyze_program(isWhite=False,
                     amaf_coeff=None,
                     fill_board=None,
                     long_game_coeff=None,
+                    pattern_coeff=None,
+                    capture_coeff=None,
+                    atari_delete_coeff=None,
+                    atari_escape_coeff=None,
+                    limit_atari=None,
                     cycles_mcts=None,
                     threads_mcts=None,
                     limit_expansion=None,
@@ -110,6 +129,11 @@ def analyze_program(isWhite=False,
                     amaf_coeff,
                     fill_board,
                     long_game_coeff,
+                    pattern_coeff,
+                    capture_coeff,
+                    atari_delete_coeff,
+                    atari_escape_coeff,
+                    limit_atari,
                     cycles_mcts,
                     threads_mcts,
                     limit_expansion,
@@ -125,8 +149,7 @@ def analyze_program(isWhite=False,
     p.wait()
     if p.returncode == 0 :
       (wrate,total) = winning_rate(prog)
-      write_row(output,[str(counter),
-                        prog[0],
+      write_row(output,[prog[0],
                         "{0:.4f}".format(wrate),
                         str(total),
                         str(size),
@@ -134,6 +157,11 @@ def analyze_program(isWhite=False,
                         str(amaf_coeff),
                         str(fill_board),
                         str(long_game_coeff),
+                        str(pattern_coeff),
+                        str(capture_coeff),
+                        str(atari_delete_coeff),
+                        str(atari_escape_coeff),
+                        str(limit_atari),
                         str(cycles_mcts),
                         str(threads_mcts),
                         str(limit_expansion),
@@ -144,8 +172,7 @@ def analyze_program(isWhite=False,
                         str(rave),
                         str(patterns)])
     else:
-      write_row(output,[str(counter),
-                        prog[0],
+      write_row(output,[prog[0],
                         'ERROR:',
                         'COD'+str(p.returncode),
                         str(size),
@@ -153,6 +180,11 @@ def analyze_program(isWhite=False,
                         str(amaf_coeff),
                         str(fill_board),
                         str(long_game_coeff),
+                        str(pattern_coeff),
+                        str(capture_coeff),
+                        str(atari_delete_coeff),
+                        str(atari_escape_coeff),
+                        str(limit_atari),
                         str(cycles_mcts),
                         str(threads_mcts),
                         str(limit_expansion),
@@ -163,179 +195,48 @@ def analyze_program(isWhite=False,
                         str(rave),
                         str(patterns)])
 
-write_row(output,['#','COL','WRATE','TOTAL','SIZE','BCOEFF','ACOEFF','FBOARD','LGCOEF','CYCLES','THREADS','LEXP','KOMI','ROOT_P','CHIN_R','TRAND','RAVE','PATT']);
-#               isWhite  patterns         bandit_coeff  amaf_coeff  fill_board  long_game_coeff  cycles_mcts  threads_mcts)
-#analyze_program(True,    'patterns.txt',  0,            1000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0.2,          1000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0.4,          1000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0.6,          1000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0.8,          1000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  1,            1000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  1.2,          1000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  1.4,          1000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  1.6,          1000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  1.8,          1000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  2,            1000,       6,          3,               30000,       5)
+write_row(output,['COL','WRATE','TOTAL','SIZE','BCOEFF','ACOEFF','FBOARD','LGCOEF','PCF','CCF','ADC','AEC','LAT','CYCLES','THREADS','LEXP','KOMI','ROOT_P','CHIN_R','TRAND','RAVE','PATT','BOOK']);
 
-#analyze_program(True,    'patterns.txt',  0,              10,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0,             100,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0,             500,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0,            2000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0,            2500,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0,            3000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0,            3500,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0,            5000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0,            7500,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0,           10000,       6,          3,               30000,       5)
-
-#analyze_program(True,    'patterns.txt',  0,            1000,       8,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0,            1000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0,            1000,       4,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0,            1000,       2,          3,               30000,       5)
-
-#analyze_program(True,    'patterns.txt',  0,            2500,       6,          3,               60000,       5)
-#analyze_program(True,    'patterns.txt',  0,            3000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0,            5000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0,            4000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0,            2500,       6,          3,               30000,       5)
-
-#analyze_program(True,    'patterns.txt',  0,            1000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0,            1000,       6,          3,               30000,       5)
-#analyze_program(True,    'patterns.txt',  0,            1000,       6,          3,               30000,       5)
-
-#analyze_program(False,   'patterns.txt',  0,            2500,       6,          3,               70000,       5)
-
-#RAVE vs NO-RAVE
+#RAVE-KNOWLEDGE vs GNU
 analyze_program(isWhite=False, komi=5, num_games=100,
   patterns='patterns.txt',
   bandit_coeff=0,
   amaf_coeff=1000,
   fill_board=1,
   long_game_coeff=3,
-  cycles_mcts=70000,
+  pattern_coeff=6,
+  capture_coeff=4,
+  atari_delete_coeff=4,
+  atari_escape_coeff=1,
+  limit_atari=24,
+  cycles_mcts=30000,
   threads_mcts=5,
   limit_expansion=1,
   root_parallel=False,
   chinese_rules=True,
   rave=True,
-  totally_random=True,
-opponent_command=marcos_go_command(
-  patterns='patterns.txt',
-  bandit_coeff=0,
-  amaf_coeff=2500,
-  fill_board=1,
-  long_game_coeff=3,
-  cycles_mcts=70000,
-  threads_mcts=5,
-  limit_expansion=1,
-  root_parallel=False,
-  chinese_rules=True,
-  rave=False,
-  totally_random=True
-)
+  totally_random=False,
 )
 
-analyze_program(isWhite=True, komi=5, num_games=100,
-  patterns='patterns.txt',
-  bandit_coeff=0,
-  amaf_coeff=2500,
-  fill_board=1,
-  long_game_coeff=3,
-  cycles_mcts=70000,
-  threads_mcts=5,
-  limit_expansion=1,
-  root_parallel=False,
-  chinese_rules=True,
-  rave=True,
-  totally_random=True,
-opponent_command=marcos_go_command(
-  patterns='patterns.txt',
-  bandit_coeff=0,
-  amaf_coeff=1000,
-  fill_board=1,
-  long_game_coeff=3,
-  cycles_mcts=70000,
-  threads_mcts=5,
-  limit_expansion=1,
-  root_parallel=False,
-  chinese_rules=True,
-  rave=False,
-  totally_random=True
-)
-)
-
-#RAVE-KNOWLEDGE vs RAVE-RANDOM
 analyze_program(isWhite=False, komi=5, num_games=100,
   patterns='patterns.txt',
   bandit_coeff=0,
-  amaf_coeff=1000,
+  amaf_coeff=2500,
   fill_board=1,
   long_game_coeff=3,
-  cycles_mcts=70000,
+  pattern_coeff=6,
+  capture_coeff=4,
+  atari_delete_coeff=4,
+  atari_escape_coeff=1,
+  limit_atari=24,
+  cycles_mcts=30000,
   threads_mcts=5,
   limit_expansion=1,
   root_parallel=False,
   chinese_rules=True,
   rave=True,
   totally_random=False,
-opponent_command=marcos_go_command(
-  patterns='patterns.txt',
-  bandit_coeff=0,
-  amaf_coeff=2500,
-  fill_board=1,
-  long_game_coeff=3,
-  cycles_mcts=70000,
-  threads_mcts=5,
-  limit_expansion=1,
-  root_parallel=False,
-  chinese_rules=True,
-  rave=True,
-  totally_random=True
 )
-)
-
-analyze_program(isWhite=True, komi=5, num_games=100,
-  patterns='patterns.txt',
-  bandit_coeff=0,
-  amaf_coeff=2500,
-  fill_board=1,
-  long_game_coeff=3,
-  cycles_mcts=70000,
-  threads_mcts=5,
-  limit_expansion=1,
-  root_parallel=False,
-  chinese_rules=True,
-  rave=True,
-  totally_random=False,
-opponent_command=marcos_go_command(
-  patterns='patterns.txt',
-  bandit_coeff=0,
-  amaf_coeff=1000,
-  fill_board=1,
-  long_game_coeff=3,
-  cycles_mcts=70000,
-  threads_mcts=5,
-  limit_expansion=1,
-  root_parallel=False,
-  chinese_rules=True,
-  rave=True,
-  totally_random=True
-)
-)
-
-#analyze_program(True,    'patterns.txt',  0,             2500,       6,         3,               30000,       5, komi=5)
-#analyze_program(True,    'patterns.txt',  0,             1000,       6,         3,                70000,       5)
-#analyze_program(False,   'patterns.txt',  0,             1000,       6,         3,                30000,       5)
-#analyze_program(False,   'patterns.txt',  0,             1000,       6,         3,                70000,       5)
-#analyze_program(False,   'patterns.txt',  0,             2500,       6,         3,                70000,       5)
-
-#analyze_program(False,   'patterns.txt',  0,            1000,       6,          3,               70000,       5)
-#analyze_program(False,   'patterns.txt',  0,            5000,       6,          3,               70000,       5)
-#analyze_program(True,    'patterns.txt',  0,            2500,       6,          3,               70000,       5)
-
-#analyze_program(True,    'patterns.txt',  0,            1000,       6,          3,               65000,       5)
-#analyze_program(True,    'patterns.txt',  0,            1000,       6,          3,               55000,       5)
-#analyze_program(True,    'patterns.txt',  0,            1000,       6,          3,               45000,       5)
 
 output.close()
  
