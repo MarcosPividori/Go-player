@@ -71,7 +71,7 @@ DataGo SelectResMostRobustOverLimit<Node>::select_res(Node *node)
             max_visits = node->children[i]->visits;
         }
     if(max_node->visits!=0 && (max_node->value / max_node->visits) < _limit)
-        return RESIGN(max_node->data.player);
+        return PASS(max_node->data.player);
     return max_node->data;
 }
 
