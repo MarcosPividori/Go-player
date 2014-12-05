@@ -6,7 +6,7 @@ Instalación:
 
 El código fuente del programa se puede obtener clonando el repositorio:
 
-<https://github.com/MarcosPividori/Go-player>\
+<https://github.com/MarcosPividori/Go-player>
 
 Para instalar la interfaz gráfica *GoGui*\cite{c14} y el jugador
 *GnuGo*\cite{c13}, ejecutamos:
@@ -28,11 +28,11 @@ provistos por *Go Text Protocol*\cite{c15}.
 
 Por otro lado, si se desea una interfaz más amigable, se puede recurrir
 a la interfaz visual *GoGui*. Para esto, se provee un script de ejemplo:
-\`\`play\_game" (También se puede iniciar *GoGui* y configurarlo
+"play\_game" (También se puede iniciar *GoGui* y configurarlo
 utilizando las opciones provistas en la barra de tareas).
 
 Para jugar una partida entre nuestro programa y *GnuGo* a través de la
-interfaz visual, se puede utilizar el script \`\`play\_game\_vs\_gnu".
+interfaz visual, se puede utilizar el script "play\_game\_vs\_gnu".
 
 Comandos básicos para usar Go Text Protocol:
 -------------------------------------------
@@ -40,7 +40,7 @@ Comandos básicos para usar Go Text Protocol:
 -   *boardsize* int , Determina el tamaño del tablero.
 -   *clear\_board* ,  Limpia el tablero, es decir, reinicia el juego.
 -   *genmove* (w|white|b|black) , Genera un movimiento para el jugador indicado.
--   *play* (w|white|b|black) mov , Realiza un movimiento determinado para el jugador indicado. El movimiento puede ser una coordenada en el tablero, \`\`pass" (pasar) o \`\`resign"
+-   *play* (w|white|b|black) mov , Realiza un movimiento determinado para el jugador indicado. El movimiento puede ser una coordenada en el tablero, "pass" (pasar) o "resign"
 (rendirse).
 -   *showboard* , Mostrar el tablero.
 -   *komi* value , Determina un valor de komi (compensación al jugador
@@ -64,14 +64,14 @@ Dentro de la implementación del programa hay varias variables que se
 pueden modificar e influyen en la forma que el programa progresa. Se
 implementaron varias opciones de linea de comando que permiten
 configurar cada una de ellas sin necesidad de recompilar el código (en
-caso de no estar presentes, se toma un valor por defecto).\
+caso de no estar presentes, se toma un valor por defecto).
 
 -  *--help* , Muestra las opciones disponibles.
 -  *--patterns* file\_name (No file) Determina un archivo sobre el cual leer
 los patrones de 3x3.
 -  *--bandit\_coeff* double (0) Determina un valor determinado al
 coeficiente de exploración.
--  *--amaf\_coeff* double (1000) Determina el valor K de la mejora Rave.
+-  *--amaf\_coeff* double (2500) Determina el valor K de la mejora Rave.
 -  *--fill\_board* double (1) Determina el número de intentos
 \`\`fill\_board" por ciclo en simulación.
 -  *--long\_game\_coeff* double (3) Determina el coeficiente que se
@@ -226,7 +226,7 @@ situación actual del juego.
 
 Por último, a la hora de seleccionar el movimiento final, se considerará
 el mejor hijo del nodo raíz, es decir, el movimiento más prometedor de
-acuerdo a la información recaudada. Para determinar qué nodo \`\`es
+acuerdo a la información recaudada. Para determinar qué nodo "es
 mejor" se pueden tomar diferentes criterios, considerando la tasa de
 éxito, o el número de visitas, etc. De acuerdo a experimentos
 realizados, no hay una diferencia significativa entre las diferentes
@@ -248,7 +248,7 @@ Para la implementación del algoritmo MCTS, principalmente se buscó:
     realizar la mayor cantidad de ciclos del algoritmo en el menor
     tiempo posible. Por esto, se intentó optimizar en todo lo posible, y
     en muchas casos se recurrió al uso de templates, funciones
-    \`\`inline", guardar cachés de ciertos valores para evitar hacer
+    "inline", guardar cachés de ciertos valores para evitar hacer
     cálculos redundantes, sobretodo de funciones costosas (por ejemplo
     las llamadas a log() y sqrt() en las selecciones uct y rave), etc.
 
@@ -374,7 +374,7 @@ Tendremos un tablero de 11x11 y cada paso consistirá en el ingreso de
 una ficha en una posición vacía. El objetivo será lograr una cadena de
 fichas iguales que conecten ambos extremos del tablero. A diferencia de
 los dos ejemplos anteriores, en este caso el factor de crecimiento del
-árbol $(11*11=121)$ es mucho mayor. Para poder hacer frente a esto, se
+árbol (11*11=121) es mucho mayor. Para poder hacer frente a esto, se
 recurrió a la mejora llamada RAVE. Siguiendo este criterio se lograron
 mucho mejores resultados.
 
@@ -450,7 +450,7 @@ Para almacenar el estado del juego, se recurre por un lado a una matriz
 que almacene las posiciones del tablero (Blanco/Negro/Vacío).
 
 Por otro lado, debemos representar de alguna manera la noción de
-\`\`Bloque". Para esto, se buscó la implementación que nos permita
+"Bloque". Para esto, se buscó la implementación que nos permita
 realizar las operaciones sobre ellos lo más eficientemente posible. Las
 principales operaciones y su complejidad de acuerdo a la implementación
 elegida son:
@@ -493,7 +493,7 @@ mejor movimiento, muchas simulaciones deben realizarse a partir de todos
 los estados y de todas las acciones.
 
 El algoritmo RAVE\cite{c2}, utiliza la heurística
-\`\`all-moves-as-first" , desde cada nodo del árbol de búsqueda, para
+"all-moves-as-first" , desde cada nodo del árbol de búsqueda, para
 estimar el valor de cada acción. Proporciona una forma sencilla de
 compartir conocimientos entre los nodos relacionados en el árbol de
 búsqueda, lo que resulta en una estimación rápida del valor de cada
@@ -530,7 +530,7 @@ dicho nodo:
 $Q(s,a) = (1-p) * Q$~MC~$(s, a) + p * Q$~amaf~$(s, a)$
 
 Donde p se irá modificando a medida que se realizan mayor número de
-simulaciones. Valiendo $p(N_i) \approx 1$ cuando $n_i$ (num de
+simulaciones. Valiendo *p(N_i) \approx 1* cuando *n_i* (num de
 simulaciones) es un número menor y un valor $p(N_i) \approx 0$ cuando se
 realizaron un número considerable de simulaciones $n_i$.
 
@@ -538,19 +538,19 @@ Si además incorporamos el componente de *exploración* de la selección
 UCT, obtenemos una nueva fórmula para el algoritmo de selección:
 
 **UCT-RAVE\cite{c2}:**
-$ValUCTRave(N_i) = (1-p(N_i)) * tasaExito_i + p(N_i) * amaf_i + C * \sqrt{ln(n_p) / n_i}$
+*ValUCTRave(N_i) = (1-p(N_i))* * *tasaExito_i + p(N_i)* * *amaf_i* *+ C* * *\sqrt{ln(n_p) / n_i}*
 
-Donde: $n_p$ y $n_i$ son el número de visitas al nodo padre y al nodo
-$N_i$ respectivamente, C es el coeficiente de exploración y p es el
+Donde: *n_p* y *n_i* son el número de visitas al nodo padre y al nodo
+*N_i* respectivamente, C es el coeficiente de exploración y p es el
 coeficiente que determina la relación entre la estimación amaf y la tasa
 de éxito.
 
-Se decidió definir el valor de p de acuerdo al enfoque \`\`Hand-Selected
+Se decidió definir el valor de p de acuerdo al enfoque "Hand-Selected
 Schedule" \cite{c2}. El cual utiliza un parámetro k que determina el
-número de simulaciones en el cual p asignará igual peso a la *tasa de
-éxito* y a la estimación *amaf*.
+número de simulaciones en el cual p asignará igual peso a la *tasa de*
+*éxito* y a la estimación *amaf*.
 
-$p(N_i)= \sqrt{k / (3*n_i+k)}$
+*p(N_i)=* *\sqrt{k / (3*n_i+k)}*
 
 Esta mejora se implementó a nuestro algoritmo de MCTS de la siguiente
 manera:
@@ -588,13 +588,13 @@ Las principales etapas sobre las que se puede actuar son las de
 
 -   **Selección:** existen varias mejoras posibles, como ser:
 
-    -   \`\`Progressive Bias"\cite{c8}: Consiste en guiar la búsqueda
+    -   "Progressive Bias"\cite{c8}: Consiste en guiar la búsqueda
         incorporando heurísticas en la etapa de Selección, las cuales
         tendrán gran influencia cuando el número de simulaciones es
         menor y a medida que el número aumenta, su aporte disminuirá
         hasta ser nulo.
 
-    -   \`\`Progressive Widening"\cite{c8}: consiste en podar el árbol
+    -   "Progressive Widening"\cite{c8}: consiste en podar el árbol
         en relación al tiempo disponible y número de simulaciones
         realizadas, con el objetivo de reducir el factor de crecimiento
         y concentrar la búsqueda en las mejores opciones encontradas
@@ -622,17 +622,17 @@ Las principales etapas sobre las que se puede actuar son las de
     Para lograr esto, dentro de la documentación propia del área, se
     encontraron 2 principales enfoques:
 
-    -   \`\`Urgency-based simulation"(Bouzy \cite{c6}): En cada instante
+    -   "Urgency-based simulation"(Bouzy \cite{c6}): En cada instante
         de la simulación, un valor de urgencia *U_j* es computado para
         cada movimiento *j* posible, combinando un valor
-        \`\`capture-escape" (que considera el número de fichas que
+        "capture-escape" (que considera el número de fichas que
         serían capturadas y el número que lograrían escapar de una
         captura, con dicho movimiento) con un valor que se calcula
         buscando ciertos patrones de 3x3 en el tablero. Luego, cada
         movimiento será elegido con mayor o menor probabilidad de
         acuerdo a su valor de urgencia *U_j*.
 
-    -   \`\`Sequence-like simulation"(Gelly \cite{c9}): Consiste en
+    -   "Sequence-like simulation"(Gelly \cite{c9}): Consiste en
         seleccionar ciertos movimientos de interés en un área cercana al
         último movimiento realizado, resultando en una secuencia de
         movimientos cercanos uno del otro.
@@ -729,8 +729,8 @@ resultan de gran importancia en el juego, las posiciones que determinan
 cuándo los bloques son capturados.
 
 Por lo tanto, se incorporan algoritmos para detectar los movimientos de
-*\`\`Captura"*, es decir, los que permiten capturar bloques del oponente
-y los movimientos *\`\`Escape de atari"*, que permite aumentar el número
+*"Captura"*, es decir, los que permiten capturar bloques del oponente
+y los movimientos *"Escape de atari"*, que permite aumentar el número
 de adyacencias de un bloque propio en estado de *atari* (una sola
 intersección libre y por lo tanto propenso a ser capturado por el
 oponente). Por ejemplo:
@@ -788,7 +788,7 @@ movimientos, no anulamos el resto, de manera de asegurarnos cierta
 aleatoriedad en las simulaciones que nos permitan obtener una estimación
 más abarcativa del rumbo que pueda tomar el juego.
 
-Cuando mencionamos una posición \`\`fill board", nos referimos a la
+Cuando mencionamos una posición "fill board", nos referimos a la
 mejora mencionada en \cite{c11}, que nos permite considerar ciertos
 movimientos en áreas no exploradas del tablero.
 
@@ -874,9 +874,9 @@ configurar cada una de ellas sin necesidad de recompilar el código (en
 caso de no estar presentes, se toma un valor por defecto).
 
 Haciendo uso de estas opciones, de la aplicación
-\`\`gogui-twogtp"\cite{c14} que permite correr múltiples partidas entre
+"gogui-twogtp"\cite{c14} que permite correr múltiples partidas entre
 dos programas y de un script que se creó para generar estadísticas
-(\`\`generate\_stats.py"), se testeó al programa corriendo múltiples
+("generate\_stats.py"), se testeó al programa corriendo múltiples
 partidas modificando el valor de diferentes variables y analizando el
 porcentaje de partidas ganadas. En el Apéndice se pueden encontrar los
 datos exactos de las estadísticas realizadas.
@@ -932,7 +932,7 @@ utilizando la puntuación China (por Área) y un komi de 5 puntos.
     mov.):
 
     ---------------------------------------------------------------------
-    | *Programa*        | *Programa 2*  | *White/Black* | *% Ganado Prog1*|
+    | *Programa 1*      | *Programa 2*  | *White/Black* | *% Ganado Prog1*|
     | ----------------- | ------------- | ------------- | --------------- |
     | UCTRave Aleatorio | UCT Aleatorio | White         | 100%            |
     | UCTRave Aleatorio | UCT Aleatorio | Black         | 100%            |
@@ -943,7 +943,7 @@ utilizando la puntuación China (por Área) y un komi de 5 puntos.
     valores de capturas (30000 sim. por mov.):
 
     -----------------------------------------------------------------------------
-    | *Programa*           | *Programa 2*      | *White/Black* | *% Ganado Prog1* |
+    | *Programa 1*         | *Programa 2*      | *White/Black* | *% Ganado Prog1* |
     | -------------------- | ----------------- | ------------- | ---------------- |
     | UCTRave con Patrones | UCTRave Aleatorio | White         | 93%              |
     | UCTRave con Patrones | UCTRave Aleatorio | Black         | 94%              |
@@ -968,8 +968,8 @@ Posibles mejoras a futuro
 =========================
 
 -   Incorporar conocimiento de dominio en la etapa de Selección, por
-    ejemplo implementando \`\`Progressive Bias"\cite{c8} o
-    \`\`Progressive Widening"\cite{c8}.
+    ejemplo implementando "Progressive Bias"\cite{c8} o
+    "Progressive Widening"\cite{c8}.
 
 -   Probar el programa con nuevos patrones e investigar la posibilidad
     de aprender dichos patrones automáticamente. Algunos resultados
@@ -1034,7 +1034,7 @@ Instalación:
 
 El código fuente del programa se puede obtener clonando el repositorio:
 
-<https://github.com/MarcosPividori/Go-player>\
+<https://github.com/MarcosPividori/Go-player>
 
 Para instalar la interfaz gráfica *GoGui*\cite{c14} y el jugador
 *GnuGo*\cite{c13}, ejecutamos:
@@ -1056,11 +1056,11 @@ provistos por *Go Text Protocol*\cite{c15}.
 
 Por otro lado, si se desea una interfaz más amigable, se puede recurrir
 a la interfaz visual *GoGui*. Para esto, se provee un script de ejemplo:
-\`\`play\_game" (También se puede iniciar *GoGui* y configurarlo
+"play\_game" (También se puede iniciar *GoGui* y configurarlo
 utilizando las opciones provistas en la barra de tareas).
 
 Para jugar una partida entre nuestro programa y *GnuGo* a través de la
-interfaz visual, se puede utilizar el script \`\`play\_game\_vs\_gnu".
+interfaz visual, se puede utilizar el script "play\_game\_vs\_gnu".
 
 Comandos básicos para usar Go Text Protocol\cite{c15}:
 ------------------------------------------------------
@@ -1069,7 +1069,7 @@ Comandos básicos para usar Go Text Protocol\cite{c15}:
 -   *boardsize* int , Determina el tamaño del tablero.
 -   *clear\_board* ,  Limpia el tablero, es decir, reinicia el juego.
 -   *genmove* (w|white|b|black) , Genera un movimiento para el jugador indicado.
--   *play* (w|white|b|black) mov , Realiza un movimiento determinado para el jugador indicado. El movimiento puede ser una coordenada en el tablero, \`\`pass" (pasar) o \`\`resign"
+-   *play* (w|white|b|black) mov , Realiza un movimiento determinado para el jugador indicado. El movimiento puede ser una coordenada en el tablero, "pass" (pasar) o "resign"
 (rendirse).
 -   *showboard* , Mostrar el tablero.
 -   *komi* value , Determina un valor de komi (compensación al jugador
@@ -1100,7 +1100,7 @@ caso de no estar presentes, se toma un valor por defecto).\
 los patrones de 3x3.
 -  *--bandit\_coeff* double (0) Determina un valor determinado al
 coeficiente de exploración.
--  *--amaf\_coeff* double (1000) Determina el valor K de la mejora Rave.
+-  *--amaf\_coeff* double (2500) Determina el valor K de la mejora Rave.
 -  *--fill\_board* double (1) Determina el número de intentos
 \`\`fill\_board" por ciclo en simulación.
 -  *--long\_game\_coeff* double (3) Determina el coeficiente que se
