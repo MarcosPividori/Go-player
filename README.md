@@ -94,9 +94,11 @@ capturas, por simulaciones totalmente aleatorias.
 
 
 
-Marcos Pividori
 
-R-413 Introducción a la Inteligencia Artificial
+
+**Marcos Pividori**
+
+**R-413 Introducción a la Inteligencia Artificial**
 
 Introducción
 ============
@@ -158,7 +160,9 @@ en árboles \cite{c16}:
 Etapas
 ------
 
-[H] ![image](mcts_etapas.png) Etapas del algoritmo MCTS \cite{c6}.
+ ![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/mcts_etapas.png)
+
+Etapas del algoritmo MCTS \cite{c6}.
 
 MCTS consiste en cuatro etapas principales, repetidas tantas veces como
 tiempo se disponga. En cada una de las iteraciones se parte de la
@@ -320,7 +324,9 @@ ganadas, por el contrario, resultó en una leve desmejora, por lo que se
 prosiguió con el enfoque de Tree Parallelization. Sin embargo, Root
 Parallelization es soportado y se puede activar a través de una bandera.
 
-[H] ![image](parallelization.png) Diferentes enfoques de paralelización
+![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/parallelization.png)
+
+Diferentes enfoques de paralelización
 MCTS. \cite{c3}
 
 Algunas pruebas
@@ -714,8 +720,7 @@ Los patrones utilizados en nuestras pruebas, fueron tomados de
 \cite{c10}, y corresponden a varias situaciones clásicas del juego Go.
 Por ejemplo:
 
-[H] ![image](patterns1.png) Patrones para la situación Hane\cite{c10}. X
-matchea cualquier situación.
+![image](http://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Mogo-hane.svg/653px-Mogo-hane.svg.png)
 
 ### Capturas y escapes de atari
 
@@ -730,13 +735,17 @@ de adyacencias de un bloque propio en estado de *atari* (una sola
 intersección libre y por lo tanto propenso a ser capturado por el
 oponente). Por ejemplo:
 
-[H] ![image](escape_atari_11.png) Posiciones de escape de atari a través
+![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/escape_atari_11.png)
+
+Posiciones de escape de atari a través
 de una captura de un bloque opuesto. La posición azul significará una
 captura de blancas y escape de atari del bloque negro principal, que
 pasará a tener dos adyacencias libres. De igual manera la posición roja
 para las fichas blancas.
 
-[H] ![image](escape_atari_2.png) Posición de escape de atari. La
+![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/escape_atari_2.png) 
+
+Posición de escape de atari. La
 posición remarcada permite aumentar el número de adyacencias del bloque
 negro librándolo del peligro de ser capturado.
 
@@ -839,7 +848,10 @@ que contiene los elementos menores. Esta modificación incorpora gastos
 mínimos en la actualización del árbol, pero nos permite buscar el
 elemento i-ésimo con una complejidad log(n).
 
-[H] ![image](avltree.png) Ejemplo de una búsqueda del elemento en la
+
+[H] ![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/avltree.png)
+
+Ejemplo de una búsqueda del elemento en la
 posición 2. Número rojos representan el número de nodos en el subárbol a
 izquierda de cada nodo.
 
@@ -919,30 +931,38 @@ utilizando la puntuación China (por Área) y un komi de 5 puntos.
     el mismo con la incorporación de la mejora RAVE (30000 sim. por
     mov.):
 
-    [pos]|l|l|c|c| **Programa 1** & **Programa 2** & **White/Black
-    Prog1** & **% Ganado Prog1**\
-    UCTRave Aleatorio & UCT Aleatorio & White & 100%\
-    UCTRave Aleatorio & UCT Aleatorio & Black & 100%\
+    ---------------------------------------------------------------------
+    | *Programa*        | *Programa 2*  | *White/Black* | *% Ganado Prog1*|
+    | ----------------- | ------------- | ------------- | --------------- |
+    | UCTRave Aleatorio | UCT Aleatorio | White         | 100%            |
+    | UCTRave Aleatorio | UCT Aleatorio | Black         | 100%            |
+    ---------------------------------------------------------------------
 
 -   Estadísticas sobre 100 partidas entre el programa, con simulaciones
     totalmente aleatorias, y el mismo con la incorporación de patrones y
     valores de capturas (30000 sim. por mov.):
 
-    [pos]|l|l|c|c| **Programa 1** & **Programa 2** & **White/Black
-    Prog1** & **% Ganado Prog1**\
-    UCTRave con Patrones & UCTRave Aleatorio & White & 93%\
-    UCTRave con Patrones & UCTRave Aleatorio & Black & 94%\
+    -----------------------------------------------------------------------------
+    | *Programa*           | *Programa 2*      | *White/Black* | *% Ganado Prog1* |
+    | -------------------- | ----------------- | ------------- | ---------------- |
+    | UCTRave con Patrones | UCTRave Aleatorio | White         | 93%              |
+    | UCTRave con Patrones | UCTRave Aleatorio | Black         | 94%              |
+    -----------------------------------------------------------------------------
+
 
 -   Estadísticas sobre 200 partidas contra GnuGo-3.8 level 10\cite{c13}
     (30000 sim. por mov.):
 
-    [pos]|l|c|c| **Programa** & **White/Black** & **% Ganado**\
-    UCT Aleatorio & White & 3%\
-    UCT Aleatorio & Black & 3%\
-    UCTRave Aleatorio & White & 14%\
-    UCTRave Aleatorio & Black & 10%\
-    UCTRave con Patrones & White & 53%\
-    UCTRave con Patrones & Black & 52%\
+    ----------------------------------------------------------
+    | *Programa*           | *White/Black*  | *% Ganado*     |
+    | -------------------- |  ------------- | -------------- |
+    | UCT Aleatorio        | White          |             3% |
+    | UCT Aleatorio        | Black          |              3%|
+    | UCTRave Aleatorio    | White          |             14%|
+    | UCTRave Aleatorio    | Black          |             10%|
+    | UCTRave con Patrones | White          |             53%|
+    | UCTRave con Patrones | Black          |             52%|
+    ----------------------------------------------------------
 
 Posibles mejoras a futuro
 =========================
