@@ -849,7 +849,7 @@ mínimos en la actualización del árbol, pero nos permite buscar el
 elemento i-ésimo con una complejidad log(n).
 
 
-[H] ![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/avltree.png)
+![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/avltree.png)
 
 Ejemplo de una búsqueda del elemento en la
 posición 2. Número rojos representan el número de nodos en el subárbol a
@@ -884,7 +884,7 @@ datos exactos de las estadísticas realizadas.
 Coeficiente de Exploración
 --------------------------
 
-[H] ![image](coeff_exploracion.png) Análisis del coeficiente de
+![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/coeff_exploracion.png) Análisis del coeficiente de
 exploración.
 
 De acuerdo a las pruebas realizadas para diferentes valores del
@@ -895,7 +895,7 @@ incorporación de la mejora RAVE, resulta ser 0.
 Coeficiente K de selección RAVE
 -------------------------------
 
-[H] ![image](coeff_exploracion_rave.png) Análisis del coeficiente K de
+![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/coeff_exploracion_rave.png) Análisis del coeficiente K de
 selección Rave.
 
 De acuerdo a las pruebas realizadas para diferentes valores del
@@ -906,7 +906,7 @@ simulaciones en el algoritmo UCT-RAVE) el valor óptimo resulta ser 2500.
 Número de simulaciones
 ----------------------
 
-[H] ![image](num_simulations.png) Análisis del número de simulaciones.
+![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/num_simulations.png) Análisis del número de simulaciones.
 
 Claramente, aumentar el número de simulaciones incrementará el
 porcentaje de partidas ganadas, porque más simulaciones nos permite
@@ -1040,7 +1040,7 @@ Para instalar la interfaz gráfica *GoGui*\cite{c14} y el jugador
 *GnuGo*\cite{c13}, ejecutamos:
 
     make env
-      sudo make install
+    sudo make install
 
 Para compilar nuestros programas:
 
@@ -1122,7 +1122,7 @@ capturas, por simulaciones totalmente aleatorias.
 -  *--no\_rave* (Rave) Desactiva el uso de la mejora Rave.
 
 
-[H] ![image](stats.pdf)
+![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/stats.png)
 
 
 ***Bibliografía:***
