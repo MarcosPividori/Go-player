@@ -18,20 +18,20 @@ Para compilar nuestros programas:
 
     make all
 
-Dentro de la carpeta $bin$ obtendremos los binarios
-$marcos\_(tateti|connect4|hexa|go)$ y $marcos\_debug$ que es una
-compilación del jugador de $Go$ con banderas de debug activadas que nos
+Dentro de la carpeta *bin* obtendremos los binarios
+*marcos\_(tateti|connect4|hexa|go)* y *marcos\_debug* que es una
+compilación del jugador de *Go* con banderas de debug activadas que nos
 permiten obtener información extra en la ejecución del programa.
 
 El programa se puede utilizar por consola a través de los comandos
 provistos por *Go Text Protocol*\cite{c15}.
 
 Por otro lado, si se desea una interfaz más amigable, se puede recurrir
-a la interfaz visual $GoGui$. Para esto, se provee un script de ejemplo:
-\`\`play\_game" (También se puede iniciar $GoGui$ y configurarlo
+a la interfaz visual *GoGui*. Para esto, se provee un script de ejemplo:
+\`\`play\_game" (También se puede iniciar *GoGui* y configurarlo
 utilizando las opciones provistas en la barra de tareas).
 
-Para jugar una partida entre nuestro programa y $GnuGo$ a través de la
+Para jugar una partida entre nuestro programa y *GnuGo* a través de la
 interfaz visual, se puede utilizar el script \`\`play\_game\_vs\_gnu".
 
 Comandos básicos para usar Go Text Protocol:
@@ -512,10 +512,10 @@ información: cada movimiento típicamente se ha intentado en varias
 ocasiones, después de sólo un puñado de simulaciones.
 
 RAVE propone generalizar sobre los sub-árboles con la asumpción de que
-el valor de una acción $a$ en un estado $s$ será similar en cualquier
-punto del sub-árbol de $s$. Luego, el valor de $a$ es estimado a partir
-de todas las simulaciones que parten de $s$ e incluyen en algún momento
-el paso $a$, sin importar exactamente cuándo se realiza.
+el valor de una acción *a* en un estado *s* será similar en cualquier
+punto del sub-árbol de *s*. Luego, el valor de *a* es estimado a partir
+de todas las simulaciones que parten de *s* e incluyen en algún momento
+el paso *a*, sin importar exactamente cuándo se realiza.
 
 El algoritmo RAVE aprende muy rápidamente, pero a menudo es equivocado.
 La principal asumpción de RAVE, que un movimiento en particular tiene el
@@ -523,7 +523,7 @@ mismo valor en todo un sub-árbol, se viola con frecuencia.
 
 Este problema se supera mediante la combinación del aprendizaje rápido
 del algoritmo RAVE con la precisión y la convergencia del algoritmo
-MCTS. Para estimar el valor total de la acción $a$ en un estado $s$,
+MCTS. Para estimar el valor total de la acción *a* en un estado *s*,
 usamos una suma ponderada, entre el valor *amaf* y el valor *mc* en
 dicho nodo:
 
@@ -623,14 +623,14 @@ Las principales etapas sobre las que se puede actuar son las de
     encontraron 2 principales enfoques:
 
     -   \`\`Urgency-based simulation"(Bouzy \cite{c6}): En cada instante
-        de la simulación, un valor de urgencia $U_j$ es computado para
-        cada movimiento $j$ posible, combinando un valor
+        de la simulación, un valor de urgencia *U_j* es computado para
+        cada movimiento *j* posible, combinando un valor
         \`\`capture-escape" (que considera el número de fichas que
         serían capturadas y el número que lograrían escapar de una
         captura, con dicho movimiento) con un valor que se calcula
         buscando ciertos patrones de 3x3 en el tablero. Luego, cada
         movimiento será elegido con mayor o menor probabilidad de
-        acuerdo a su valor de urgencia $U_j$.
+        acuerdo a su valor de urgencia *U_j*.
 
     -   \`\`Sequence-like simulation"(Gelly \cite{c9}): Consiste en
         seleccionar ciertos movimientos de interés en un área cercana al
@@ -700,7 +700,7 @@ manera:
     logra implementar el algoritmo de manera de poder hacer el chequeo
     en tiempo constante. Básicamente:
 
-    -   Se crea un arreglo de $3^9=19683$ booleanos, representando cada
+    -   Se crea un arreglo de *3^9=19683* booleanos, representando cada
         posición una posible combinación de un tablero de 3x3 y se lo
         inicializa en false.
 
@@ -849,7 +849,7 @@ mínimos en la actualización del árbol, pero nos permite buscar el
 elemento i-ésimo con una complejidad log(n).
 
 
-[H] ![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/avltree.png)
+![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/avltree.png)
 
 Ejemplo de una búsqueda del elemento en la
 posición 2. Número rojos representan el número de nodos en el subárbol a
@@ -884,7 +884,7 @@ datos exactos de las estadísticas realizadas.
 Coeficiente de Exploración
 --------------------------
 
-[H] ![image](coeff_exploracion.png) Análisis del coeficiente de
+![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/coeff_exploracion.png) Análisis del coeficiente de
 exploración.
 
 De acuerdo a las pruebas realizadas para diferentes valores del
@@ -895,7 +895,7 @@ incorporación de la mejora RAVE, resulta ser 0.
 Coeficiente K de selección RAVE
 -------------------------------
 
-[H] ![image](coeff_exploracion_rave.png) Análisis del coeficiente K de
+![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/coeff_exploracion_rave.png) Análisis del coeficiente K de
 selección Rave.
 
 De acuerdo a las pruebas realizadas para diferentes valores del
@@ -906,7 +906,7 @@ simulaciones en el algoritmo UCT-RAVE) el valor óptimo resulta ser 2500.
 Número de simulaciones
 ----------------------
 
-[H] ![image](num_simulations.png) Análisis del número de simulaciones.
+![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/num_simulations.png) Análisis del número de simulaciones.
 
 Claramente, aumentar el número de simulaciones incrementará el
 porcentaje de partidas ganadas, porque más simulaciones nos permite
@@ -1040,26 +1040,26 @@ Para instalar la interfaz gráfica *GoGui*\cite{c14} y el jugador
 *GnuGo*\cite{c13}, ejecutamos:
 
     make env
-      sudo make install
+    sudo make install
 
 Para compilar nuestros programas:
 
     make all
 
-Dentro de la carpeta $bin$ obtendremos los binarios
-$marcos\_(tateti|connect4|hexa|go)$ y $marcos\_debug$ que es una
-compilación del jugador de $Go$ con banderas de debug activadas que nos
+Dentro de la carpeta *bin* obtendremos los binarios
+*marcos\_(tateti|connect4|hexa|go)* y *marcos\_debug* que es una
+compilación del jugador de *Go* con banderas de debug activadas que nos
 permiten obtener información extra en la ejecución del programa.
 
 El programa se puede utilizar por consola a través de los comandos
 provistos por *Go Text Protocol*\cite{c15}.
 
 Por otro lado, si se desea una interfaz más amigable, se puede recurrir
-a la interfaz visual $GoGui$. Para esto, se provee un script de ejemplo:
-\`\`play\_game" (También se puede iniciar $GoGui$ y configurarlo
+a la interfaz visual *GoGui*. Para esto, se provee un script de ejemplo:
+\`\`play\_game" (También se puede iniciar *GoGui* y configurarlo
 utilizando las opciones provistas en la barra de tareas).
 
-Para jugar una partida entre nuestro programa y $GnuGo$ a través de la
+Para jugar una partida entre nuestro programa y *GnuGo* a través de la
 interfaz visual, se puede utilizar el script \`\`play\_game\_vs\_gnu".
 
 Comandos básicos para usar Go Text Protocol\cite{c15}:
@@ -1122,7 +1122,7 @@ capturas, por simulaciones totalmente aleatorias.
 -  *--no\_rave* (Rave) Desactiva el uso de la mejora Rave.
 
 
-[H] ![image](stats.pdf)
+![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/stats.png)
 
 
 ***Bibliografía:***
