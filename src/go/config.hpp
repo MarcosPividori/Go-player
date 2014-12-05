@@ -21,7 +21,7 @@ struct Config
     bool knowledge;
     Config() : pattern_file(NULL),
                bandit_coeff(0),
-               amaf_coeff(1000),
+               amaf_coeff(2500),
                number_fill_board_attemps(1),
                long_game_coeff(3),
                pattern_coeff(6),

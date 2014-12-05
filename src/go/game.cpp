@@ -151,15 +151,6 @@ DataGo Game::gen_move(Player p){
 
     _mcts->run_cycles(_cfg.number_cycles_mcts);
     DataGo pos = _mcts->get_resultant_move();
-/*
-#ifdef DEBUG
-    _mcts->get_root()->show();
-    std::cout << "Resultado: " << " i=" << (int)pos.i << " j=" << (int)pos.j
-              << " vis=" << _mcts->get_root()->visits << " win=" << _mcts->get_root()->value
-              << " vis_amaf=" << _mcts->get_root()->amaf_visits << " win_amaf=" << _mcts->get_root()->amaf_value << std::endl;
-    debug();
-#endif
-*/
     return pos;
 }
 
