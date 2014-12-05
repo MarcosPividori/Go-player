@@ -10,7 +10,6 @@ SRCDIR_HEXA = $(SRCDIR)/hexa
 
 CC = g++
 CFLAGS = -std=c++0x -pthread -O2 -I $(SRCDIR_MCTS) 
-CFLAGS_GO =
 DEBUGFLAGS = -DDEBUG -g
 
 SOURCESC_GO = play_gtp.c gtp.c
@@ -19,16 +18,16 @@ OBJS_GO = $(SOURCESCPP_GO:%.cpp=$(OBJDIR)/%.o) $(SOURCESC_GO:%.c=$(OBJDIR)/%.o)
 OBJS_DEBUG_GO = $(SOURCESCPP_GO:%.cpp=$(OBJDIR)/%_debug.o) $(SOURCESC_GO:%.c=$(OBJDIR)/%_debug.o)
 
 $(OBJDIR)/%_debug.o: $(SRCDIR_GO)/%.cpp
-		$(CC) $(CFLAGS) $(CFLAGS_GO) $(DEBUGFLAGS) -c $< -o $@
+		$(CC) $(CFLAGS) $(DEBUGFLAGS) -c $< -o $@
 
 $(OBJDIR)/%_debug.o: $(SRCDIR_GO)/%.c
-		$(CC) $(CFLAGS) $(CFLAGS_GO) $(DEBUGFLAGS) -c $< -o $@
+		$(CC) $(CFLAGS) $(DEBUGFLAGS) -c $< -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR_GO)/%.cpp
-		$(CC) $(CFLAGS) $(CFLAGS_GO) -c $< -o $@
+		$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR_GO)/%.c
-		$(CC) $(CFLAGS) $(CFLAGS_GO) -c $< -o $@
+		$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 		$(RM) $(BINDIR)/* $(OBJDIR)/*.o
@@ -36,10 +35,10 @@ clean:
 all: go debug tateti connect4 hexa
 
 go: $(OBJS_GO)
-		$(CC) $(CFLAGS) $(CFLAGS_GO) $(SRCDIR_GO)/marcos_go.cpp -o $(BINDIR)/marcos_go $(OBJS_GO)
+		$(CC) $(CFLAGS) $(SRCDIR_GO)/marcos_go.cpp -o $(BINDIR)/marcos_go $(OBJS_GO)
 
 debug: $(OBJS_DEBUG_GO)
-		$(CC) $(CFLAGS) $(CFLAGS_GO) $(DEBUGFLAGS) $(SRCDIR_GO)/marcos_go.cpp -o $(BINDIR)/marcos_debug $(OBJS_DEBUG_GO)
+		$(CC) $(CFLAGS) $(DEBUGFLAGS) $(SRCDIR_GO)/marcos_go.cpp -o $(BINDIR)/marcos_debug $(OBJS_DEBUG_GO)
 
 tateti:
 		$(CC) $(CFLAGS) $(SRCDIR_TATETI)/marcos_tateti.cpp $(SRCDIR_TATETI)/state_tateti.cpp -o $(BINDIR)/marcos_tateti
