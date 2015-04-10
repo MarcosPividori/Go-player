@@ -11,6 +11,7 @@ SRCDIR_HEXA = $(SRCDIR)/hexa
 CC = g++
 CFLAGS = -std=c++0x -pthread -O2 -I $(SRCDIR_MCTS) 
 DEBUGFLAGS = -DDEBUG -g
+CFLAGS_HEXA = -DRAVE 
 
 SOURCESC_GO = play_gtp.c gtp.c
 SOURCESCPP_GO = state_go.cpp game.cpp pattern_list.cpp mcts_go.cpp
