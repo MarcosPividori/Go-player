@@ -75,7 +75,8 @@ int main()
         else{
             std::cout<<std::endl;
             std::cout<<"-Computer plays---"<<std::endl<<std::endl;
-            mcts.run_cycles(NUM_CYCLES);
+            mcts.run_time(MAX_SECONDS);
+            //mcts.run_cycles(NUM_CYCLES);
             res=mcts.get_resultant_move();
         }
 

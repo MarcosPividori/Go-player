@@ -11,6 +11,7 @@
 #define ChangePlayer(p)  (p==Circle ? Cross  : Circle)
 #define NUM_THREADS      5
 #define NUM_CYCLES       50000
+#define MAX_SECONDS      1.5
 
 typedef long DataConnect4;
 typedef double ValConnect4;
