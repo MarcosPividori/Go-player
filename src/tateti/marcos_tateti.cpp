@@ -11,7 +11,7 @@ struct EvalNod: public EvalNode<ValTateti,DataTateti> {
     ValTateti operator()(ValTateti v_nodo,ValTateti v_final,DataTateti dat_nodo)
     {
         if(v_final == EMPTY)//Tie
-            return v_nodo+0.9999;
+            return v_nodo+0.9;
         if(v_final == PlayerToCell(Player(dat_nodo)))
             return v_nodo+1;
         return v_nodo;
@@ -74,7 +74,8 @@ int main()
         else{
             std::cout<<std::endl;
             std::cout<<"-Computer plays---"<<std::endl<<std::endl;
-            mcts.run_cycles(NUM_CYCLES);
+            mcts.run_time(MAX_SECONDS);
+            //mcts.run_cycles(NUM_CYCLES);
             res=mcts.get_resultant_move();
         }
         

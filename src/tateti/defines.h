@@ -12,6 +12,7 @@
 #define ChangePlayer(p)  (p==Circle ? Cross  : Circle)
 #define NUM_THREADS      5
 #define NUM_CYCLES       100000
+#define MAX_SECONDS      1
 
 typedef long DataTateti;
 typedef double ValTateti;
