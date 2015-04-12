@@ -47,7 +47,7 @@ template <class Value,class Data,class State,class Node>
 Node* ExpansionAllChildren<Value,Data,State,Node>::expand(Node *nod,
                                             State *state)
 {
-    assert(nod->children.empty());
+    assert(nod->children_begin() == nod->children_end());
     if(!nod->get_parent() //Root node.
      || nod->get_visits() >= _lim){
         std::vector<Data> v;
@@ -60,7 +60,7 @@ Node* ExpansionAllChildren<Value,Data,State,Node>::expand(Node *nod,
         }
         for(int i=0;i<v.size();i++)
             nod->create_child(_val,v[i]);
-        return nod->children[0];
+        return *(nod->children_begin());
     }
     return nod;
 }
@@ -89,13 +89,14 @@ Value SimulationTotallyRandom<Value,Data,State>::simulate(State *state)
 template <class Value,class Data,class Node>
 Data SelectResMostRobust<Value,Data,Node>::select_res(Node *node)
 {
-    assert(!node->children.empty());
-    unsigned long max_visits = node->children[0]->get_visits();
-    Node *max_node = node->children[0];
-    for(int i=1;i<node->children.size();i++)
-        if(node->children[i]->get_visits() > max_visits){
-            max_node = node->children[i];
-            max_visits = node->children[i]->get_visits();
+    assert(node->children_begin() != node->children_end());
+    typename Node::const_iterator iter=node->children_begin();
+    unsigned long max_visits = (*iter)->get_visits();
+    Node *max_node = *iter;
+    for(iter++;iter != node->children_end();iter++)
+        if((*iter)->get_visits() > max_visits){
+            max_node = *iter;
+            max_visits = (*iter)->get_visits();
         }
     return max_node->data;
 }

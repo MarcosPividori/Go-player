@@ -127,8 +127,10 @@ void debug(MctsParallel_GlobalMutex<ValHexa,DataHexa,Nod,StateHexa> &mcts)
 {
 #ifdef RAVE
     NodeUCTRave<ValHexa,DataHexa> *root = (NodeUCTRave<ValHexa,DataHexa>*) mcts.get_root();
+    NodeUCTRave<ValHexa,DataHexa>::const_iterator iter=root->children_begin();
 #else
     NodeUCT<ValHexa,DataHexa> *root = (NodeUCT<ValHexa,DataHexa>*) mcts.get_root();
+    NodeUCT<ValHexa,DataHexa>::const_iterator iter=root->children_begin();
 #endif
     root->debug();
     long visits[SIZE][SIZE];
@@ -140,17 +142,17 @@ void debug(MctsParallel_GlobalMutex<ValHexa,DataHexa,Nod,StateHexa> &mcts)
         return;
     std::cout<<std::endl<<"CELL MCTS VISITS: (num of visits,move value)"<<std::endl<<std::endl;
     double sqrt_log_parent = sqrt(log((double) root->get_visits()));
-    for(int i=0;i<root->children.size();i++)
+    for(;iter != root->children_end();iter++)
     {
-        visits[I(root->children[i]->data)][J(root->children[i]->data)]=root->children[i]->get_visits();
+        visits[I((*iter)->data)][J((*iter)->data)]=(*iter)->get_visits();
 #ifdef RAVE
-        coeffs[I(root->children[i]->data)][J(root->children[i]->data)]=
+        coeffs[I((*iter)->data)][J((*iter)->data)]=
                 SelectionUCTRave<ValHexa,DataHexa>(BANDIT_COEFF,K_RAVE)
-                .get_uct_amaf_val(root->children[i],sqrt_log_parent);
+                .get_uct_amaf_val((*iter),sqrt_log_parent);
 #else
-        coeffs[I(root->children[i]->data)][J(root->children[i]->data)]=
+        coeffs[I((*iter)->data)][J((*iter)->data)]=
                 SelectionUCT<ValHexa,DataHexa>(BANDIT_COEFF)
-                .get_uct_val(root->children[i],sqrt_log_parent);
+                .get_uct_val((*iter),sqrt_log_parent);
 #endif
     }
     std::cout<<std::setw(5)<<" ";

@@ -12,6 +12,7 @@ template <class Value,class Data> class NodeUCTRave{
     protected:
         NodeUCTRave<Value,Data> *parent;
     private:
+        std::vector< NodeUCTRave<Value,Data>* > children;
         unsigned long visits;
         double sqrt_visits;
         unsigned long amaf_visits;
@@ -19,12 +20,14 @@ template <class Value,class Data> class NodeUCTRave{
         void count_nodes(int level,long counter[],int max_level);
         NodeUCTRave(Value init_value,Data init_data,NodeUCTRave<Value,Data> *father);
     public:
+        typedef typename std::vector< NodeUCTRave<Value,Data>* >::const_iterator const_iterator;
         static double k_rave;
         Value value;
         Value amaf_value;
         Data data;
-        std::vector< NodeUCTRave<Value,Data>* > children;
         NodeUCTRave(Value init_value,Data init_data);
+        const_iterator children_begin() const {return children.cbegin();};
+        const_iterator children_end() const {return children.cend();};
         void set_visits(unsigned long v);
         unsigned long get_visits() const {return visits;};
         double get_sqrt_visits() const {return sqrt_visits;};

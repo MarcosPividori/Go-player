@@ -193,9 +193,11 @@ inline void MctsParallel_Root<Value,Data,Nod,State>::merge_trees()
     _exp.expand(_root,_state);
     for(int i=0;i<_m.size();i++){
         _root->join(_roots_mcts[i]);
-        for(int j=0;j<_roots_mcts[i]->children.size();j++){
-            assert(_root->children[j]->data==_roots_mcts[i]->children[j]->data);
-            _root->children[j]->join(_roots_mcts[i]->children[j]);
+        typename Nod::const_iterator iter1=_root->children_begin(),
+                            iter2=_roots_mcts[i]->children_begin();
+        for(;iter2 != _roots_mcts[i]->children_end();iter1++,iter2++){
+            assert((*iter1)->data==(*iter2)->data);
+            (*iter1)->join(*iter2);
         }
     }
 }

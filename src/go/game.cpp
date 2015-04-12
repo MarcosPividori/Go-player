@@ -172,10 +172,11 @@ void Game::debug(){
         if(!root) return;
         std::cout<<"CELL MCTS VISITS:"<<std::endl;
         double sqrt_log_parent = sqrt(log((double) root->get_visits()));
-        for(int i=0;i<root->children.size();i++)
-            if(!IS_PASS(root->children[i]->data)){
-              visits[root->children[i]->data.i][root->children[i]->data.j]=root->children[i]->get_visits();
-              coeffs[root->children[i]->data.i][root->children[i]->data.j]=SelectionUCTRave<ValGo,DataGo>(_cfg.bandit_coeff,_cfg.amaf_coeff).get_uct_amaf_val(root->children[i],sqrt_log_parent);
+        NodeUCTRave<ValGo,DataGo>::const_iterator iter=root->children_begin();
+        for(;iter != root->children_end();iter++)
+            if(!IS_PASS((*iter)->data)){
+              visits[(*iter)->data.i][(*iter)->data.j]=(*iter)->get_visits();
+              coeffs[(*iter)->data.i][(*iter)->data.j]=SelectionUCTRave<ValGo,DataGo>(_cfg.bandit_coeff,_cfg.amaf_coeff).get_uct_amaf_val((*iter),sqrt_log_parent);
             }
     }
     else
@@ -184,10 +185,11 @@ void Game::debug(){
         if(!root) return;
         std::cout<<"CELL MCTS VISITS:"<<std::endl;
         double sqrt_log_parent = sqrt(log((double) root->get_visits()));
-        for(int i=0;i<root->children.size();i++)
-            if(!IS_PASS(root->children[i]->data)){
-              visits[root->children[i]->data.i][root->children[i]->data.j]=root->children[i]->get_visits();
-              coeffs[root->children[i]->data.i][root->children[i]->data.j]=SelectionUCT<ValGo,DataGo>(_cfg.bandit_coeff).get_uct_val(root->children[i],sqrt_log_parent);
+        NodeUCT<ValGo,DataGo>::const_iterator iter=root->children_begin();
+        for(;iter != root->children_end();iter++)
+            if(!IS_PASS((*iter)->data)){
+              visits[(*iter)->data.i][(*iter)->data.j]=(*iter)->get_visits();
+              coeffs[(*iter)->data.i][(*iter)->data.j]=SelectionUCT<ValGo,DataGo>(_cfg.bandit_coeff).get_uct_val((*iter),sqrt_log_parent);
             }
     }
     for(int i=_size-1;i>=0;i--){

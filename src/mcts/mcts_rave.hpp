@@ -67,7 +67,7 @@ inline double SelectionUCTRave<Value,Data>::get_uct_amaf_val(const NodeUCTRave<V
 template <class Value,class Data>
 NodeUCTRave<Value,Data>* SelectionUCTRave<Value,Data>::select(const NodeUCTRave<Value,Data> *nod)
 {
-    NodeUCTRave<Value,Data>::const_iterator iter=nod->children_begin();
+    typename NodeUCTRave<Value,Data>::const_iterator iter=nod->children_begin();
     if(iter==nod->children_end())
         return NULL;
     NodeUCTRave<Value,Data> *max_nod= *iter;
@@ -119,7 +119,7 @@ void SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>:
         assert(node->get_visits()<ULONG_MAX);
         node->set_visits(node->get_visits()+1);
         NodeUCTRave<Value,Data>* nod;
-        NodeUCTRave<Value,Data>::const_iterator iter=nod->children_begin();
+        typename NodeUCTRave<Value,Data>::const_iterator iter=node->children_begin();
         for(;iter != node->children_end();iter++){
             nod=*iter;
             if(recorder.isMove(nod->data)){
