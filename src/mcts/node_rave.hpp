@@ -9,25 +9,32 @@
 #include <iostream>
 
 template <class Value,class Data> class NodeUCTRave{
+    protected:
+        NodeUCTRave<Value,Data> *parent;
     private:
+        unsigned long visits;
+        double sqrt_visits;
+        unsigned long amaf_visits;
+        double sqrt_for_amaf;
         void count_nodes(int level,long counter[],int max_level);
         NodeUCTRave(Value init_value,Data init_data,NodeUCTRave<Value,Data> *father);
     public:
         static double k_rave;
-        unsigned long visits;
-        unsigned long amaf_visits;
-        double sqrt_visits;
-        double sqrt_for_amaf;
         Value value;
         Value amaf_value;
         Data data;
         std::vector< NodeUCTRave<Value,Data>* > children;
-        NodeUCTRave<Value,Data> *parent;
         NodeUCTRave(Value init_value,Data init_data);
+        void set_visits(unsigned long v);
+        unsigned long get_visits() const {return visits;};
+        double get_sqrt_visits() const {return sqrt_visits;};
+        void set_amaf_visits(unsigned long v) {amaf_visits = v;};
+        unsigned long get_amaf_visits() const {return amaf_visits;};
+        double get_sqrt_for_amaf() const {return sqrt_for_amaf;};
+        NodeUCTRave<Value,Data> *get_parent() const {return parent;};
+        NodeUCTRave<Value,Data> *move_root_to_child(Data child_data);
         void create_child(Value init_value,Data init_data);
         void delete_tree();
-        NodeUCTRave<Value,Data> *move_root_to_child(Data child_data);
-        void set_visits(unsigned long v);
         void join(NodeUCTRave<Value,Data>* nod);
         void show();
         void debug();

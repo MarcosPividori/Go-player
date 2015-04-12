@@ -139,10 +139,10 @@ void debug(MctsParallel_GlobalMutex<ValHexa,DataHexa,Nod,StateHexa> &mcts)
     if(!root)
         return;
     std::cout<<std::endl<<"CELL MCTS VISITS: (num of visits,move value)"<<std::endl<<std::endl;
-    double sqrt_log_parent = sqrt(log((double) root->visits));
+    double sqrt_log_parent = sqrt(log((double) root->get_visits()));
     for(int i=0;i<root->children.size();i++)
     {
-        visits[I(root->children[i]->data)][J(root->children[i]->data)]=root->children[i]->visits;
+        visits[I(root->children[i]->data)][J(root->children[i]->data)]=root->children[i]->get_visits();
 #ifdef RAVE
         coeffs[I(root->children[i]->data)][J(root->children[i]->data)]=
                 SelectionUCTRave<ValHexa,DataHexa>(BANDIT_COEFF,K_RAVE)

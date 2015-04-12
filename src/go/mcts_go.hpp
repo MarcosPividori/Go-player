@@ -63,14 +63,14 @@ template <class Node>
 DataGo SelectResMostRobustOverLimit<Node>::select_res(Node *node)
 {
     assert(!node->children.empty());
-    unsigned long max_visits = node->children[0]->visits;
+    unsigned long max_visits = node->children[0]->get_visits();
     Node *max_node = node->children[0];
     for(int i=1;i<node->children.size();i++)
-        if(node->children[i]->visits > max_visits){
+        if(node->children[i]->get_visits() > max_visits){
             max_node = node->children[i];
-            max_visits = node->children[i]->visits;
+            max_visits = node->children[i]->get_visits();
         }
-    if(max_node->visits!=0 && (max_node->value / max_node->visits) < _limit)
+    if(max_node->get_visits()!=0 && (max_node->value / max_node->get_visits()) < _limit)
         return PASS(max_node->data.player);
     return max_node->data;
 }

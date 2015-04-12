@@ -171,10 +171,10 @@ void Game::debug(){
         NodeUCTRave<ValGo,DataGo> *root = (NodeUCTRave<ValGo,DataGo>*) _mcts->get_root();
         if(!root) return;
         std::cout<<"CELL MCTS VISITS:"<<std::endl;
-        double sqrt_log_parent = sqrt(log((double) root->visits));
+        double sqrt_log_parent = sqrt(log((double) root->get_visits()));
         for(int i=0;i<root->children.size();i++)
             if(!IS_PASS(root->children[i]->data)){
-              visits[root->children[i]->data.i][root->children[i]->data.j]=root->children[i]->visits;
+              visits[root->children[i]->data.i][root->children[i]->data.j]=root->children[i]->get_visits();
               coeffs[root->children[i]->data.i][root->children[i]->data.j]=SelectionUCTRave<ValGo,DataGo>(_cfg.bandit_coeff,_cfg.amaf_coeff).get_uct_amaf_val(root->children[i],sqrt_log_parent);
             }
     }
@@ -183,10 +183,10 @@ void Game::debug(){
         NodeUCT<ValGo,DataGo> *root = (NodeUCT<ValGo,DataGo>*) _mcts->get_root();
         if(!root) return;
         std::cout<<"CELL MCTS VISITS:"<<std::endl;
-        double sqrt_log_parent = sqrt(log((double) root->visits));
+        double sqrt_log_parent = sqrt(log((double) root->get_visits()));
         for(int i=0;i<root->children.size();i++)
             if(!IS_PASS(root->children[i]->data)){
-              visits[root->children[i]->data.i][root->children[i]->data.j]=root->children[i]->visits;
+              visits[root->children[i]->data.i][root->children[i]->data.j]=root->children[i]->get_visits();
               coeffs[root->children[i]->data.i][root->children[i]->data.j]=SelectionUCT<ValGo,DataGo>(_cfg.bandit_coeff).get_uct_val(root->children[i],sqrt_log_parent);
             }
     }

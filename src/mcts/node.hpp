@@ -9,21 +9,25 @@
 #include <iostream>
 
 template <class Value,class Data> class NodeUCT{
+    protected:
+        NodeUCT<Value,Data> *parent;
     private:
+        unsigned long visits;
+        double sqrt_visits;
         void count_nodes(int level,long counter[],int max_level);
         NodeUCT(Value init_value,Data init_data,NodeUCT<Value,Data> *father);
     public:
-        unsigned long visits;
-        double sqrt_visits;
         Value value;
         Data data;
         std::vector< NodeUCT<Value,Data>* > children;
-        NodeUCT<Value,Data> *parent;
         NodeUCT(Value init_value,Data init_data);
+        void set_visits(unsigned long v);
+        unsigned long get_visits() const {return visits;};
+        double get_sqrt_visits() const {return sqrt_visits;};
+        NodeUCT<Value,Data> *get_parent() const {return parent;};
+        NodeUCT<Value,Data> *move_root_to_child(Data child_data);
         void create_child(Value init_value,Data init_data);
         void delete_tree();
-        NodeUCT<Value,Data> *move_root_to_child(Data child_data);
-        void set_visits(unsigned long v);
         void join(NodeUCT<Value,Data>* nod);
         void show();
 #ifdef DEBUG

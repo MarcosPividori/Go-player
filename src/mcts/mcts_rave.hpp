@@ -53,32 +53,33 @@ SelectionUCTRave<Value,Data>::SelectionUCTRave(double coeff, double amaf_coeff) 
 template <class Value,class Data>
 inline double SelectionUCTRave<Value,Data>::get_uct_amaf_val(const NodeUCTRave<Value,Data> *nod, double sqrt_log_parent)
 {
-    if(nod->visits==0)
+    if(nod->get_visits()==0)
         return -1;
-    if(nod->amaf_visits==0)
-        return (((double) nod->value) / (double) nod->visits) +
-                 _coeff * sqrt_log_parent / nod->sqrt_visits;
-    double amaf_coeff = _amaf_coeff / nod->sqrt_for_amaf;
-    return (((double) nod->value) / (double) nod->visits) * (1-amaf_coeff) +
-           (((double) nod->amaf_value) / (double) nod->amaf_visits) * amaf_coeff +
-             _coeff * sqrt_log_parent / nod->sqrt_visits;
+    if(nod->get_amaf_visits()==0)
+        return (((double) nod->value) / (double) nod->get_visits()) +
+                 _coeff * sqrt_log_parent / nod->get_sqrt_visits();
+    double amaf_coeff = _amaf_coeff / nod->get_sqrt_for_amaf();
+    return (((double) nod->value) / (double) nod->get_visits()) * (1-amaf_coeff) +
+           (((double) nod->amaf_value) / (double) nod->get_amaf_visits()) * amaf_coeff +
+             _coeff * sqrt_log_parent / nod->get_sqrt_visits();
 }
 
 template <class Value,class Data>
 NodeUCTRave<Value,Data>* SelectionUCTRave<Value,Data>::select(const NodeUCTRave<Value,Data> *nod)
 {
-    if(nod->children.empty())
+    NodeUCTRave<Value,Data>::const_iterator iter=nod->children_begin();
+    if(iter==nod->children_end())
         return NULL;
-    NodeUCTRave<Value,Data> *max_nod= nod->children[0];
-    double max_val,val,sqrt_log_parent = sqrt(log((double) nod->visits));
-    if((max_val = get_uct_amaf_val(nod->children[0],sqrt_log_parent))==-1)
+    NodeUCTRave<Value,Data> *max_nod= *iter;
+    double max_val,val,sqrt_log_parent = sqrt(log((double) (nod->get_visits())));
+    if((max_val = get_uct_amaf_val(*iter,sqrt_log_parent))==-1)
         return max_nod;
-    for(int i=1;i<nod->children.size();i++){
-        if((val=get_uct_amaf_val(nod->children[i],sqrt_log_parent))==-1)
-            return nod->children[i];
+    for(iter++;iter != nod->children_end();iter++){
+        if((val=get_uct_amaf_val(*iter,sqrt_log_parent))==-1)
+            return *iter;
         if(val>max_val){
             max_val = val;
-            max_nod = nod->children[i];
+            max_nod = *iter;
         }
     }
     return max_nod;
@@ -115,18 +116,19 @@ void SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>:
 {
     do{
         node->value=_eval_fun(node->value,value,node->data);
-        assert(node->visits<ULONG_MAX);
-        node->set_visits(node->visits+1);
+        assert(node->get_visits()<ULONG_MAX);
+        node->set_visits(node->get_visits()+1);
         NodeUCTRave<Value,Data>* nod;
-        for(int i=0;i<node->children.size();i++){
-            nod=node->children[i];
+        NodeUCTRave<Value,Data>::const_iterator iter=nod->children_begin();
+        for(;iter != node->children_end();iter++){
+            nod=*iter;
             if(recorder.isMove(nod->data)){
-                assert(nod->amaf_visits<ULONG_MAX);
+                assert(nod->get_amaf_visits()<ULONG_MAX);
                 nod->amaf_value=_eval_fun(nod->amaf_value,value,nod->data);
-                nod->amaf_visits+=1;
+                nod->set_amaf_visits(nod->get_amaf_visits()+1);
             }
         }
         recorder.prevMove(node->data);
-    }while((node=node->parent)!=NULL);
+    }while(node=node->get_parent());
 }
 

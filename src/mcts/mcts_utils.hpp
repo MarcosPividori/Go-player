@@ -48,8 +48,8 @@ Node* ExpansionAllChildren<Value,Data,State,Node>::expand(Node *nod,
                                             State *state)
 {
     assert(nod->children.empty());
-    if(nod->parent == NULL //Root node.
-     || nod->visits >= _lim){
+    if(!nod->get_parent() //Root node.
+     || nod->get_visits() >= _lim){
         std::vector<Data> v;
         state->get_possible_moves(v);
         if(v.empty()){
@@ -90,12 +90,12 @@ template <class Value,class Data,class Node>
 Data SelectResMostRobust<Value,Data,Node>::select_res(Node *node)
 {
     assert(!node->children.empty());
-    unsigned long max_visits = node->children[0]->visits;
+    unsigned long max_visits = node->children[0]->get_visits();
     Node *max_node = node->children[0];
     for(int i=1;i<node->children.size();i++)
-        if(node->children[i]->visits > max_visits){
+        if(node->children[i]->get_visits() > max_visits){
             max_node = node->children[i];
-            max_visits = node->children[i]->visits;
+            max_visits = node->children[i]->get_visits();
         }
     return max_node->data;
 }
