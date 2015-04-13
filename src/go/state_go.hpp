@@ -22,7 +22,7 @@ class Block{
       Block() : adj(0),size(1),atari(PASS(Empty)) {};
 };
 
-class StateGo : public States<ValGo,DataGo>
+class StateGo
 {
     friend class PatternList;
     public:

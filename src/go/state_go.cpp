@@ -270,7 +270,7 @@ unsigned int StateGo::count_area(bool **visited,INDEX i,INDEX j)
     return res;
 }
 
-inline void StateGo::get_possible_moves(std::vector<DataGo>& v)
+void StateGo::get_possible_moves(std::vector<DataGo>& v)
 {
     if(pass==2)
         return;
@@ -401,7 +401,7 @@ bool StateGo::is_useful_move(DataGo mov)
          || remove_opponent_block_and_no_ko(mov.i,mov.j));
 }
 
-inline ValGo StateGo::get_final_value()
+ValGo StateGo::get_final_value()
 {
     float res = final_value();
     if(res<0)
@@ -460,7 +460,7 @@ inline float StateGo::final_value()
     return countw-countb; 
 }
 
-inline void StateGo::apply(DataGo d)
+void StateGo::apply(DataGo d)
 {
     assert(d.player == turn);
     num_movs++;

@@ -2,7 +2,8 @@
 #include "defines.h"
 #include "states.hpp"
 
-class StateHexa: public States<ValHexa,DataHexa>{
+class StateHexa
+{
     private:
         int _size;
         CELL **A;
@@ -12,10 +13,10 @@ class StateHexa: public States<ValHexa,DataHexa>{
         Player turn;
         StateHexa(int size);
         ~StateHexa();
-        virtual StateHexa *copy();
-        virtual void get_possible_moves(std::vector<DataHexa>& v);
-        virtual void apply(DataHexa);
-        virtual ValHexa get_final_value();
+        StateHexa *copy();
+        void get_possible_moves(std::vector<DataHexa>& v);
+        void apply(DataHexa);
+        ValHexa get_final_value();
         bool valid_move(DataHexa);
         void show();
 };
