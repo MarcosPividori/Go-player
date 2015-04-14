@@ -194,21 +194,22 @@ void Game::debug(){
     }
     for(int i=_size-1;i>=0;i--){
         for(int j=0;j<_size;j++)
-            if(visits[i][j] == 0){
-              std::cout<<std::setw(4)<<"---";
+            if(visits[i][j] == 0)
               switch(_state->Stones[i][j]){
-                case Black: std::cout<<"X";break;
-                case White: std::cout<<"O";break;
-                default: std::cout<<"-";break;
+                case Black: std::cout<<"    \\/  ";break;
+                case White: std::cout<<"    /\\  ";break;
+                default: std::cout<<"    --  ";break;
               }
-              std::cout<<"---";
-            }
             else
               std::cout<<std::setw(8)<<visits[i][j];
         std::cout<<std::endl;
         for(int j=0;j<_size;j++)
             if(visits[i][j] == 0)
-              std::cout<<std::setw(8)<<" ";
+              switch(_state->Stones[i][j]){
+                case Black: std::cout<<"    /\\  ";break;
+                case White: std::cout<<"    \\/  ";break;
+                default: std::cout<<std::setw(8)<<" ";break;
+              }
             else
               std::cout<<std::setw(8)<<std::setprecision(5)<<coeffs[i][j];
         std::cout<<std::endl;
