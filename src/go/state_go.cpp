@@ -15,11 +15,13 @@
 
 #define FOR_EACH_ADJ(i,j,k,l,Code)  ( \
             { \
+              INDEX k,l;\
               if(i>0)      { k=i-1;l=j;Code;} \
               if(i<_size-1){ k=i+1;l=j;Code;} \
               if(j>0)      { k=i;l=j-1;Code;} \
               if(j<_size-1){ k=i;l=j+1;Code;} \
             })
+
 
 bool StateGo::japanese_rules;
 double StateGo::pattern_coeff;
@@ -125,7 +127,6 @@ void StateGo::eliminate_block(Block *block,INDEX i,INDEX j)
     Stones[i][j]=Empty;
     b_mov.insert(POS(i,j));
     w_mov.insert(POS(i,j));
-    INDEX k,l;
     FOR_EACH_ADJ(i,j,k,l,
     {
       if(Blocks[k][l]==block)//If same block, propagate.
@@ -149,7 +150,6 @@ void StateGo::eliminate_block(Block *block,INDEX i,INDEX j)
 void StateGo::update_block(Block *block,Block *new_block,INDEX i,INDEX j)
 {
     Blocks[i][j]=new_block;
-    INDEX k,l;
     FOR_EACH_ADJ(i,j,k,l,
     {
       if(Blocks[k][l]==block)//If same block, propagate.
@@ -163,7 +163,6 @@ unsigned int StateGo::get_liberty_block(Block *block,Block *flag,INDEX i,INDEX j
     Blocks[i][j]= flag;
     INDEX t_i,t_j;
     unsigned int res=INIT_LIB,v;
-    INDEX k,l;
     FOR_EACH_ADJ(i,j,k,l,
     {
       if(Blocks[k][l]==block){//If same block, propagate.
@@ -211,7 +210,6 @@ inline bool StateGo::is_block_in_atari(INDEX i,INDEX j,INDEX &i_atari,INDEX &j_a
 DataGo StateGo::look_for_delete_atari(Block *block,Block *flag,INDEX i,INDEX j,int &max_size)
 {
     Blocks[i][j]= flag;
-    INDEX k,l;
     Player opp=CHANGE_PLAYER(Stones[i][j]);
     DataGo res=PASS(Empty);
     FOR_EACH_ADJ(i,j,k,l,
@@ -249,7 +247,6 @@ unsigned int StateGo::count_area(bool **visited,INDEX i,INDEX j)
 {
     unsigned int res=1,v;
     visited[i][j]=true;
-    INDEX k,l;
     FOR_EACH_ADJ(i,j,k,l,
     {
       switch(Stones[k][l]){
@@ -305,7 +302,7 @@ void StateGo::get_atari_escape_moves(vector<DataGo>& v)
 {
     if(IS_PASS(last_mov))
       return;
-    INDEX k,l,m,n;
+    INDEX k,l;
     int sum=0,c=0,count,size;
     vector<POS> *atari_blocks;
     if(turn==White)
@@ -716,7 +713,6 @@ inline bool StateGo::remove_opponent_block_and_no_ko(INDEX i,INDEX j)
     if(ko.flag && ko.i==i && ko.j==j)
       return false;
     Player opp=CHANGE_PLAYER(turn);
-    INDEX k,l;
     FOR_EACH_ADJ(i,j,k,l,
     {
       if(Stones[k][l]==opp)
@@ -732,7 +728,6 @@ inline bool StateGo::no_self_atari_nor_suicide(INDEX i,INDEX j,Player p)
     int c_empty=0;
     bool flag=false;
     INDEX l_i,l_j;
-    INDEX k,l;
     FOR_EACH_ADJ(i,j,k,l,
     {
       if(Stones[k][l]==Empty){
@@ -790,7 +785,6 @@ inline void StateGo::update_mov(INDEX i,INDEX j)
 
 inline bool StateGo::no_suicide(INDEX i,INDEX j,Player p)
 {
-    INDEX k,l;
     if(Stones[i][j]!=Empty)
       return false;
     FOR_EACH_ADJ(i,j,k,l,
@@ -812,7 +806,6 @@ inline bool StateGo::no_ko_nor_suicide(INDEX i,INDEX j,Player p)
 {
     if(ko.flag && ko.i==i && ko.j==j)
       return false;
-    INDEX k,l;
     FOR_EACH_ADJ(i,j,k,l,
     {
       if(Stones[k][l]==Empty)
