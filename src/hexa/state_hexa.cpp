@@ -29,21 +29,22 @@ StateHexa::StateHexa(int size) : _size(size)
     turn=Cross;
 }
 
+StateHexa::StateHexa(StateHexa *src)
+{
+    A = new CELL*[src->_size];
+    for(int i=0;i<src->_size;i++){
+        A[i] = new CELL[src->_size];
+        for(int j=0;j<src->_size;j++)
+            A[i][j]=src->A[i][j];
+    }
+    turn = src->turn;
+}
+
 StateHexa::~StateHexa()
 {
     for(int i=0;i<_size;i++)
         delete[] A[i];
     delete[] A;
-}
-
-StateHexa *StateHexa::copy()
-{
-    StateHexa *s = new StateHexa(_size);
-    for(int i=0;i<_size;i++)
-       for(int j=0;j<_size;j++)
-          s->A[i][j]=A[i][j];
-    s->turn = turn;
-    return s;
 }
 
 void StateHexa::get_possible_moves(vector<DataHexa>& v)

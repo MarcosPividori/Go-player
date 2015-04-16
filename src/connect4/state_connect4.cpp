@@ -9,11 +9,9 @@ StateConnect4::StateConnect4()
     turn=Cross;
 }
 
-StateConnect4 *StateConnect4::copy()
+StateConnect4::StateConnect4(StateConnect4 *src)
 {
-    StateConnect4 *s = new StateConnect4();
-    *s = *this;
-    return s;
+    *this = *src;
 }
 
 void StateConnect4::get_possible_moves(std::vector<DataConnect4>& v)

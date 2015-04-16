@@ -1,6 +1,5 @@
 
 #include "defines.h"
-#include "states.hpp"
 
 class StateConnect4
 {
@@ -9,7 +8,7 @@ class StateConnect4
     public:
         Player turn;
         StateConnect4();
-        StateConnect4 *copy();
+        StateConnect4(StateConnect4* src);
         void get_possible_moves(std::vector<DataConnect4>& v);
         void apply(DataConnect4);
         ValConnect4 get_final_value();

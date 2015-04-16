@@ -2,8 +2,8 @@
 #define __STATE_GO__
 
 #include <iostream>
+#include <vector>
 #include "defines.h"
-#include "states.hpp"
 #include "pattern_list.hpp"
 #include "avl_tree.hpp"
 
@@ -65,14 +65,13 @@ class StateGo
         float final_value();
         int captured_b;
         int captured_w;
-        StateGo(StateGo *src);
     public:
         int num_movs;
         Player turn;
         StateGo(int size,float komi,PatternList *p);
+        StateGo(StateGo *src);
         ~StateGo();
-        StateGo *copy();
-        void get_possible_moves(std::vector<DataGo>& v);
+        void get_possible_moves(vector<DataGo>& v);
         int possible_moves_size();
         DataGo get_possible_moves_by_index(int i);
         void get_atari_escape_moves(std::vector<DataGo>& v);

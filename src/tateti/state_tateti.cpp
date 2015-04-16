@@ -9,11 +9,9 @@ StateTateti::StateTateti()
     turn=Cross;
 }
 
-StateTateti *StateTateti::copy()
+StateTateti::StateTateti(StateTateti *src)
 {
-    StateTateti *s = new StateTateti();
-    *s = *this;
-    return s;
+    *this = *src;
 }
 
 void StateTateti::get_possible_moves(std::vector<DataTateti>& v)

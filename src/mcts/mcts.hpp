@@ -5,7 +5,6 @@
 #include <cstddef>
 #include <ctime>
 #include <mutex>
-#include "states.hpp"
 
 template <class Nod> class Selection{
     public:
@@ -84,22 +83,22 @@ inline void Mcts<Value,Data,Nod,State>::run_one_cycle(Nod *root,
 {
     Nod *node,*after,*before;
     Value res;
-    State *actual_state=init_state->copy();
+    State actual_state(init_state);
     node=root;
     if(_mutex){
         //Selection
         _mutex->lock();
         while((after=_sel->select(node))){
             node=after;
-            actual_state->apply(node->data);
+            actual_state.apply(node->data);
         }
         //Expansion
         before=node;
-        if((node=_exp->expand(node,actual_state)) != before)
-            actual_state->apply(node->data);
+        if((node=_exp->expand(node,&actual_state)) != before)
+            actual_state.apply(node->data);
         _mutex->unlock();
         //Simulation
-        res= _sim->simulate(actual_state);
+        res= _sim->simulate(&actual_state);
         //Retropropagation
         _mutex->lock();
         _ret->retro(node,res);
@@ -110,18 +109,17 @@ inline void Mcts<Value,Data,Nod,State>::run_one_cycle(Nod *root,
         //Selection
         while((after=_sel->select(node))){
             node=after;
-            actual_state->apply(node->data);
+            actual_state.apply(node->data);
         }
         //Expansion
         before=node;
-        if((node=_exp->expand(node,actual_state)) != before)
-            actual_state->apply(node->data);
+        if((node=_exp->expand(node,&actual_state)) != before)
+            actual_state.apply(node->data);
         //Simulation
-        res= _sim->simulate(actual_state);
+        res= _sim->simulate(&actual_state);
         //Retropropagation
         _ret->retro(node,res);
     }
-    delete actual_state;
 }
 
 template <class Value,class Data,class Nod,class State>

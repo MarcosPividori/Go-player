@@ -1,6 +1,5 @@
 
 #include "defines.h"
-#include "states.hpp"
 
 class StateTateti
 {
@@ -9,7 +8,7 @@ class StateTateti
     public:
         Player turn;
         StateTateti();
-        StateTateti *copy();
+        StateTateti(StateTateti *src);
         void get_possible_moves(std::vector<DataTateti>& v);
         void apply(DataTateti);
         ValTateti get_final_value();

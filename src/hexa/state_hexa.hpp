@@ -1,6 +1,5 @@
 
 #include "defines.h"
-#include "states.hpp"
 
 class StateHexa
 {
@@ -12,8 +11,8 @@ class StateHexa
     public:
         Player turn;
         StateHexa(int size);
+        StateHexa(StateHexa *src);
         ~StateHexa();
-        StateHexa *copy();
         void get_possible_moves(std::vector<DataHexa>& v);
         void apply(DataHexa);
         ValHexa get_final_value();

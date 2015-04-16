@@ -99,11 +99,6 @@ StateGo::StateGo(StateGo *src) :
         b_atari.push_back(src->b_atari[l]);
 }
 
-StateGo *StateGo::copy()
-{
-    return new StateGo(this);
-}
-
 StateGo::~StateGo()
 {
     for(int i=0;i<_size;i++){

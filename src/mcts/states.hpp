@@ -6,14 +6,12 @@
 template <class Value,class Data>
 class States{
     public:
-        virtual ~States()=0;
-        virtual States *copy()=0;
-        virtual void get_possible_moves(std::vector<Data>& v)=0;
-        virtual void apply(Data)=0;
-        virtual Value get_final_value()=0;
-#ifdef DEBUG
-        virtual void show()=0;
-#endif
+        ~States()=0;
+        States States(States *src)=0;
+        void get_possible_moves(std::vector<Data>& v)=0;
+        void apply(Data)=0;
+        Value get_final_value()=0;
+        void show()=0;
 };
 
 template <class Value,class Data>
