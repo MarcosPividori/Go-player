@@ -6,6 +6,8 @@
 #include <cassert>
 #include <climits>
 
+using namespace std;
+
 template <class Value,class Data>
 class SelectionUCTRave: public Selection<NodeUCTRave<Value,Data> >{
     private:
@@ -34,7 +36,7 @@ class SimulationAndRetropropagationRave: public Simulation<Value,State>,
                                          public Retropropagation<Value, NodeUCTRave<Value,Data> >
 {
     protected:
-        std::mt19937 mt;
+        mt19937 mt;
         MoveRecorderT recorder;
         EvalNode _eval_fun;
     public:
@@ -88,7 +90,7 @@ NodeUCTRave<Value,Data>* SelectionUCTRave<Value,Data>::select(const NodeUCTRave<
 template <class Value,class Data,class State,class EvalNode,class MoveRecorderT>
 SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::SimulationAndRetropropagationRave()
 {
-    std::random_device rd;
+    random_device rd;
     mt.seed(rd());
 }
 
@@ -96,11 +98,11 @@ template <class Value,class Data,class State,class EvalNode,class MoveRecorderT>
 Value SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::simulate(State *state)
 {
     recorder.clear();
-    std::vector<Data> v;
+    vector<Data> v;
     Data mov;
     state->get_possible_moves(v);
     while(!v.empty()){
-        std::uniform_int_distribution<int> dist(0, v.size()-1);
+        uniform_int_distribution<int> dist(0, v.size()-1);
         mov = v[dist(mt)];
         state->apply(mov);
         recorder.postMove(mov);

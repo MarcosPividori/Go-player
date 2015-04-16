@@ -8,6 +8,8 @@
 #include "state_go.hpp"
 #include "moverecorder_go.hpp"
 
+using namespace std;
+
 struct EvalNod : EvalNode<ValGo,DataGo> {
     ValGo operator()(ValGo v_nodo,ValGo v_final,DataGo dat_nodo)
     {
@@ -24,7 +26,7 @@ class SimulationWithDomainKnowledge: public SimulationAndRetropropagationRave<Va
         int _fill_board_n;
         double _long_game_coeff;
         int _limit_atari;
-        void get_possible_moves(StateGo *state,std::vector<DataGo> &v,std::uniform_int_distribution<int> &mov_dist);
+        void get_possible_moves(StateGo *state,vector<DataGo> &v,uniform_int_distribution<int> &mov_dist);
     public:
         SimulationWithDomainKnowledge(int number_fill_board_attemps,double long_game_coeff,int limit_atari): SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>(),_fill_board_n(number_fill_board_attemps), _long_game_coeff(long_game_coeff), _limit_atari(limit_atari) {};
         ValGo simulate(StateGo *state);
@@ -41,7 +43,7 @@ class SimulationAndRetropropagationRaveGo: public SimulationAndRetropropagationR
 class SimulationTotallyRandomGo: public Simulation<ValGo,StateGo> {
     private:
         double _long_game_coeff;
-        std::mt19937 mt;
+        mt19937 mt;
     public:
         SimulationTotallyRandomGo(double long_game_coeff);
         ValGo simulate(StateGo *state);

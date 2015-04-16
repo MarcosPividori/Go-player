@@ -6,6 +6,8 @@
 #include <ctime>
 #include <mutex>
 
+using namespace std;
+
 template <class Nod> class Selection{
     public:
         virtual Nod *select(const Nod *nod)=0;
@@ -44,14 +46,14 @@ class Mcts{
         Simulation<Value,State> *_sim;
         Retropropagation<Value,Nod> *_ret;
         SelectRes<Data,Nod> *_sel_res;
-        std::mutex *_mutex;
+        mutex *_mutex;
     public:
         Mcts(Selection<Nod> *sel,
              Expansion<Nod,State> *exp,
              Simulation<Value,State> *sim,
              Retropropagation<Value,Nod> *ret,
              SelectRes<Data,Nod> *sel_res,
-             std::mutex *mutex=NULL);
+             mutex *mutex=NULL);
         void run_time(double time_limit,
                  Nod *root,
                  State *init_state);
@@ -59,7 +61,7 @@ class Mcts{
                  Nod *root,
                  State *init_state);
         Data get_resultant_move(Nod *root);
-        void set_mutex(std::mutex *mutex) {_mutex=mutex;};
+        void set_mutex(mutex *mutex) {_mutex=mutex;};
     private:
         void run_one_cycle(Nod *root,
                            State *init_state);
@@ -73,7 +75,7 @@ Mcts<Value,Data,Nod,State>::Mcts(Selection<Nod> *sel,
                            Simulation<Value,State> *sim,
                            Retropropagation<Value,Nod> *ret,
                            SelectRes<Data,Nod> *sel_res,
-                           std::mutex *mutex)
+                           mutex *mutex)
                          : _sel(sel),_exp(exp),_sim(sim),_ret(ret),_sel_res(sel_res),_mutex(mutex)
 {}
 

@@ -265,7 +265,7 @@ unsigned int StateGo::count_area(bool **visited,INDEX i,INDEX j)
     return res;
 }
 
-void StateGo::get_possible_moves(std::vector<DataGo>& v)
+void StateGo::get_possible_moves(vector<DataGo>& v)
 {
     if(pass==2)
         return;
@@ -301,13 +301,13 @@ DataGo StateGo::get_possible_moves_by_index(int i)
       return DataGo(b_mov[i],turn);
 }
 
-void StateGo::get_atari_escape_moves(std::vector<DataGo>& v)
+void StateGo::get_atari_escape_moves(vector<DataGo>& v)
 {
     if(IS_PASS(last_mov))
       return;
     INDEX k,l,m,n;
     int sum=0,c=0,count,size;
-    std::vector<POS> *atari_blocks;
+    vector<POS> *atari_blocks;
     if(turn==White)
         atari_blocks=&w_atari;
     else
@@ -335,7 +335,7 @@ void StateGo::get_atari_escape_moves(std::vector<DataGo>& v)
     }
 }
 
-void StateGo::get_pattern_moves(std::vector<DataGo>& v)
+void StateGo::get_pattern_moves(vector<DataGo>& v)
 {
     if(patterns==NULL)
         return;
@@ -355,7 +355,7 @@ void StateGo::get_pattern_moves(std::vector<DataGo>& v)
         }
 }
 
-void StateGo::get_capture_moves(std::vector<DataGo>& v)
+void StateGo::get_capture_moves(vector<DataGo>& v)
 {
     if(pass==2)
         return;
@@ -649,9 +649,9 @@ void StateGo::show(FILE *output){
         }
     }
 #ifdef DEBUG
-    std::cout<<std::endl<<std::endl;
-    std::cout<<"WHITE MOVES:"<<std::endl;
-    std::cout<<"   ";
+    cout<<endl<<endl;
+    cout<<"WHITE MOVES:"<<endl;
+    cout<<"   ";
     for(int i=0;i<_size;i++)
         printf(" %c",'A'+i+(i>7));
     for(int i=_size-1;i>=0;i--){
@@ -664,8 +664,8 @@ void StateGo::show(FILE *output){
             printf(" %c",c);
         }
     }
-    std::cout<<std::endl<<std::endl;
-    std::cout<<"BLACK MOVES:"<<std::endl;
+    cout<<endl<<endl;
+    cout<<"BLACK MOVES:"<<endl;
     printf("   ");
     for(int i=0;i<_size;i++)
         printf(" %c",'A'+i+(i>7));
@@ -688,26 +688,26 @@ void StateGo::show(){
 
 #ifdef DEBUG
 void StateGo::debug(){
-    std::cout<<"STATE VALUE: "<<get_final_value()<<std::endl<<std::endl;
-    std::cout<<"BLOCKS:"<<std::endl;
+    cout<<"STATE VALUE: "<<get_final_value()<<endl<<endl;
+    cout<<"BLOCKS:"<<endl;
     for(int i = _size-1;i>=0;i--){
         for(int j=0;j<_size;j++)
             if(Blocks[i][j]==NULL)
-              std::cout<<std::setw(5)<<"----";
+              cout<<setw(5)<<"----";
             else
-              std::cout<<std::setw(5)<<(((long) Blocks[i][j])%10000);
-        std::cout<<std::endl;
+              cout<<setw(5)<<(((long) Blocks[i][j])%10000);
+        cout<<endl;
     }
-    std::cout<<std::endl<<"BLOCKS'S VALUES:"<<std::endl;
+    cout<<endl<<"BLOCKS'S VALUES:"<<endl;
     for(int i = _size-1;i>=0;i--){
         for(int j=0;j<_size;j++)
             if(Blocks[i][j] == NULL)
-              std::cout<<std::setw(3)<<"--";
+              cout<<setw(3)<<"--";
             else
-              std::cout<<std::setw(3)<<(Blocks[i][j]->adj);
-        std::cout<<std::endl;
+              cout<<setw(3)<<(Blocks[i][j]->adj);
+        cout<<endl;
     }
-    std::cout<<std::endl;
+    cout<<endl;
 }
 #endif
 

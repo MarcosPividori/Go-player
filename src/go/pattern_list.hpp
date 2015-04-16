@@ -6,6 +6,8 @@
 #include <iostream>
 #include <fstream>
 
+using namespace std;
+
 class StateGo;
 
 class PatternList{

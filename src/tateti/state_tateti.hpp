@@ -1,6 +1,8 @@
 
 #include "defines.h"
 
+using namespace std;
+
 class StateTateti
 {
     private:
@@ -9,7 +11,7 @@ class StateTateti
         Player turn;
         StateTateti();
         StateTateti(StateTateti *src);
-        void get_possible_moves(std::vector<DataTateti>& v);
+        void get_possible_moves(vector<DataTateti>& v);
         void apply(DataTateti);
         ValTateti get_final_value();
         bool valid_move(DataTateti);

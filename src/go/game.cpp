@@ -170,7 +170,7 @@ void Game::debug(){
     {
         NodeUCTRave<ValGo,DataGo> *root = (NodeUCTRave<ValGo,DataGo>*) _mcts->get_root();
         if(!root) return;
-        std::cout<<"CELL MCTS VISITS:"<<std::endl;
+        cout<<"CELL MCTS VISITS:"<<endl;
         double sqrt_log_parent = sqrt(log((double) root->get_visits()));
         NodeUCTRave<ValGo,DataGo>::const_iterator iter=root->children_begin();
         for(;iter != root->children_end();iter++)
@@ -183,7 +183,7 @@ void Game::debug(){
     {
         NodeUCT<ValGo,DataGo> *root = (NodeUCT<ValGo,DataGo>*) _mcts->get_root();
         if(!root) return;
-        std::cout<<"CELL MCTS VISITS:"<<std::endl;
+        cout<<"CELL MCTS VISITS:"<<endl;
         double sqrt_log_parent = sqrt(log((double) root->get_visits()));
         NodeUCT<ValGo,DataGo>::const_iterator iter=root->children_begin();
         for(;iter != root->children_end();iter++)
@@ -196,42 +196,42 @@ void Game::debug(){
         for(int j=0;j<_size;j++)
             if(visits[i][j] == 0)
               switch(_state->Stones[i][j]){
-                case Black: std::cout<<"    \\/  ";break;
-                case White: std::cout<<"    /\\  ";break;
-                default: std::cout<<"    --  ";break;
+                case Black: cout<<"    \\/  ";break;
+                case White: cout<<"    /\\  ";break;
+                default: cout<<"    --  ";break;
               }
             else
-              std::cout<<std::setw(8)<<visits[i][j];
-        std::cout<<std::endl;
+              cout<<setw(8)<<visits[i][j];
+        cout<<endl;
         for(int j=0;j<_size;j++)
             if(visits[i][j] == 0)
               switch(_state->Stones[i][j]){
-                case Black: std::cout<<"    /\\  ";break;
-                case White: std::cout<<"    \\/  ";break;
-                default: std::cout<<std::setw(8)<<" ";break;
+                case Black: cout<<"    /\\  ";break;
+                case White: cout<<"    \\/  ";break;
+                default: cout<<setw(8)<<" ";break;
               }
             else
-              std::cout<<std::setw(8)<<std::setprecision(5)<<coeffs[i][j];
-        std::cout<<std::endl;
-        std::cout<<" "<<std::endl;
+              cout<<setw(8)<<setprecision(5)<<coeffs[i][j];
+        cout<<endl;
+        cout<<" "<<endl;
     }
 }
 
 void Game::match_patterns(){
-    std::vector<DataGo> v;
-    std::cout<<"ESCAPE ATARI: "<<std::endl;
+    vector<DataGo> v;
+    cout<<"ESCAPE ATARI: "<<endl;
     _state->get_atari_escape_moves(v);
     for(int i=0;i<v.size();i++)
-        std::cout<<"Position: "<<POS_TO_LETTER(v[i].j)<<" "<<int(1+v[i].i)<<std::endl;
-    std::cout<<"PATTERNS: "<<std::endl;
+        cout<<"Position: "<<POS_TO_LETTER(v[i].j)<<" "<<int(1+v[i].i)<<endl;
+    cout<<"PATTERNS: "<<endl;
     v.clear();
     _state->get_pattern_moves(v);
     for(int i=0;i<v.size();i++)
-        std::cout<<"Position: "<<POS_TO_LETTER(v[i].j)<<" "<<int(1+v[i].i)<<std::endl;
+        cout<<"Position: "<<POS_TO_LETTER(v[i].j)<<" "<<int(1+v[i].i)<<endl;
     v.clear();
-    std::cout<<"CAPTURES: "<<std::endl;
+    cout<<"CAPTURES: "<<endl;
     _state->get_capture_moves(v);
     for(int i=0;i<v.size();i++)
-        std::cout<<"Position: "<<POS_TO_LETTER(v[i].j)<<" "<<int(1+v[i].i)<<std::endl;
+        cout<<"Position: "<<POS_TO_LETTER(v[i].j)<<" "<<int(1+v[i].i)<<endl;
 }
 #endif

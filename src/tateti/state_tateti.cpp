@@ -14,7 +14,7 @@ StateTateti::StateTateti(StateTateti *src)
     *this = *src;
 }
 
-void StateTateti::get_possible_moves(std::vector<DataTateti>& v)
+void StateTateti::get_possible_moves(vector<DataTateti>& v)
 {
     if(get_final_value() !=0)
         return;
@@ -68,12 +68,12 @@ void StateTateti::apply(DataTateti d)
 
 void StateTateti::show()
 {
-    std::cout<<"  1 2 3"<<std::endl;
+    cout<<"  1 2 3"<<endl;
     for(int i=0;i<3;i++){
-        std::cout<<i+1;
+        cout<<i+1;
         for(int j=0;j<3;j++)
-            std::cout<<(A[i][j] == EMPTY ? " -" : (A[i][j]==CROSS ? " X" : " O"));
-        std::cout<<std::endl;
+            cout<<(A[i][j] == EMPTY ? " -" : (A[i][j]==CROSS ? " X" : " O"));
+        cout<<endl;
     }
 }
 

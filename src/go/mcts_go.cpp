@@ -3,9 +3,9 @@
 
 ValGo SimulationWithDomainKnowledge::simulate(StateGo *state)
 {
-    std::uniform_int_distribution<int> mov_dist(0, state->size()-1);
+    uniform_int_distribution<int> mov_dist(0, state->size()-1);
     SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>::recorder.clear();
-    std::vector<DataGo> v;
+    vector<DataGo> v;
     DataGo mov;
     mov_counter=0;
     mov_limit= state->size() * state->size() * _long_game_coeff;
@@ -14,13 +14,13 @@ ValGo SimulationWithDomainKnowledge::simulate(StateGo *state)
     while(1){
         if(v.empty())
           if((n=state->possible_moves_size()) &&  mov_counter<mov_limit){
-            std::uniform_int_distribution<int> dist(0,n-1);
+            uniform_int_distribution<int> dist(0,n-1);
             mov = state->get_possible_moves_by_index(dist(SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>::mt));
           }
           else
             break;
         else{
-          std::uniform_int_distribution<int> dist(0,v.size()-1);
+          uniform_int_distribution<int> dist(0,v.size()-1);
           mov = v[dist(SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>::mt)];
         }
         state->apply(mov);
@@ -31,7 +31,7 @@ ValGo SimulationWithDomainKnowledge::simulate(StateGo *state)
     return state->get_final_value();
 }
 
-inline void SimulationWithDomainKnowledge::get_possible_moves(StateGo *state,std::vector<DataGo> &v,std::uniform_int_distribution<int> &mov_dist)
+inline void SimulationWithDomainKnowledge::get_possible_moves(StateGo *state,vector<DataGo> &v,uniform_int_distribution<int> &mov_dist)
 {
     mov_counter++;
     INDEX i,j;
@@ -61,7 +61,7 @@ ValGo SimulationAndRetropropagationRaveGo::simulate(StateGo *state)
     int size;
     while((size=state->possible_moves_size()) && mov_counter<mov_limit){
         mov_counter++;
-        std::uniform_int_distribution<int> dist(0, size-1);
+        uniform_int_distribution<int> dist(0, size-1);
         mov = state->get_possible_moves_by_index(dist(SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>::mt));
         state->apply(mov);
         SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>::recorder.postMove(mov);
@@ -71,7 +71,7 @@ ValGo SimulationAndRetropropagationRaveGo::simulate(StateGo *state)
 
 SimulationTotallyRandomGo::SimulationTotallyRandomGo(double long_game_coeff) : _long_game_coeff(long_game_coeff)
 {
-    std::random_device rd;
+    random_device rd;
     mt.seed(rd());
 }
 
@@ -82,7 +82,7 @@ ValGo SimulationTotallyRandomGo::simulate(StateGo *state)
     int size;
     while((size=state->possible_moves_size()) && mov_counter<mov_limit){
         mov_counter++;
-        std::uniform_int_distribution<int> dist(0, size-1);
+        uniform_int_distribution<int> dist(0, size-1);
         state->apply(state->get_possible_moves_by_index(dist(mt)));
     }
     return state->get_final_value();

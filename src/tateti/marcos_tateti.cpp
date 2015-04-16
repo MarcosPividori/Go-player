@@ -7,6 +7,8 @@
 #include <thread>
 #include "state_tateti.hpp"
 
+using namespace std;
+
 struct EvalNod: public EvalNode<ValTateti,DataTateti> {
     ValTateti operator()(ValTateti v_nodo,ValTateti v_final,DataTateti dat_nodo)
     {
@@ -22,11 +24,11 @@ Player insert_player()
 {
     char c;
     while(1){
-        std::cout<< "First(f) or Second(s) player?: ";
-        if((std::cin>>c) && (c=='f' || c=='s'))
+        cout<< "First(f) or Second(s) player?: ";
+        if((cin>>c) && (c=='f' || c=='s'))
             break;
-        std::cin.clear();
-        std::cin.ignore(10000, '\n');
+        cin.clear();
+        cin.ignore(10000, '\n');
     }
     return (c=='f') ? Cross : Circle;
 }
@@ -35,13 +37,13 @@ DataTateti insert_mov(Player player,StateTateti *state)
 {
     int i,j;
     while(1){
-        std::cout<<"Insert mov (row and column): ";
-        if((std::cin>>i>>j) && (i>=1 && i<4) && (j>=1 && j<4) && state->valid_move(MOVE(i-1,j-1,player)))
+        cout<<"Insert mov (row and column): ";
+        if((cin>>i>>j) && (i>=1 && i<4) && (j>=1 && j<4) && state->valid_move(MOVE(i-1,j-1,player)))
             break;
-        std::cin.clear();
-        std::cin.ignore(10000, '\n');
+        cin.clear();
+        cin.ignore(10000, '\n');
     }
-    std::cout<<std::endl;
+    cout<<endl;
     return MOVE(i-1,j-1,player);
 }
 
@@ -49,31 +51,31 @@ int main()
 {
     StateTateti state;
     DataTateti res;
-    std::vector<DataTateti> v;
+    vector<DataTateti> v;
     SelectionUCT<ValTateti,DataTateti> sel(1);
     ExpansionAllChildren<ValTateti,DataTateti,StateTateti,Nod> exp(2,0);
     SimulationTotallyRandom<ValTateti,DataTateti,StateTateti> sim;
     RetropropagationSimple<ValTateti,DataTateti,EvalNod> ret;
     SelectResMostRobust<ValTateti,DataTateti,Nod> sel_res;
     Mcts<ValTateti,DataTateti,Nod,StateTateti> m(&sel,&exp,&sim,&ret,&sel_res);
-    std::vector<Mcts<ValTateti,DataTateti,Nod,StateTateti> *> m_vector(NUM_THREADS,&m);
+    vector<Mcts<ValTateti,DataTateti,Nod,StateTateti> *> m_vector(NUM_THREADS,&m);
     MctsParallel_GlobalMutex<ValTateti,DataTateti,Nod,StateTateti> mcts(m_vector,&state,0);
     
-    std::cout<< "TATETI:"<<std::endl;
+    cout<< "TATETI:"<<endl;
     Player us_player=insert_player();
     
-    std::cout<<"------------------"<<std::endl<<std::endl;
+    cout<<"------------------"<<endl<<endl;
     state.show();
 
     while((v.clear(),state.get_possible_moves(v),!v.empty())){
         if(state.turn== us_player){
-            std::cout<<std::endl;
-            std::cout<<"-You play---------"<<std::endl<<std::endl;
+            cout<<endl;
+            cout<<"-You play---------"<<endl<<endl;
             res=insert_mov(us_player,&state);
         }
         else{
-            std::cout<<std::endl;
-            std::cout<<"-Computer plays---"<<std::endl<<std::endl;
+            cout<<endl;
+            cout<<"-Computer plays---"<<endl<<endl;
             mcts.run_time(MAX_SECONDS);
             //mcts.run_cycles(NUM_CYCLES);
             res=mcts.get_resultant_move();
@@ -84,9 +86,9 @@ int main()
         state.show();    
     }
 
-    std::cout<<std::endl<<"------------------"<<std::endl<<std::endl;
-    std::cout << "RESULT: " << (state.get_final_value()==1  ? "X wins." :
-                               (state.get_final_value()==-1 ? "O wins." : "Tie.")) <<std::endl<<std::endl;
+    cout<<endl<<"------------------"<<endl<<endl;
+    cout << "RESULT: " << (state.get_final_value()==1  ? "X wins." :
+                               (state.get_final_value()==-1 ? "O wins." : "Tie.")) <<endl<<endl;
     return 0;
 }
 

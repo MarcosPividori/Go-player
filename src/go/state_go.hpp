@@ -7,6 +7,8 @@
 #include "pattern_list.hpp"
 #include "avl_tree.hpp"
 
+using namespace std;
+
 class PatternList;
 
 typedef double ValGo;
@@ -43,8 +45,8 @@ class StateGo
         DataGo ko;
         DataGo last_mov;
         unsigned char pass;
-        std::vector<POS> b_atari;
-        std::vector<POS> w_atari;
+        vector<POS> b_atari;
+        vector<POS> w_atari;
         AVLTree<POS> b_mov;
         AVLTree<POS> w_mov;
         void remove_atari_block(INDEX i,INDEX j);
@@ -74,9 +76,9 @@ class StateGo
         void get_possible_moves(vector<DataGo>& v);
         int possible_moves_size();
         DataGo get_possible_moves_by_index(int i);
-        void get_atari_escape_moves(std::vector<DataGo>& v);
-        void get_pattern_moves(std::vector<DataGo>& v);
-        void get_capture_moves(std::vector<DataGo>& v);
+        void get_atari_escape_moves(vector<DataGo>& v);
+        void get_pattern_moves(vector<DataGo>& v);
+        void get_capture_moves(vector<DataGo>& v);
         bool is_completely_empty(INDEX i,INDEX j);
         inline int size(){return _size;};
         void apply(DataGo);

@@ -1,6 +1,8 @@
 
 #include "defines.h"
 
+using namespace std;
+
 class StateConnect4
 {
     private:
@@ -9,7 +11,7 @@ class StateConnect4
         Player turn;
         StateConnect4();
         StateConnect4(StateConnect4* src);
-        void get_possible_moves(std::vector<DataConnect4>& v);
+        void get_possible_moves(vector<DataConnect4>& v);
         void apply(DataConnect4);
         ValConnect4 get_final_value();
         bool valid_move(DataConnect4);

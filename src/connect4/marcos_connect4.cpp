@@ -7,6 +7,8 @@
 #include <thread>
 #include "state_connect4.hpp"
 
+using namespace std;
+
 struct EvalNod : public EvalNode<ValConnect4,DataConnect4> {
     ValConnect4 operator()(ValConnect4 v_nodo,ValConnect4 v_final,DataConnect4 dat_nodo)
     {
@@ -22,11 +24,11 @@ Player insert_player()
 {
     char c;
     while(1){
-        std::cout<< "First(f) or Second(s) player?: ";
-        if((std::cin>>c) && (c=='f' || c=='s'))
+        cout<< "First(f) or Second(s) player?: ";
+        if((cin>>c) && (c=='f' || c=='s'))
             break;
-        std::cin.clear();
-        std::cin.ignore(10000, '\n');
+        cin.clear();
+        cin.ignore(10000, '\n');
     }
     return (c=='f') ? Cross : Circle;
 }
@@ -35,13 +37,13 @@ DataConnect4 insert_mov(Player player,StateConnect4 *state)
 {
     int j;
     while(1){
-        std::cout<<"Insert mov (Column num 0-6): ";
-        if((std::cin>>j) && (j>=0 && j<7) && state->valid_move(MOVE(j,player)))
+        cout<<"Insert mov (Column num 0-6): ";
+        if((cin>>j) && (j>=0 && j<7) && state->valid_move(MOVE(j,player)))
             break;
-        std::cin.clear();
-        std::cin.ignore(10000, '\n');
+        cin.clear();
+        cin.ignore(10000, '\n');
     }
-    std::cout<<std::endl;
+    cout<<endl;
     return MOVE(j,player);
 }
 
@@ -49,7 +51,7 @@ int main()
 {
     StateConnect4 state;
     DataConnect4 res;
-    std::vector<DataConnect4> v;
+    vector<DataConnect4> v;
     
     SelectionUCT<ValConnect4,DataConnect4> sel(1);
     ExpansionAllChildren<ValConnect4,DataConnect4,StateConnect4,Nod> exp(2,0);
@@ -57,24 +59,24 @@ int main()
     RetropropagationSimple<ValConnect4,DataConnect4,EvalNod> ret;
     SelectResMostRobust<ValConnect4,DataConnect4,Nod> sel_res;
     Mcts<ValConnect4,DataConnect4,Nod,StateConnect4> m(&sel,&exp,&sim,&ret,&sel_res);
-    std::vector<Mcts<ValConnect4,DataConnect4,Nod,StateConnect4> *> m_vector(NUM_THREADS,&m);
+    vector<Mcts<ValConnect4,DataConnect4,Nod,StateConnect4> *> m_vector(NUM_THREADS,&m);
     MctsParallel_GlobalMutex<ValConnect4,DataConnect4,Nod,StateConnect4> mcts(m_vector,&state,MOVE(Circle,0));
     
-    std::cout<< "CONNNECT4:"<<std::endl;
+    cout<< "CONNNECT4:"<<endl;
     Player us_player=insert_player();
     
-    std::cout<<"------------------"<<std::endl<<std::endl;
+    cout<<"------------------"<<endl<<endl;
     state.show();
 
     while((v.clear(),state.get_possible_moves(v),!v.empty())){
         if(state.turn== us_player){
-            std::cout<<std::endl;
-            std::cout<<"-You play---------"<<std::endl<<std::endl;
+            cout<<endl;
+            cout<<"-You play---------"<<endl<<endl;
             res=insert_mov(us_player,&state);
         }
         else{
-            std::cout<<std::endl;
-            std::cout<<"-Computer plays---"<<std::endl<<std::endl;
+            cout<<endl;
+            cout<<"-Computer plays---"<<endl<<endl;
             mcts.run_time(MAX_SECONDS);
             //mcts.run_cycles(NUM_CYCLES);
             res=mcts.get_resultant_move();
@@ -85,9 +87,9 @@ int main()
         state.show();
     }
 
-    std::cout<<std::endl<<"------------------"<<std::endl<<std::endl;
-    std::cout << "RESULT: " << (state.get_final_value()==1  ? "X wins." :
-                               (state.get_final_value()==-1 ? "O wins." : "Tie.")) <<std::endl<<std::endl;
+    cout<<endl<<"------------------"<<endl<<endl;
+    cout << "RESULT: " << (state.get_final_value()==1  ? "X wins." :
+                               (state.get_final_value()==-1 ? "O wins." : "Tie.")) <<endl<<endl;
     return 0;
 }
 

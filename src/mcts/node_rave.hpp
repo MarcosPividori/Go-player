@@ -8,11 +8,13 @@
 #include <functional>
 #include <iostream>
 
+using namespace std;
+
 template <class Value,class Data> class NodeUCTRave{
     protected:
         NodeUCTRave<Value,Data> *parent;
     private:
-        std::vector< NodeUCTRave<Value,Data>* > children;
+        vector< NodeUCTRave<Value,Data>* > children;
         unsigned long visits;
         double sqrt_visits;
         unsigned long amaf_visits;
@@ -20,7 +22,7 @@ template <class Value,class Data> class NodeUCTRave{
         void count_nodes(int level,long counter[],int max_level);
         NodeUCTRave(Value init_value,Data init_data,NodeUCTRave<Value,Data> *father);
     public:
-        typedef typename std::vector< NodeUCTRave<Value,Data>* >::const_iterator const_iterator;
+        typedef typename vector< NodeUCTRave<Value,Data>* >::const_iterator const_iterator;
         static double k_rave;
         Value value;
         Value amaf_value;
@@ -82,7 +84,7 @@ inline void NodeUCTRave<Value,Data>::create_child(Value init_value,Data init_dat
 
 template <class Value,class Data>
 void NodeUCTRave<Value,Data>::delete_tree(){
-    std::for_each(children.begin(), children.end(), std::mem_fun(&NodeUCTRave<Value,Data>::delete_tree));
+    for_each(children.begin(), children.end(), mem_fun(&NodeUCTRave<Value,Data>::delete_tree));
     delete this;
 }
 
@@ -117,17 +119,17 @@ void NodeUCTRave<Value,Data>::show(){
     count_nodes(0,size,20);
     for(int i=0;i<20;i++)
         total+=size[i];
-    std::cout<<"==Show node=="<<std::endl;
-    std::cout<<"TOTAL: "<<total<<std::endl;
+    cout<<"==Show node=="<<endl;
+    cout<<"TOTAL: "<<total<<endl;
     for(int k=0;k<20 && size[k]!=0;k++)
-        std::cout<<"Level "<<k<<": "<<size[k]<<std::endl;
-    std::cout<<"============="<<std::endl;
+        cout<<"Level "<<k<<": "<<size[k]<<endl;
+    cout<<"============="<<endl;
 }
 
 template <class Value,class Data>
 void NodeUCTRave<Value,Data>::debug(){
-    std::cout << "DEBUG STATS NODE: vis=" << visits << " win=" << value<< " vis_amaf=" << amaf_visits << " win_amaf=" << amaf_value << std::endl;
-    std::cout << "                  rate=" << (value / visits) << "  amaf_rate=" << (amaf_value / amaf_visits) << "  amaf_coeff="<< (sqrt(k_rave)/sqrt_for_amaf) << std::endl;
+    cout << "DEBUG STATS NODE: vis=" << visits << " win=" << value<< " vis_amaf=" << amaf_visits << " win_amaf=" << amaf_value << endl;
+    cout << "                  rate=" << (value / visits) << "  amaf_rate=" << (amaf_value / amaf_visits) << "  amaf_coeff="<< (sqrt(k_rave)/sqrt_for_amaf) << endl;
 }
 
 #endif //__NODE_RAVE__

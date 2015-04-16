@@ -6,6 +6,8 @@
 #include "config.hpp"
 #include "mcts_go.hpp"
 
+using namespace std;
+
 class Game{
     private:
         StateGo *_state;
@@ -40,7 +42,7 @@ class RaveEnv : public MctsParallel<ValGo,DataGo,StateGo>
         SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo> **_sim_and_retro;
         Retropropagation<ValGo,Nod> **_ret;
         SelectRes<DataGo,Nod> *_sel_res;
-        std::vector<Mcts<ValGo,DataGo,Nod,StateGo> *> _m;
+        vector<Mcts<ValGo,DataGo,Nod,StateGo> *> _m;
         MctsParallel<ValGo,DataGo,StateGo> *_mcts;
     public:
         RaveEnv(Config &cfg_input,StateGo *state);
@@ -64,7 +66,7 @@ class UCTEnv : public MctsParallel<ValGo,DataGo,StateGo>
         Simulation<ValGo,StateGo> **_sim;
         Retropropagation<ValGo,Nod> *_ret;
         SelectRes<DataGo,Nod> *_sel_res;
-        std::vector<Mcts<ValGo,DataGo,Nod,StateGo> *> _m;
+        vector<Mcts<ValGo,DataGo,Nod,StateGo> *> _m;
         MctsParallel<ValGo,DataGo,StateGo> *_mcts;
     public:
         UCTEnv(Config &cfg_input,StateGo *state);

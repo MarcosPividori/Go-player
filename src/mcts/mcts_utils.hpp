@@ -6,6 +6,8 @@
 #include <cassert>
 #include <random>
 
+using namespace std;
+
 template <class Value,class Data,class State,class Node>
 class ExpansionAllChildren: public Expansion<Node,State> {
     private:
@@ -22,7 +24,7 @@ class ExpansionAllChildren: public Expansion<Node,State> {
 template <class Value,class Data,class State>
 class SimulationTotallyRandom: public Simulation<Value,State> {
     private:
-        std::mt19937 mt;
+        mt19937 mt;
     public:
         SimulationTotallyRandom();
         Value simulate(State *state);
@@ -50,7 +52,7 @@ Node* ExpansionAllChildren<Value,Data,State,Node>::expand(Node *nod,
     assert(nod->children_begin() == nod->children_end());
     if(!nod->get_parent() //Root node.
      || nod->get_visits() >= _lim){
-        std::vector<Data> v;
+        vector<Data> v;
         state->get_possible_moves(v);
         if(v.empty()){
 #ifdef DEBUG
@@ -68,17 +70,17 @@ Node* ExpansionAllChildren<Value,Data,State,Node>::expand(Node *nod,
 template <class Value,class Data,class State>
 SimulationTotallyRandom<Value,Data,State>::SimulationTotallyRandom()
 {
-    std::random_device rd;
+    random_device rd;
     mt.seed(rd());
 }
 
 template <class Value,class Data,class State>
 Value SimulationTotallyRandom<Value,Data,State>::simulate(State *state)
 {
-    std::vector<Data> v;
+    vector<Data> v;
     state->get_possible_moves(v);
     while(!v.empty()){
-        std::uniform_int_distribution<int> dist(0, v.size()-1);
+        uniform_int_distribution<int> dist(0, v.size()-1);
         state->apply(v[dist(mt)]);
         v.clear();
         state->get_possible_moves(v);

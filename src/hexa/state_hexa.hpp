@@ -1,6 +1,8 @@
 
 #include "defines.h"
 
+using namespace std;
+
 class StateHexa
 {
     private:
@@ -13,7 +15,7 @@ class StateHexa
         StateHexa(int size);
         StateHexa(StateHexa *src);
         ~StateHexa();
-        void get_possible_moves(std::vector<DataHexa>& v);
+        void get_possible_moves(vector<DataHexa>& v);
         void apply(DataHexa);
         ValHexa get_final_value();
         bool valid_move(DataHexa);

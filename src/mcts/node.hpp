@@ -8,17 +8,19 @@
 #include <functional>
 #include <iostream>
 
+using namespace std;
+
 template <class Value,class Data> class NodeUCT{
     protected:
         NodeUCT<Value,Data> *parent;
     private:
-        std::vector< NodeUCT<Value,Data>* > children;
+        vector< NodeUCT<Value,Data>* > children;
         unsigned long visits;
         double sqrt_visits;
         void count_nodes(int level,long counter[],int max_level);
         NodeUCT(Value init_value,Data init_data,NodeUCT<Value,Data> *father);
     public:
-        typedef typename std::vector< NodeUCT<Value,Data>* >::const_iterator const_iterator;
+        typedef typename vector< NodeUCT<Value,Data>* >::const_iterator const_iterator;
         Value value;
         Data data;
         NodeUCT(Value init_value,Data init_data);
@@ -69,7 +71,7 @@ inline void NodeUCT<Value,Data>::create_child(Value init_value,Data init_data)
 
 template <class Value,class Data>
 void NodeUCT<Value,Data>::delete_tree(){
-    std::for_each(children.begin(), children.end(), std::mem_fun(&NodeUCT<Value,Data>::delete_tree));
+    for_each(children.begin(), children.end(), mem_fun(&NodeUCT<Value,Data>::delete_tree));
     delete this;
 }
 
@@ -104,17 +106,17 @@ void NodeUCT<Value,Data>::show(){
     count_nodes(0,size,20);
     for(int i=0;i<20;i++)
         total+=size[i];
-    std::cout<<"==Show node=="<<std::endl;
-    std::cout<<"TOTAL: "<<total<<std::endl;
+    cout<<"==Show node=="<<endl;
+    cout<<"TOTAL: "<<total<<endl;
     for(int k=0;k<20 && size[k]!=0;k++)
-        std::cout<<"Level "<<k<<": "<<size[k]<<std::endl;
-    std::cout<<"============="<<std::endl;
+        cout<<"Level "<<k<<": "<<size[k]<<endl;
+    cout<<"============="<<endl;
 }
 
 template <class Value,class Data>
 void NodeUCT<Value,Data>::debug(){
-    std::cout << "DEBUG STATS NODE: vis=" << visits << " win=" << value << std::endl;
-    std::cout << "                  rate=" << (value / visits) << std::endl;
+    cout << "DEBUG STATS NODE: vis=" << visits << " win=" << value << endl;
+    cout << "                  rate=" << (value / visits) << endl;
 }
 
 #endif //__NODE__

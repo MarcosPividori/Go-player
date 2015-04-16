@@ -127,7 +127,7 @@ void PatternList::read_file(const char *file_name){
     char c;
     int i=0,j=0,k=0;
     Pattern pat;
-    std::ifstream myfile;
+    ifstream myfile;
     myfile.open(file_name);
     assert(myfile.is_open());
     while(!myfile.eof()){

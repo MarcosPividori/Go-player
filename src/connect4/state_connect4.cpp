@@ -14,7 +14,7 @@ StateConnect4::StateConnect4(StateConnect4 *src)
     *this = *src;
 }
 
-void StateConnect4::get_possible_moves(std::vector<DataConnect4>& v)
+void StateConnect4::get_possible_moves(vector<DataConnect4>& v)
 {
     if(get_final_value() !=EMPTY)
         return;
@@ -107,12 +107,12 @@ void StateConnect4::apply(DataConnect4 d)
 void StateConnect4::show()
 {
     for(int j=0;j<7;j++)
-        std::cout<<" "<<j;
-    std::cout<<std::endl;
+        cout<<" "<<j;
+    cout<<endl;
     for(int i=0;i<6;i++){
         for(int j=0;j<7;j++)
-            std::cout<<(A[i][j] == EMPTY ? " -" : (A[i][j]==CROSS ? " X" : " O"));
-        std::cout<<std::endl;
+            cout<<(A[i][j] == EMPTY ? " -" : (A[i][j]==CROSS ? " X" : " O"));
+        cout<<endl;
     }
 }
 

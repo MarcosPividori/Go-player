@@ -6,6 +6,7 @@
 #include <thread>
 #include <mutex>
 
+using namespace std;
 
 template <class Value,class Data,class State>
 class MctsParallel{
@@ -27,12 +28,12 @@ MctsParallel<Value,Data,State>::~MctsParallel(){}
 template <class Value,class Data,class Nod,class State>
 class MctsParallel_GlobalMutex : public MctsParallel<Value,Data,State> {
     private:
-        std::mutex _mutex;
-        std::vector<Mcts<Value,Data,Nod,State>* >& _m;
+        mutex _mutex;
+        vector<Mcts<Value,Data,Nod,State>* >& _m;
         State *_state;
         Nod *_root;
     public:
-        MctsParallel_GlobalMutex(std::vector<Mcts<Value,Data,Nod,State>* >& m,
+        MctsParallel_GlobalMutex(vector<Mcts<Value,Data,Nod,State>* >& m,
              State *init_state,
              Data init_data);
         ~MctsParallel_GlobalMutex();
@@ -49,14 +50,14 @@ class MctsParallel_GlobalMutex : public MctsParallel<Value,Data,State> {
 template <class Value,class Data,class Nod,class State>
 class MctsParallel_Root : public MctsParallel<Value,Data,State> {
     private:
-        std::vector<Mcts<Value,Data,Nod,State>* >& _m;
+        vector<Mcts<Value,Data,Nod,State>* >& _m;
         ExpansionAllChildren<Value,Data,State,Nod> _exp;
         void merge_trees();
         Nod **_roots_mcts;
         State *_state;
         Nod *_root;
     public:
-        MctsParallel_Root(std::vector<Mcts<Value,Data,Nod,State>* >& m,
+        MctsParallel_Root(vector<Mcts<Value,Data,Nod,State>* >& m,
              State *init_state,
              Data init_data);
         ~MctsParallel_Root();
@@ -73,7 +74,7 @@ class MctsParallel_Root : public MctsParallel<Value,Data,State> {
 ///////////////////////////////////////////////////////////////////
 
 template <class Value,class Data,class Nod,class State>
-MctsParallel_GlobalMutex<Value,Data,Nod,State>::MctsParallel_GlobalMutex(std::vector<Mcts<Value,Data,Nod,State>* > &m,
+MctsParallel_GlobalMutex<Value,Data,Nod,State>::MctsParallel_GlobalMutex(vector<Mcts<Value,Data,Nod,State>* > &m,
   State *init_state,
   Data init_data)
                          : _state(init_state),_m(m)
@@ -87,9 +88,9 @@ MctsParallel_GlobalMutex<Value,Data,Nod,State>::MctsParallel_GlobalMutex(std::ve
 template <class Value,class Data,class Nod,class State>
 void MctsParallel_GlobalMutex<Value,Data,Nod,State>::run_time(double time_limit)
 {
-    std::thread *threads= new std::thread[_m.size()];
+    thread *threads= new thread[_m.size()];
     for(int i=0;i<_m.size();i++)
-        threads[i] = std::thread(&Mcts<Value,Data,Nod,State>::run_time,_m[i],time_limit,_root,_state);
+        threads[i] = thread(&Mcts<Value,Data,Nod,State>::run_time,_m[i],time_limit,_root,_state);
     for(int i=0;i<_m.size();i++)
         threads[i].join();
     delete[] threads;
@@ -98,9 +99,9 @@ void MctsParallel_GlobalMutex<Value,Data,Nod,State>::run_time(double time_limit)
 template <class Value,class Data,class Nod,class State>
 void MctsParallel_GlobalMutex<Value,Data,Nod,State>::run_cycles(unsigned long cycles_limit)
 {
-    std::thread *threads= new std::thread[_m.size()];
+    thread *threads= new thread[_m.size()];
     for(int i=0;i<_m.size();i++)
-        threads[i] = std::thread(&Mcts<Value,Data,Nod,State>::run_cycles,_m[i],cycles_limit/_m.size(),_root,_state);
+        threads[i] = thread(&Mcts<Value,Data,Nod,State>::run_cycles,_m[i],cycles_limit/_m.size(),_root,_state);
     for(int i=0;i<_m.size();i++)
         threads[i].join();
     delete[] threads;
@@ -151,7 +152,7 @@ void *MctsParallel_GlobalMutex<Value,Data,Nod,State>::get_root()
 ///////////////////////////////////////////////////////////////////////////
 
 template <class Value,class Data,class Nod,class State>
-MctsParallel_Root<Value,Data,Nod,State>::MctsParallel_Root(std::vector<Mcts<Value,Data,Nod,State>* > &m,
+MctsParallel_Root<Value,Data,Nod,State>::MctsParallel_Root(vector<Mcts<Value,Data,Nod,State>* > &m,
   State *init_state,
   Data init_data)
                          : _state(init_state),_m(m),_exp(0,0)
@@ -166,9 +167,9 @@ MctsParallel_Root<Value,Data,Nod,State>::MctsParallel_Root(std::vector<Mcts<Valu
 template <class Value,class Data,class Nod,class State>
 void MctsParallel_Root<Value,Data,Nod,State>::run_time(double time_limit)
 {
-    std::thread *threads= new std::thread[_m.size()];
+    thread *threads= new thread[_m.size()];
     for(int i=0;i<_m.size();i++)
-        threads[i] = std::thread(&Mcts<Value,Data,Nod,State>::run_time,_m[i],time_limit,_roots_mcts[i],_state);
+        threads[i] = thread(&Mcts<Value,Data,Nod,State>::run_time,_m[i],time_limit,_roots_mcts[i],_state);
     for(int i=0;i<_m.size();i++)
         threads[i].join();
     delete[] threads;
@@ -178,9 +179,9 @@ void MctsParallel_Root<Value,Data,Nod,State>::run_time(double time_limit)
 template <class Value,class Data,class Nod,class State>
 void MctsParallel_Root<Value,Data,Nod,State>::run_cycles(unsigned long cycles_limit)
 {
-    std::thread *threads= new std::thread[_m.size()];
+    thread *threads= new thread[_m.size()];
     for(int i=0;i<_m.size();i++)
-        threads[i] = std::thread(&Mcts<Value,Data,Nod,State>::run_cycles,_m[i],cycles_limit/_m.size(),_roots_mcts[i],_state);
+        threads[i] = thread(&Mcts<Value,Data,Nod,State>::run_cycles,_m[i],cycles_limit/_m.size(),_roots_mcts[i],_state);
     for(int i=0;i<_m.size();i++)
         threads[i].join();
     delete[] threads;
