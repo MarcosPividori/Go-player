@@ -29,12 +29,12 @@ StateHexa::StateHexa(int size) : _size(size)
     turn=Cross;
 }
 
-StateHexa::StateHexa(StateHexa *src)
+StateHexa::StateHexa(StateHexa *src) : _size(src->_size)
 {
-    A = new CELL*[src->_size];
-    for(int i=0;i<src->_size;i++){
-        A[i] = new CELL[src->_size];
-        for(int j=0;j<src->_size;j++)
+    A = new CELL*[_size];
+    for(int i=0;i<_size;i++){
+        A[i] = new CELL[_size];
+        for(int j=0;j<_size;j++)
             A[i][j]=src->A[i][j];
     }
     turn = src->turn;
