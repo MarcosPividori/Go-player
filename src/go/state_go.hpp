@@ -33,6 +33,8 @@ class StateGo
         static double capture_coeff;
         static double atari_delete_coeff;
         static double atari_escape_coeff;
+        int num_movs;
+        Player turn;
 #ifndef DEBUG
     private:
 #endif
@@ -42,6 +44,8 @@ class StateGo
         Block ***Blocks;
         const int _size;
         const float _komi;
+        int captured_b;
+        int captured_w;
         DataGo ko;
         DataGo last_mov;
         unsigned char pass;
@@ -65,11 +69,7 @@ class StateGo
         DataGo look_for_delete_atari(Block *block,Block *flag,INDEX i,INDEX j,int &max_size);
         DataGo get_delete_atari(INDEX i,INDEX j,int &b_size);
         float final_value();
-        int captured_b;
-        int captured_w;
     public:
-        int num_movs;
-        Player turn;
         StateGo(int size,float komi,PatternList *p);
         StateGo(StateGo *src);
         ~StateGo();

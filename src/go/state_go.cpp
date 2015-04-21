@@ -4,15 +4,6 @@
 #include <cassert>
 #include <queue>
 
-#define FLAG_B    0x80000000
-#define FLAG_W    0x40000000
-#define FLAG_BOTH (FLAG_B | FLAG_W)
-#define NO_FLAG   0x3fffffff
-
-#define INIT_LIB  0
-#define FOUND_LIB 1
-#define FAIL_LIB  2
-
 #define FOR_EACH_ADJ(i,j,k,l,Code)  ( \
             { \
               INDEX k,l;\
@@ -22,6 +13,11 @@
               if(j<_size-1){ k=i;l=j+1;Code;} \
             })
 
+#include "state_go_atari.cpp"
+#include "state_go_show.cpp"
+#include "state_go_utils.cpp"
+#include "state_go_value.cpp"
+#include "state_go_blocks.cpp"
 
 bool StateGo::japanese_rules;
 double StateGo::pattern_coeff;
@@ -114,152 +110,6 @@ StateGo::~StateGo()
     }
     delete[] Blocks;
     delete[] Stones;
-}
-
-// RECURSIVE ELIMINATING (DFS)
-void StateGo::eliminate_block(Block *block,INDEX i,INDEX j)
-{
-    Blocks[i][j]=NULL;
-    if(Stones[i][j]==Black)
-        captured_b++;
-    else
-        captured_w++;
-    Stones[i][j]=Empty;
-    b_mov.insert(POS(i,j));
-    w_mov.insert(POS(i,j));
-    FOR_EACH_ADJ(i,j,k,l,
-    {
-      if(Blocks[k][l]==block)//If same block, propagate.
-        eliminate_block(block,k,l);
-      else
-        if(Stones[k][l]!=Empty){//Add a free adjacency.
-          Blocks[k][l]->adj+=1;
-          if(Blocks[k][l]->is_atari()){
-            INDEX a=Blocks[k][l]->atari.i;
-            INDEX b=Blocks[k][l]->atari.j;
-            Blocks[k][l]->no_atari();
-            update_mov(a,b);
-            remove_atari_block(k,l);
-          }
-        }
-    }
-    );
-}
-
-// RECURSIVE UPDATING (DFS)
-void StateGo::update_block(Block *block,Block *new_block,INDEX i,INDEX j)
-{
-    Blocks[i][j]=new_block;
-    FOR_EACH_ADJ(i,j,k,l,
-    {
-      if(Blocks[k][l]==block)//If same block, propagate.
-        update_block(block,new_block,k,l);
-    }
-    );
-}
-
-unsigned int StateGo::get_liberty_block(Block *block,Block *flag,INDEX i,INDEX j,INDEX &lib_i,INDEX &lib_j)
-{
-    Blocks[i][j]= flag;
-    INDEX t_i,t_j;
-    unsigned int res=INIT_LIB,v;
-    FOR_EACH_ADJ(i,j,k,l,
-    {
-      if(Blocks[k][l]==block){//If same block, propagate.
-        v=get_liberty_block(block,flag,k,l,t_i,t_j);
-        if(v == FAIL_LIB)
-          return FAIL_LIB;
-        if(v == FOUND_LIB)
-          if(res == FOUND_LIB){
-            if(lib_i!=t_i || lib_j!=t_j)
-              return FAIL_LIB;
-          }
-          else{
-            lib_i=t_i;lib_j=t_j;
-            res=FOUND_LIB;
-          }
-      }
-      else
-        if(Stones[k][l]==Empty)
-          if(res == FOUND_LIB){
-            if(lib_i!=k || lib_j!=l)
-              return FAIL_LIB;
-          }
-          else{
-            lib_i=k;lib_j=l;
-            res=FOUND_LIB;
-          }
-    }
-    );
-    return res;
-}
-
-inline bool StateGo::is_block_in_atari(INDEX i,INDEX j,INDEX &i_atari,INDEX &j_atari)
-{
-    if(Blocks[i][j]->adj >4)
-      return false;
-    Block *block=Blocks[i][j];
-    bool res=false;
-    Block flag;
-    if(get_liberty_block(block,&flag,i,j,i_atari,j_atari)==FOUND_LIB)
-        res=true;
-    update_block(&flag,block,i,j);
-    return res;
-}
-
-DataGo StateGo::look_for_delete_atari(Block *block,Block *flag,INDEX i,INDEX j,int &max_size)
-{
-    Blocks[i][j]= flag;
-    Player opp=CHANGE_PLAYER(Stones[i][j]);
-    DataGo res=PASS(Empty);
-    FOR_EACH_ADJ(i,j,k,l,
-    {
-      if(Blocks[k][l]==block){//If same block, propagate.
-        DataGo v=look_for_delete_atari(block,flag,k,l,max_size);
-        if(!IS_PASS(v))
-          res=v;
-      }
-      else
-        if(Stones[k][l]==opp)
-          if(Blocks[k][l]->is_atari() && Blocks[k][l]->size>max_size){
-            DataGo d=Blocks[k][l]->atari;
-            if(!(ko.flag && ko.i==d.i && ko.j==d.j)){
-              max_size=Blocks[k][l]->size;
-              res=d;
-            }
-          }
-    }
-    );
-    return res;
-}
-
-inline DataGo StateGo::get_delete_atari(INDEX i,INDEX j,int &b_size)
-{
-    b_size=0;
-    Block *block=Blocks[i][j];
-    Block flag;
-    DataGo res=look_for_delete_atari(block,&flag,i,j,b_size);
-    update_block(&flag,block,i,j);
-    return res;
-}
-
-unsigned int StateGo::count_area(bool **visited,INDEX i,INDEX j)
-{
-    unsigned int res=1,v;
-    visited[i][j]=true;
-    FOR_EACH_ADJ(i,j,k,l,
-    {
-      switch(Stones[k][l]){
-        case Black: res|=FLAG_B;break;
-        case White: res|=FLAG_W;break;
-        default: if(!visited[k][l]){
-                    v=count_area(visited,k,l);
-                    res = (v | (res & FLAG_BOTH)) + (res & NO_FLAG);
-                 }
-      }
-    }
-    );
-    return res;
 }
 
 void StateGo::get_possible_moves(vector<DataGo>& v)
@@ -374,82 +224,6 @@ void StateGo::get_capture_moves(vector<DataGo>& v)
         for(c=0;c<(block->size * capture_coeff);c++)
           v.push_back(block->atari);
       }
-}
-
-bool StateGo::is_completely_empty(INDEX i,INDEX j)
-{
-    for(int k=MAX(i-1,0);k<= MIN(_size-1,i+1);k++)
-      for(int l=MAX(j-1,0);l<= MIN(_size-1,j+1);l++)
-        if(Stones[k][l]!=Empty)
-            return false;
-    return true;
-}
-
-bool StateGo::is_useful_move(DataGo mov)
-{
-    if(IS_PASS(mov))
-        return true;
-    return (no_self_atari_nor_suicide(mov.i,mov.j,turn)
-         || remove_opponent_block_and_no_ko(mov.i,mov.j));
-}
-
-ValGo StateGo::get_final_value()
-{
-    float res = final_value();
-    if(res<0)
-        return Black;
-    else if(res>0)
-        return White;
-    return Empty;
-}
-
-float StateGo::get_final_score()
-{
-    return final_value();
-}
-
-inline float StateGo::final_value()
-{
-    if(pass<2)
-        return Empty;
-    bool **visited= new bool*[_size];
-    for(int i=0;i<_size;i++){
-        visited[i]= new bool[_size];
-        for(int j=0;j<_size;j++)
-            visited[i][j]=false;
-    }
-    unsigned int res,numb=0,numw=0;
-    float countb=0,countw=0;
-    for(int i=0;i<_size;i++)
-        for(int j=0;j<_size;j++)
-            if(Stones[i][j]==Empty && !visited[i][j]){
-                res=count_area(visited,i,j);
-                if((res & FLAG_B) && (res & FLAG_W))
-                    continue;
-                if(res & FLAG_B)
-                    numb+=(res & NO_FLAG);
-                if(res & FLAG_W)
-                    numw+=(res & NO_FLAG);
-            }
-            else 
-                if(!japanese_rules)
-                  if(Stones[i][j]==White)
-                    countw++;
-                  else 
-                    if(Stones[i][j]==Black)
-                      countb++;
-    for(int i=0;i<_size;i++)
-        delete[] visited[i];
-    delete[] visited;
-    if(japanese_rules){
-        countb=float(numb)-float(captured_b);
-        countw=float(numw)+_komi-float(captured_w);
-    }
-    else{
-        countb+=float(numb);
-        countw+=float(numw)+_komi;
-    }
-    return countw-countb; 
 }
 
 void StateGo::apply(DataGo d)
@@ -605,6 +379,25 @@ void StateGo::apply(DataGo d)
     last_mov=d;
 }
 
+inline void StateGo::update_mov(INDEX i,INDEX j)
+{
+    if(no_suicide(i,j,White))
+      w_mov.insert(POS(i,j));
+    else
+      w_mov.remove(POS(i,j));
+    if(no_suicide(i,j,Black))
+      b_mov.insert(POS(i,j));
+    else
+      b_mov.remove(POS(i,j));
+}
+
+inline void StateGo::add_atari_block(INDEX i,INDEX j){
+    if(Stones[i][j]==White)
+        w_atari.push_back(POS(i,j));
+    else
+        b_atari.push_back(POS(i,j));
+}
+
 inline void StateGo::remove_atari_block(INDEX i,INDEX j){
     if(Stones[i][j]==White){
       for(int l=0;l<w_atari.size();l++)
@@ -620,205 +413,6 @@ inline void StateGo::remove_atari_block(INDEX i,INDEX j){
           l--;break;
         }
       }
-}
-
-inline void StateGo::add_atari_block(INDEX i,INDEX j){
-    if(Stones[i][j]==White)
-        w_atari.push_back(POS(i,j));
-    else
-        b_atari.push_back(POS(i,j));
-}
-
-void StateGo::show(FILE *output){
-    char c;
-    fprintf(output,"   ");
-    for(int i=0;i<_size;i++)
-        fprintf(output," %c",'A'+i+(i>7));
-    for(int i=_size-1;i>=0;i--){
-        fprintf(output,"\n%2d ",i+1);
-        for(int j=0;j<_size;j++){
-            switch(Stones[i][j]){
-                case Empty: c='.';break;
-                case White: c='O';break;
-                case Black: c='X';break;
-            }
-            fprintf(output," %c",c);
-        }
-    }
-#ifdef DEBUG
-    cout<<endl<<endl;
-    cout<<"WHITE MOVES:"<<endl;
-    cout<<"   ";
-    for(int i=0;i<_size;i++)
-        printf(" %c",'A'+i+(i>7));
-    for(int i=_size-1;i>=0;i--){
-        printf("\n%2d ",i+1);
-        for(int j=0;j<_size;j++){
-            c='-';
-            for(int k=0;k<w_mov.size();k++)
-               if(w_mov[k].i == i && w_mov[k].j==j)
-                 {c='O';break;}
-            printf(" %c",c);
-        }
-    }
-    cout<<endl<<endl;
-    cout<<"BLACK MOVES:"<<endl;
-    printf("   ");
-    for(int i=0;i<_size;i++)
-        printf(" %c",'A'+i+(i>7));
-    for(int i=_size-1;i>=0;i--){
-        printf("\n%2d ",i+1);
-        for(int j=0;j<_size;j++){
-            c='-';
-            for(int k=0;k<b_mov.size();k++)
-               if(b_mov[k].i == i && b_mov[k].j==j)
-                 {c='X';break;}
-            printf(" %c",c);
-        }
-    }
-#endif
-}
-
-void StateGo::show(){
-    show(stdout);
-}
-
-#ifdef DEBUG
-void StateGo::debug(){
-    cout<<"STATE VALUE: "<<get_final_value()<<endl<<endl;
-    cout<<"BLOCKS:"<<endl;
-    for(int i = _size-1;i>=0;i--){
-        for(int j=0;j<_size;j++)
-            if(Blocks[i][j]==NULL)
-              cout<<setw(5)<<"----";
-            else
-              cout<<setw(5)<<(((long) Blocks[i][j])%10000);
-        cout<<endl;
-    }
-    cout<<endl<<"BLOCKS'S VALUES:"<<endl;
-    for(int i = _size-1;i>=0;i--){
-        for(int j=0;j<_size;j++)
-            if(Blocks[i][j] == NULL)
-              cout<<setw(3)<<"--";
-            else
-              cout<<setw(3)<<(Blocks[i][j]->adj);
-        cout<<endl;
-    }
-    cout<<endl;
-}
-#endif
-
-inline bool StateGo::remove_opponent_block_and_no_ko(INDEX i,INDEX j)
-{
-    if(ko.flag && ko.i==i && ko.j==j)
-      return false;
-    Player opp=CHANGE_PLAYER(turn);
-    FOR_EACH_ADJ(i,j,k,l,
-    {
-      if(Stones[k][l]==opp)
-        if(Blocks[k][l]->is_atari())
-          return true;
-    }
-    );
-    return false;
-}
-
-inline bool StateGo::no_self_atari_nor_suicide(INDEX i,INDEX j,Player p)
-{
-    int c_empty=0;
-    bool flag=false;
-    INDEX l_i,l_j;
-    FOR_EACH_ADJ(i,j,k,l,
-    {
-      if(Stones[k][l]==Empty){
-        flag=true;
-        l_i=k;
-        l_j=l;
-        c_empty++;
-      }
-    }
-    );
-
-    if(c_empty>1)
-      return true;
-
-    //Check if next blocks of same player wont be atari.
-    Stones[i][j]=p;
-    INDEX t_i,t_j;
-    FOR_EACH_ADJ(i,j,k,l,
-    {
-        if(Stones[k][l]==p)
-          if(!(Blocks[k][l]->is_atari()))
-            if(is_block_in_atari(k,l,t_i,t_j))
-              if(flag){
-                if(t_i!=l_i || t_j!=l_j){
-                  Stones[i][j]=Empty;
-                  return true;
-                }
-              }
-              else{
-                flag=true;
-                l_i=t_i;
-                l_j=t_j;
-              }
-            else{
-              Stones[i][j]=Empty;
-              return true;
-            }
-    }
-    );
-    Stones[i][j]=Empty;
-    return false;
-}
-
-inline void StateGo::update_mov(INDEX i,INDEX j)
-{
-    if(no_suicide(i,j,White))
-      w_mov.insert(POS(i,j));
-    else
-      w_mov.remove(POS(i,j));
-    if(no_suicide(i,j,Black))
-      b_mov.insert(POS(i,j));
-    else
-      b_mov.remove(POS(i,j));
-}
-
-inline bool StateGo::no_suicide(INDEX i,INDEX j,Player p)
-{
-    if(Stones[i][j]!=Empty)
-      return false;
-    FOR_EACH_ADJ(i,j,k,l,
-    {
-      if(Stones[k][l]==Empty)
-        return true;
-      if(Stones[k][l]==p){
-        if(!(Blocks[k][l]->is_atari()))
-          return true;
-      }else
-        if(Blocks[k][l]->is_atari())
-          return true;
-    }
-    );
-    return false;
-}
-
-inline bool StateGo::no_ko_nor_suicide(INDEX i,INDEX j,Player p)
-{
-    if(ko.flag && ko.i==i && ko.j==j)
-      return false;
-    FOR_EACH_ADJ(i,j,k,l,
-    {
-      if(Stones[k][l]==Empty)
-        return true;
-      if(Stones[k][l]==p){
-        if(!(Blocks[k][l]->is_atari()))
-          return true;
-      }else
-        if(Blocks[k][l]->is_atari())
-          return true;
-    }
-    );
-    return false;
 }
 
 bool StateGo::valid_move(DataGo d)
