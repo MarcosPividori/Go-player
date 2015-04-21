@@ -52,7 +52,7 @@ inline bool StateGo::is_block_in_atari(INDEX i,INDEX j,INDEX &i_atari,INDEX &j_a
     return res;
 }
 
-DataGo StateGo::look_for_delete_atari(Block *block,Block *flag,INDEX i,INDEX j,int &max_size)
+DataGo StateGo::look_for_delete_atari(Block *block,Block *flag,INDEX i,INDEX j,int &max_size) const
 {
     Blocks[i][j]= flag;
     Player opp=CHANGE_PLAYER(Stones[i][j]);

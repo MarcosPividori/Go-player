@@ -4,7 +4,7 @@
 #define FLAG_BOTH (FLAG_B | FLAG_W)
 #define NO_FLAG   0x3fffffff
 
-ValGo StateGo::get_final_value()
+ValGo StateGo::get_final_value() const
 {
     float res = final_value();
     if(res<0)
@@ -14,12 +14,12 @@ ValGo StateGo::get_final_value()
     return Empty;
 }
 
-float StateGo::get_final_score()
+float StateGo::get_final_score() const
 {
     return final_value();
 }
 
-inline float StateGo::final_value()
+inline float StateGo::final_value() const
 {
     if(pass<2)
         return Empty;
@@ -63,7 +63,7 @@ inline float StateGo::final_value()
     return countw-countb; 
 }
 
-unsigned int StateGo::count_area(bool **visited,INDEX i,INDEX j)
+unsigned int StateGo::count_area(bool **visited,INDEX i,INDEX j) const
 {
     unsigned int res=1,v;
     visited[i][j]=true;

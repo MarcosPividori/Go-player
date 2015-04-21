@@ -23,18 +23,18 @@ class AVLTree{
         Node* update();
         Node* find_max(T &val);
         Node* remove(T val,bool &flag);
-        T get_index(int index);
+        T get_index(int index) const;
         void delete_tree();
-        Node* copy_tree();
+        Node* copy_tree() const;
     };
     Node *_root;
     int _size;
   public:
     void insert(T value);
     bool remove(T value);
-    T operator[](int index);
-    int size(){return _size;}
-    int height();
+    T operator[](int index) const;
+    int size() const {return _size;}
+    int height() const;
     AVLTree(AVLTree *src);
     AVLTree();
     ~AVLTree();
@@ -226,7 +226,7 @@ typename AVLTree<T>::Node* AVLTree<T>::Node::remove(T val,bool &flag)
 };
 
 template <class T>
-T AVLTree<T>::Node::get_index(int index)
+T AVLTree<T>::Node::get_index(int index) const
 {
     if(index<left_size)
       return left->get_index(index);
@@ -248,7 +248,7 @@ void AVLTree<T>::Node::delete_tree()
 };
 
 template <class T>
-typename AVLTree<T>::Node* AVLTree<T>::Node::copy_tree()
+typename AVLTree<T>::Node* AVLTree<T>::Node::copy_tree() const
 {
     Node *n= new Node(value);
     if(right)
@@ -292,7 +292,7 @@ bool AVLTree<T>::remove(T value)
 }
 
 template <class T>
-T AVLTree<T>::operator[](int index)
+T AVLTree<T>::operator[](int index) const
 {
     assert(index >=0 && index <_size);
     return _root->get_index(index);
@@ -306,7 +306,7 @@ AVLTree<T>::~AVLTree()
 }
 
 template <class T>
-int AVLTree<T>::height()
+int AVLTree<T>::height() const
 {
     if(!_root)
       return 0;

@@ -1,5 +1,6 @@
 
-void StateGo::show(FILE *output){
+void StateGo::show(FILE *output) const
+{
     char c;
     fprintf(output,"   ");
     for(int i=0;i<_size;i++)
@@ -49,12 +50,14 @@ void StateGo::show(FILE *output){
 #endif
 }
 
-void StateGo::show(){
+void StateGo::show() const
+{
     show(stdout);
 }
 
 #ifdef DEBUG
-void StateGo::debug(){
+void StateGo::debug() const
+{
     cerr<<"STATE VALUE: "<<get_final_value()<<endl<<endl;
     cerr<<"BLOCKS:"<<endl;
     for(int i = _size-1;i>=0;i--){

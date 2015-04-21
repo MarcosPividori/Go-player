@@ -130,7 +130,7 @@ void StateGo::get_possible_moves(vector<DataGo>& v)
       }
 }
 
-int StateGo::possible_moves_size()
+int StateGo::possible_moves_size() const
 {
     if(pass==2)
       return 0;
@@ -140,7 +140,7 @@ int StateGo::possible_moves_size()
       return b_mov.size();
 }
 
-DataGo StateGo::get_possible_moves_by_index(int i)
+DataGo StateGo::get_possible_moves_by_index(int i) const
 {
     if(turn==White)
       return DataGo(w_mov[i],turn);
@@ -202,7 +202,7 @@ void StateGo::get_pattern_moves(vector<DataGo>& v)
         }
 }
 
-void StateGo::get_capture_moves(vector<DataGo>& v)
+void StateGo::get_capture_moves(vector<DataGo>& v) const
 {
     if(pass==2)
         return;
@@ -415,7 +415,7 @@ inline void StateGo::remove_atari_block(INDEX i,INDEX j){
       }
 }
 
-bool StateGo::valid_move(DataGo d)
+bool StateGo::valid_move(DataGo d) const
 {
     if(d.player!=turn)
       return false;

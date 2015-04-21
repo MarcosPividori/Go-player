@@ -7,7 +7,7 @@ bool StateGo::is_useful_move(DataGo mov)
          || remove_opponent_block_and_no_ko(mov.i,mov.j));
 }
 
-bool StateGo::is_completely_empty(INDEX i,INDEX j)
+bool StateGo::is_completely_empty(INDEX i,INDEX j) const
 {
     for(int k=MAX(i-1,0);k<= MIN(_size-1,i+1);k++)
       for(int l=MAX(j-1,0);l<= MIN(_size-1,j+1);l++)
@@ -16,7 +16,7 @@ bool StateGo::is_completely_empty(INDEX i,INDEX j)
     return true;
 }
 
-inline bool StateGo::remove_opponent_block_and_no_ko(INDEX i,INDEX j)
+inline bool StateGo::remove_opponent_block_and_no_ko(INDEX i,INDEX j) const
 {
     if(ko.flag && ko.i==i && ko.j==j)
       return false;
@@ -79,7 +79,7 @@ inline bool StateGo::no_self_atari_nor_suicide(INDEX i,INDEX j,Player p)
     return false;
 }
 
-inline bool StateGo::no_suicide(INDEX i,INDEX j,Player p)
+inline bool StateGo::no_suicide(INDEX i,INDEX j,Player p) const
 {
     if(Stones[i][j]!=Empty)
       return false;
@@ -98,7 +98,7 @@ inline bool StateGo::no_suicide(INDEX i,INDEX j,Player p)
     return false;
 }
 
-inline bool StateGo::no_ko_nor_suicide(INDEX i,INDEX j,Player p)
+inline bool StateGo::no_ko_nor_suicide(INDEX i,INDEX j,Player p) const
 {
     if(ko.flag && ko.i==i && ko.j==j)
       return false;
