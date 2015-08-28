@@ -953,7 +953,7 @@ utilizando la puntuación China (por Área) y un komi de 5 puntos.
 -   Estadísticas sobre 500 partidas contra GnuGo-3.8 level 10\cite{c13}
     (30000 sim. por mov.):
 
-    -------------------------.--------------------------------------
+    ----------------------------------------------------------------
     | *Programa*                 | *White/Black*  | *% Ganado*     |
     | -------------------------- |  ------------- | -------------- |
     | UCT Aleatorio              | Blanco         |              5%|
@@ -962,7 +962,7 @@ utilizando la puntuación China (por Área) y un komi de 5 puntos.
     | UCTRave Aleatorio          | Negro          |              8%|
     | UCTRave con Conoc. Dominio | Blanco         |             52%|
     | UCTRave con Conoc. Dominio | Negro          |             51%|
-    ---------------------------------------------------------------
+    ----------------------------------------------------------------
 
 Posibles mejoras a futuro
 =========================
