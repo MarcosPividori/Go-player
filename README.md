@@ -934,35 +934,35 @@ utilizando la puntuación China (por Área) y un komi de 5 puntos.
     ---------------------------------------------------------------------
     | *Programa 1*      | *Programa 2*  | *White/Black* | *% Ganado Prog1*|
     | ----------------- | ------------- | ------------- | --------------- |
-    | UCTRave Aleatorio | UCT Aleatorio | White         | 100%            |
-    | UCTRave Aleatorio | UCT Aleatorio | Black         | 100%            |
+    | UCTRave Aleatorio | UCT Aleatorio | Blanco        | 100%            |
+    | UCTRave Aleatorio | UCT Aleatorio | Negro         | 100%            |
     ---------------------------------------------------------------------
 
 -   Estadísticas sobre 100 partidas entre el programa, con simulaciones
     totalmente aleatorias, y el mismo con la incorporación de patrones y
     valores de capturas (30000 sim. por mov.):
 
-    -----------------------------------------------------------------------------
-    | *Programa 1*         | *Programa 2*      | *White/Black* | *% Ganado Prog1* |
-    | -------------------- | ----------------- | ------------- | ---------------- |
-    | UCTRave con Patrones | UCTRave Aleatorio | White         | 93%              |
-    | UCTRave con Patrones | UCTRave Aleatorio | Black         | 94%              |
-    -----------------------------------------------------------------------------
+    -------------------------------------------------------------------------------------
+    | *Programa 1*               | *Programa 2*      | *White/Black* | *% Ganado Prog1* |
+    | -------------------------- | ----------------- | ------------- | ---------------- |
+    | UCTRave con Conoc. Dominio | UCTRave Aleatorio | Blanco        | 93%              |
+    | UCTRave con Conoc. Dominio | UCTRave Aleatorio | Negro         | 94%              |
+    -------------------------------------------------------------------------------------
 
 
--   Estadísticas sobre 200 partidas contra GnuGo-3.8 level 10\cite{c13}
+-   Estadísticas sobre 500 partidas contra GnuGo-3.8 level 10\cite{c13}
     (30000 sim. por mov.):
 
-    ----------------------------------------------------------
-    | *Programa*           | *White/Black*  | *% Ganado*     |
-    | -------------------- |  ------------- | -------------- |
-    | UCT Aleatorio        | White          |             3% |
-    | UCT Aleatorio        | Black          |              3%|
-    | UCTRave Aleatorio    | White          |             14%|
-    | UCTRave Aleatorio    | Black          |             10%|
-    | UCTRave con Patrones | White          |             53%|
-    | UCTRave con Patrones | Black          |             52%|
-    ----------------------------------------------------------
+    -------------------------.--------------------------------------
+    | *Programa*                 | *White/Black*  | *% Ganado*     |
+    | -------------------------- |  ------------- | -------------- |
+    | UCT Aleatorio              | Blanco         |              5%|
+    | UCT Aleatorio              | Negro          |              3%|
+    | UCTRave Aleatorio          | Blanco         |             14%|
+    | UCTRave Aleatorio          | Negro          |              8%|
+    | UCTRave con Conoc. Dominio | Blanco         |             52%|
+    | UCTRave con Conoc. Dominio | Negro          |             51%|
+    ---------------------------------------------------------------
 
 Posibles mejoras a futuro
 =========================
