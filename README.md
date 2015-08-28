@@ -931,38 +931,38 @@ utilizando la puntuación China (por Área) y un komi de 5 puntos.
     el mismo con la incorporación de la mejora RAVE (30000 sim. por
     mov.):
 
-    ---------------------------------------------------------------------
-    | *Programa 1*      | *Programa 2*  | *White/Black* | *% Ganado Prog1*|
-    | ----------------- | ------------- | ------------- | --------------- |
-    | UCTRave Aleatorio | UCT Aleatorio | Blanco        | 100%            |
-    | UCTRave Aleatorio | UCT Aleatorio | Negro         | 100%            |
-    ---------------------------------------------------------------------
+    ------------------------------------------------------------------------
+    | *Programa 1*      | *Programa 2*  | *Blanco/Negro* | *% Ganado Prog1*|
+    | ----------------- | ------------- | -------------- | --------------- |
+    | UCTRave Aleatorio | UCT Aleatorio | Blanco         | 100%            |
+    | UCTRave Aleatorio | UCT Aleatorio | Negro          | 100%            |
+    ------------------------------------------------------------------------
 
 -   Estadísticas sobre 100 partidas entre el programa, con simulaciones
     totalmente aleatorias, y el mismo con la incorporación de patrones y
     valores de capturas (30000 sim. por mov.):
 
-    -------------------------------------------------------------------------------------
-    | *Programa 1*               | *Programa 2*      | *White/Black* | *% Ganado Prog1* |
-    | -------------------------- | ----------------- | ------------- | ---------------- |
-    | UCTRave con Conoc. Dominio | UCTRave Aleatorio | Blanco        | 93%              |
-    | UCTRave con Conoc. Dominio | UCTRave Aleatorio | Negro         | 94%              |
-    -------------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------------
+    | *Programa 1*               | *Programa 2*      | *Blanco/Negro* | *% Ganado Prog1* |
+    | -------------------------- | ----------------- | -------------- | ---------------- |
+    | UCTRave con Conoc. Dominio | UCTRave Aleatorio | Blanco         | 93%              |
+    | UCTRave con Conoc. Dominio | UCTRave Aleatorio | Negro          | 94%              |
+    --------------------------------------------------------------------------------------
 
 
 -   Estadísticas sobre 500 partidas contra GnuGo-3.8 level 10\cite{c13}
     (30000 sim. por mov.):
 
-    ----------------------------------------------------------------
-    | *Programa*                 | *White/Black*  | *% Ganado*     |
-    | -------------------------- |  ------------- | -------------- |
-    | UCT Aleatorio              | Blanco         |              5%|
-    | UCT Aleatorio              | Negro          |              3%|
-    | UCTRave Aleatorio          | Blanco         |             14%|
-    | UCTRave Aleatorio          | Negro          |              8%|
-    | UCTRave con Conoc. Dominio | Blanco         |             52%|
-    | UCTRave con Conoc. Dominio | Negro          |             51%|
-    ----------------------------------------------------------------
+    -----------------------------------------------------------------
+    | *Programa*                 | *Blanco/Negro*  | *% Ganado*     |
+    | -------------------------- |  -------------- | -------------- |
+    | UCT Aleatorio              | Blanco          |              5%|
+    | UCT Aleatorio              | Negro           |              3%|
+    | UCTRave Aleatorio          | Blanco          |             14%|
+    | UCTRave Aleatorio          | Negro           |              8%|
+    | UCTRave con Conoc. Dominio | Blanco          |             52%|
+    | UCTRave con Conoc. Dominio | Negro           |             51%|
+    -----------------------------------------------------------------
 
 Posibles mejoras a futuro
 =========================
