@@ -94,12 +94,6 @@ capturas, por simulaciones totalmente aleatorias.
 
 
 
-
-
-**Marcos Pividori**
-
-**R-413 Introducción a la Inteligencia Artificial**
-
 Introducción
 ============
 
@@ -157,7 +151,7 @@ en árboles \cite{c16}:
 
 -   *Simple de implementar.*
 
-Etapasp
+Etapas
 ------
 
  ![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/mcts_etapas.png)
@@ -237,7 +231,7 @@ Implementación MCTS
 
 Para la implementación del algoritmo MCTS, principalmente se buscó:
 
--   Que sea *reusable*, es decir, que la implementación del árbol y el
+-   Que sea *reutilizable*, es decir, que la implementación del árbol y el
     algoritmo MCTS sean independiente del dominio de aplicación, y
     además se puedan agregar nuevos módulos para modificar diferentes
     etapas del algoritmo (Selección, Expansión, Simulación, etc.), en
@@ -264,17 +258,18 @@ incorporar y si es cruz o círculo.
 *State*, luego, contará con una interfaz mínima:
 
 
-    class States{
-         // Crear una copia del estado.
-         States *copy()
-         // Obtener una lista de posible pasos a realizar desde dicho estado.
-         // Si es vacía, se llegó al final.     
-         get_possible_moves(vector<Data>& v)
-         // Aplicar un paso en particular. (transición)
-         apply(Data)
-         // Obtener el resultado final.
-         Value get_final_value()
-    };
+    class State{
+     // Crear una copia del estado.
+     State(State *src)
+     // Obtener una lista de posible pasos a realizar desde dicho estado.
+     // Si es vacía, se llegó al final.
+     get_possible_moves(vector<Data>& v)
+     // Aplicar un paso en particular. (transición)
+     apply(Data)
+     // Obtener el resultado final.
+     Value get_final_value()
+    }
+
 
 De la cual heredarán por ejemplo: *StateTateti*, *StateGo*,
 *StateConnect4*, etc. Cada nodo del árbol almacenará información *Data*,
@@ -465,23 +460,6 @@ elegida son:
 
 -   Eliminar del tablero las fichas de un bloque. O(n)
 
-<!-- -->
-
-    class StateGo inherits from States
-    {
-        // Matriz que representa el tablero.
-        Player Stones[Size][Size];
-        // Relación Posición -> Bloque. 
-        Block *Blocks[Size][Size];
-        // Turno del juego.
-        Player turn;
-        ...
-        // Implementamos la interfaz base de State.
-        StateGo *copy();
-        get_possible_moves(vector<DataGo>& v);
-        apply(DataGo);
-        ValGo get_final_value();
-    };
 
 Mejora Rapid Action Value Estimation
 ====================================
@@ -758,21 +736,23 @@ mayor importancia a las posiciones antes mencionadas.
 Para elegir qué movimiento tomar en cada instante de la simulación,
 basándose en las propuestas presentadas en \cite{c11} y \cite{c7}, se
 probaron diferentes variantes y finalmente se concluyó con el siguiente
-algoritmo:
+algoritmo (se muestra una versión simplificada):
 
-    list = []
-    Por cada movimiento de escape de atari Mi que salva al bloque Bi, incorporar size(Bi) veces
-      Mi a list y si Mi además captura un bloque enemigo Ei, incorporarlo size(Ei) veces más.
-    Si size(list) < CTE:
-       X veces intentar encontrar aleatoriamente una posición "fill board".
+        list = []
+     Por cada movimiento de ESCAPE DE ATARI Mi que salva al bloque Bi,
+       incorporar size(Bi) veces Mi a list y si Mi además captura un
+       bloque enemigo Ei, incorporarlo size(Ei) veces más.
+     Si size(list) < CTE:
+       Intentar encontrar aleatoriamente una posición "FILL BOARD".
        Si no se encuentra:
-          Incorporar a list todas las posiciones dentro de las 8 casillas alrededor del último
-             movimiento que concuerden con los patrones.
-          Por cada movimiento Mi de captura al bloque Bi, incorporarlo a list size(Bi) veces.
-          Si list==[]:
-             Incorporar a list todos los movimientos posibles.
-
-    Elegir, de forma uniformemente aleatoria, una posición de list y realizar dicho movimiento.
+         Incorporar a list toda posición adyacente (8-adj) al último
+           movimiento que concuerde con algún PATRÓN.
+         Por cada movimiento Mi de CAPTURA al bloque Bi, incorporarlo
+           a list size(Bi) veces.
+         Si list está vacía:
+           Incorporar a list todos los movimientos posibles.
+     Elegir, de forma uniformemente aleatoria, una posición de list
+       y realizar dicho movimiento.
 
 De esta manera, incrementamos la probabilidad en que son elegidos los
 movimientos de mayor importancia. Es decir, un movimiento que me permite
@@ -847,7 +827,6 @@ número de elementos en el sub árbol izquierdo, es decir, el sub árbol
 que contiene los elementos menores. Esta modificación incorpora gastos
 mínimos en la actualización del árbol, pero nos permite buscar el
 elemento i-ésimo con una complejidad log(n).
-
 
 ![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/avltree.png)
 
