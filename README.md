@@ -4,10 +4,6 @@ Go-player
 Instalación:
 ------------
 
-El código fuente del programa se puede obtener clonando el repositorio:
-
-<https://github.com/MarcosPividori/Go-player>
-
 Para instalar la interfaz gráfica *GoGui*\cite{c14} y el jugador
 *GnuGo*\cite{c13}, ejecutamos:
 
