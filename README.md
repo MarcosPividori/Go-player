@@ -157,7 +157,7 @@ en árboles \cite{c16}:
 
 -   *Simple de implementar.*
 
-Etapas
+Etapasp
 ------
 
  ![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/mcts_etapas.png)
@@ -720,7 +720,7 @@ Los patrones utilizados en nuestras pruebas, fueron tomados de
 \cite{c10}, y corresponden a varias situaciones clásicas del juego Go.
 Por ejemplo:
 
-![image](http://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Mogo-hane.svg/653px-Mogo-hane.svg.png)
+![image](https://github.com/MarcosPividori/Go-player/blob/master/docs/patterns.png)
 
 ### Capturas y escapes de atari
 
