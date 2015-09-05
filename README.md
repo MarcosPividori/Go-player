@@ -1097,6 +1097,9 @@ capturas, por simulaciones totalmente aleatorias.
 -  *--no\_rave* (Rave) Desactiva el uso de la mejora Rave.
 
 
+Estadísticas: (Desactualizado)
+-------------
+
 ![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/stats.png)
 
 
