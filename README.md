@@ -6,8 +6,8 @@ Go-player
 Instalación:
 ------------
 
-Para instalar la interfaz gráfica *GoGui*\cite{c14} y el jugador
-*GnuGo*\cite{c13}, ejecutamos:
+Para instalar la interfaz gráfica *GoGui*[14] y el jugador
+*GnuGo*[13], ejecutamos:
 
     ./install_env.sh
 
@@ -21,7 +21,7 @@ compilación del jugador de *Go* con banderas de debug activadas que nos
 permiten obtener información extra en la ejecución del programa.
 
 El programa se puede utilizar por consola a través de los comandos
-provistos por *Go Text Protocol*\cite{c15}.
+provistos por *Go Text Protocol*[15].
 
 Por otro lado, si se desea una interfaz más amigable, se puede recurrir
 a la interfaz visual *GoGui*. Para esto, se provee un script de ejemplo:
@@ -126,10 +126,10 @@ sucesivamente estimando los valores de los movimientos más prometedores.
 Para que MCTS sea aplicable se debe cumplir: la puntuación del juego
 debe estar acotada, las reglas son conocidas (información completa) y
 las simulaciones terminan relativamente rápido (longitud del juego es
-limitada) \cite{c1}.
+limitada) [1].
 
 MCTS ofrece ciertas ventajas sobre los métodos tradicionales de búsqueda
-en árboles \cite{c16}:
+en árboles [16]:
 
 -   *Sin Heurísticas:* MCTS no requiere ningún conocimiento estratégico
     del dominio de aplicación para lograr decisiones razonables. El
@@ -153,7 +153,7 @@ Etapas
 
  ![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/mcts_etapas.png)
 
-Etapas del algoritmo MCTS \cite{c6}.
+Etapas del algoritmo MCTS [6].
 
 MCTS consiste en cuatro etapas principales, repetidas tantas veces como
 tiempo se disponga. En cada una de las iteraciones se parte de la
@@ -165,7 +165,7 @@ situación actual del juego.
     ese momento, como el valor y el número de visitas.
 
     Dentro de las diferentes opciones, UCT (Upper Confidence bounds
-    applied to Trees) \cite{c4} es la más utilizada por su simplicidad y
+    applied to Trees) [4] es la más utilizada por su simplicidad y
     eficiencia. La estrategia UCT calcula para cada uno de los
     movimientos posibles una combinación de dos valores, la tasa de
     éxito de ese nodo y un número asociado a la relación entre el número
@@ -292,9 +292,9 @@ Paralelización
 ==============
 
 Con respecto a la paralelización del algoritmo, se consideraron
-diferentes opciones, de igual manera a las mencionadas en \cite{c3}.
+diferentes opciones, de igual manera a las mencionadas en [3].
 Luego de hacer algunas pruebas con diferentes enfoques, se decidió
-proseguir con el principio de Tree Parallelization (\cite{c3}) con un
+proseguir con el principio de Tree Parallelization ([3]) con un
 lock global. En este enfoque, cada thread bloqueará el árbol cuando
 necesite acceder al mismo, en las etapas de selección, expansión y
 retropropagación. Puede parecer muy limitante, pero como el mayor tiempo
@@ -305,7 +305,7 @@ muy simple, solamente de debe agregar un lock global para el acceso al
 
 También, como segunda opción, se implementó el enfoque Root
 Parallelization, debido a que se mencionaban muy buenos resultados en la
-documentación \cite{c3}. Root Parallelization consiste en mantener un
+documentación [3]. Root Parallelization consiste en mantener un
 árbol distinto para cada thread que actúa de forma independiente al
 resto y, al finalizar, se unen en un solo árbol sobre el que analiza el
 mejor movimiento. Esto permite el máximo de concurrencia, ya que cada
@@ -319,7 +319,7 @@ Parallelization es soportado y se puede activar a través de una bandera.
 ![image](https://raw.githubusercontent.com/MarcosPividori/Go-player/master/docs/parallelization.png)
 
 Diferentes enfoques de paralelización
-MCTS. \cite{c3}
+MCTS. [3]
 
 Algunas pruebas
 ===============
@@ -422,7 +422,7 @@ Implementación
 
 ### Go Text Protocol
 
-*Go Text Protocol* (GTP)\cite{c15} es un protocolo basado en texto para
+*Go Text Protocol* (GTP)[15] es un protocolo basado en texto para
 la comunicación con programas que juegan al Go. A través del intercambio
 de comandos, se puede establecer partidas entre diferentes programas,
 programas y usuarios y conectarse con servidores para participar de
@@ -430,10 +430,10 @@ torneos.
 
 El proyecto desarrollado, soporta este protocolo. Esto nos permitió
 testear los diferentes avances jugando contra otros programas, como
-*GnuGo*\cite{c13}, y contra diferentes variantes de si mismo.
+*GnuGo*[13], y contra diferentes variantes de si mismo.
 
 Al mismo tiempo, también nos posibilitó comunicarnos con una interfaz
-visual, como ser *GoGui*\cite{c14}, pudiendo así jugar de manera más
+visual, como ser *GoGui*[14], pudiendo así jugar de manera más
 amigable y testear el programa durante su desarrollo.
 
 ### La clase StateGo
@@ -467,7 +467,7 @@ entre las posiciones o movimientos relacionados. Para determinar el
 mejor movimiento, muchas simulaciones deben realizarse a partir de todos
 los estados y de todas las acciones.
 
-El algoritmo RAVE\cite{c2}, utiliza la heurística
+El algoritmo RAVE[2], utiliza la heurística
 "all-moves-as-first" , desde cada nodo del árbol de búsqueda, para
 estimar el valor de cada acción. Proporciona una forma sencilla de
 compartir conocimientos entre los nodos relacionados en el árbol de
@@ -512,7 +512,7 @@ realizaron un número considerable de simulaciones $n_i$.
 Si además incorporamos el componente de *exploración* de la selección
 UCT, obtenemos una nueva fórmula para el algoritmo de selección:
 
-**UCT-RAVE\cite{c2}:**
+**UCT-RAVE[2]:**
 *ValUCTRave(N_i) = (1-p(N_i))* * *tasaExito_i + p(N_i)* * *amaf_i* *+ C* * *\sqrt{ln(n_p) / n_i}*
 
 Donde: *n_p* y *n_i* son el número de visitas al nodo padre y al nodo
@@ -521,7 +521,7 @@ coeficiente que determina la relación entre la estimación amaf y la tasa
 de éxito.
 
 Se decidió definir el valor de p de acuerdo al enfoque "Hand-Selected
-Schedule" \cite{c2}. El cual utiliza un parámetro k que determina el
+Schedule" [2]. El cual utiliza un parámetro k que determina el
 número de simulaciones en el cual p asignará igual peso a la *tasa de*
 *éxito* y a la estimación *amaf*.
 
@@ -563,13 +563,13 @@ Las principales etapas sobre las que se puede actuar son las de
 
 -   **Selección:** existen varias mejoras posibles, como ser:
 
-    -   "Progressive Bias"\cite{c8}: Consiste en guiar la búsqueda
+    -   "Progressive Bias"[8]: Consiste en guiar la búsqueda
         incorporando heurísticas en la etapa de Selección, las cuales
         tendrán gran influencia cuando el número de simulaciones es
         menor y a medida que el número aumenta, su aporte disminuirá
         hasta ser nulo.
 
-    -   "Progressive Widening"\cite{c8}: consiste en podar el árbol
+    -   "Progressive Widening"[8]: consiste en podar el árbol
         en relación al tiempo disponible y número de simulaciones
         realizadas, con el objetivo de reducir el factor de crecimiento
         y concentrar la búsqueda en las mejores opciones encontradas
@@ -597,7 +597,7 @@ Las principales etapas sobre las que se puede actuar son las de
     Para lograr esto, dentro de la documentación propia del área, se
     encontraron 2 principales enfoques:
 
-    -   "Urgency-based simulation"(Bouzy \cite{c6}): En cada instante
+    -   "Urgency-based simulation"(Bouzy [6]): En cada instante
         de la simulación, un valor de urgencia *U_j* es computado para
         cada movimiento *j* posible, combinando un valor
         "capture-escape" (que considera el número de fichas que
@@ -607,7 +607,7 @@ Las principales etapas sobre las que se puede actuar son las de
         movimiento será elegido con mayor o menor probabilidad de
         acuerdo a su valor de urgencia *U_j*.
 
-    -   "Sequence-like simulation"(Gelly \cite{c9}): Consiste en
+    -   "Sequence-like simulation"(Gelly [9]): Consiste en
         seleccionar ciertos movimientos de interés en un área cercana al
         último movimiento realizado, resultando en una secuencia de
         movimientos cercanos uno del otro.
@@ -644,7 +644,7 @@ Simulación a través del uso de secuencias de movimientos, porque:
 
 -   Es bastante simple de implementar.
 
--   Es el enfoque utilizado en MoGo\cite{c9}, el cual logró muy buenos
+-   Es el enfoque utilizado en MoGo[9], el cual logró muy buenos
     resultados siendo uno de los programas pioneros en el área.
 
 Implementación
@@ -692,7 +692,7 @@ manera:
 ### Patrones
 
 Los patrones utilizados en nuestras pruebas, fueron tomados de
-\cite{c10}, y corresponden a varias situaciones clásicas del juego Go.
+[10], y corresponden a varias situaciones clásicas del juego Go.
 Por ejemplo:
 
 ![image](https://github.com/MarcosPividori/Go-player/blob/master/docs/patterns.png)
@@ -731,7 +731,7 @@ elección de movimientos puramente aleatorios por una elección que dé
 mayor importancia a las posiciones antes mencionadas.
 
 Para elegir qué movimiento tomar en cada instante de la simulación,
-basándose en las propuestas presentadas en \cite{c11} y \cite{c7}, se
+basándose en las propuestas presentadas en [11] y [7], se
 probaron diferentes variantes y finalmente se concluyó con el siguiente
 algoritmo (se muestra una versión simplificada):
 
@@ -766,7 +766,7 @@ aleatoriedad en las simulaciones que nos permitan obtener una estimación
 más abarcativa del rumbo que pueda tomar el juego.
 
 Cuando mencionamos una posición "fill board", nos referimos a la
-mejora mencionada en \cite{c11}, que nos permite considerar ciertos
+mejora mencionada en [11], que nos permite considerar ciertos
 movimientos en áreas no exploradas del tablero.
 
 Mejora en las estructuras de datos utilizadas
@@ -814,7 +814,7 @@ complejidad aceptable. Por ejemplo, se analizaron:
 
 Por lo tanto, se decidió implementar una nueva estructura que nos
 permita realizar las 3 operaciones en una complejidad aceptable. Se
-comenzó con un árbol binario AVL \cite{c12}, continuamente balanceado,
+comenzó con un árbol binario AVL [12], continuamente balanceado,
 que nos asegura complejidad log(n) para inserción y eliminación de
 elementos.
 
@@ -850,7 +850,7 @@ configurar cada una de ellas sin necesidad de recompilar el código (en
 caso de no estar presentes, se toma un valor por defecto).
 
 Haciendo uso de estas opciones, de la aplicación
-"gogui-twogtp"\cite{c14} que permite correr múltiples partidas entre
+"gogui-twogtp"[14] que permite correr múltiples partidas entre
 dos programas y de un script que se creó para generar estadísticas
 ("generate\_stats.py"), se testeó al programa corriendo múltiples
 partidas modificando el valor de diferentes variables y analizando el
@@ -865,7 +865,7 @@ exploración.
 
 De acuerdo a las pruebas realizadas para diferentes valores del
 coeficiente de exploración en el algoritmo UCT, y en concordancia con
-los resultados presentados en \cite{c2}, el valor óptimo luego de la
+los resultados presentados en [2], el valor óptimo luego de la
 incorporación de la mejora RAVE, resulta ser 0.
 
 Coeficiente K de selección RAVE
@@ -926,7 +926,7 @@ utilizando la puntuación China (por Área) y un komi de 5 puntos.
     --------------------------------------------------------------------------------------
 
 
--   Estadísticas sobre 500 partidas contra GnuGo-3.8 level 10\cite{c13}
+-   Estadísticas sobre 500 partidas contra GnuGo-3.8 level 10[13]
     (30000 sim. por mov.):
 
     -----------------------------------------------------------------
@@ -944,13 +944,13 @@ Posibles mejoras a futuro
 =========================
 
 -   Incorporar conocimiento de dominio en la etapa de Selección, por
-    ejemplo implementando "Progressive Bias"\cite{c8} o
-    "Progressive Widening"\cite{c8}.
+    ejemplo implementando "Progressive Bias"[8] o
+    "Progressive Widening"[8].
 
 -   Probar el programa con nuevos patrones e investigar la posibilidad
     de aprender dichos patrones automáticamente. Algunos resultados
     sobre intentos de aprendizaje automatizado, se pueden encontrar en
-    \cite{c8}.
+    [8].
 
 -   Mejorar el programa para que pueda regular el tiempo automáticamente
     de acuerdo a la etapa en la que se encuentre del juego. (Es decir,
@@ -1000,7 +1000,7 @@ Posibles mejoras a futuro
     se podrían realizar muchísimas más simulaciones en igual tiempo y
     definitivamente la eficiencia del programa aumentaría con mayor
     porcentaje de partidas ganadas. Investigación en este tema se puede
-    encontrar en \cite{c17} y \cite{c18}.
+    encontrar en [17] y [18].
 
 Estadísticas: (Desactualizado)
 -------------
@@ -1010,74 +1010,74 @@ Estadísticas: (Desactualizado)
 
 ***Bibliografía:***
 
-c1 Beatriz Nasarre Embid. Método de Monte-Carlo Tree Search (MCTS) para
+[1] Beatriz Nasarre Embid. Método de Monte-Carlo Tree Search (MCTS) para
 resolver problemas de alta complejidad: Jugador virtual para el juego
 del Go.\
 <http://zaguan.unizar.es/TAZ/EINA/2012/8010/TAZ-PFC-2012-393.pdf>
 
-c2 Sylvain Gelly and David Silver. 2011. Monte-Carlo Tree Search and
+[2] Sylvain Gelly and David Silver. 2011. Monte-Carlo Tree Search and
 Rapid Action Value Estimation in Computer Go. Artif. Intell. 175, 11
 (July 2011), 1856-1875.\
 <http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Applications_files/mcrave.pdf>
 
-c3 Guillaume M.J-B. Chaslot, Mark H.M. Winands, and H. Jaap van den
+[3] Guillaume M.J-B. Chaslot, Mark H.M. Winands, and H. Jaap van den
 Herik. Parallel Monte-Carlo Tree Search.\
 <https://dke.maastrichtuniversity.nl/m.winands/documents/multithreadedMCTS2.pdf>
 
-c4 Levente Kocsis and Csaba Szepesvári. Bandit based Monte-Carlo
+[4] Levente Kocsis and Csaba Szepesvári. Bandit based Monte-Carlo
 Planning.\
 <http://www.sztaki.hu/~szcsaba/papers/ecml06.pdf>
 
-c5 Bruno Bouzy. Associating domain-dependent knowledge and Monte Carlo
+[5] Bruno Bouzy. Associating domain-dependent knowledge and Monte Carlo
 approaches within a go program.\
 <http://www.math-info.univ-paris5.fr/~bouzy/publications/Bouzy-InformationSciences.pdf>
 
-c6 Guillaume Maurice Jean-Bernard Chaslot. Monte-Carlo Tree Search.\
+[6] Guillaume Maurice Jean-Bernard Chaslot. Monte-Carlo Tree Search.\
 <https://project.dke.maastrichtuniversity.nl/games/files/phd/Chaslot_thesis.pdf>
 
-c7 Guillaume Chaslot, Louis Chatriot, C. Fiter, Sylvain Gelly,
+[7] Guillaume Chaslot, Louis Chatriot, C. Fiter, Sylvain Gelly,
 Jean-Baptiste Hoock, Julien Perez, Arpad Rimmel, Olivier Teytaud.
 Combining expert, offline, transient and online knowledge in Monte-Carlo
 exploration.\
 <https://www.lri.fr/~teytaud/eg.pdf>
 
-c8 Guillaume Chaslot, Mark H.M. Winands, H. Jaap van den Herik, Jos
+[8] Guillaume Chaslot, Mark H.M. Winands, H. Jaap van den Herik, Jos
 W.H.M. Uiterwijk, Bruno Bouzy. Progressive Strategies for Monte-Carlo
 tree search.\
 <https://gnunet.org/sites/default/files/NMNC%20-%20Progressive%20strategies%20for%20MCTS.pdf>
 
-c9 Sylvain Gelly, Yizao Wang, Modifications of UCT and sequence-like
+[9] Sylvain Gelly, Yizao Wang, Modifications of UCT and sequence-like
 simulations for Monte-Carlo Go.\
 <http://dept.stat.lsa.umich.edu/~yizwang/publications/wang07modifications.pdf>
 
-c10 Sylvain Gelly, Yizao Wang, Rémi Munos, Olivier Teytaud. Modification
+[10] Sylvain Gelly, Yizao Wang, Rémi Munos, Olivier Teytaud. Modification
 of UCT with Patterns in Monte-Carlo Go.\
 <https://hal.inria.fr/inria-00117266/PDF/RR-6062.pdf>
 
-c11 Chang-Shing Lee, Mei-Hui Wang, Guillaume Chaslot, Jean-Baptiste
+[11] Chang-Shing Lee, Mei-Hui Wang, Guillaume Chaslot, Jean-Baptiste
 Hoock, Arpad Rimmel. The Computational Intelligence of MoGo Revealed in
 Taiwan’s Computer Go Tournaments.\
 <https://hal.archives-ouvertes.fr/file/index/docid/369786/filename/TCIAIG-2008-0010_Accepted_.pdf>
 
-c12 Georgy Adelson-Velsky, G.; E. M. Landis (1962). \`\`An algorithm for
+[12] Georgy Adelson-Velsky, G.; E. M. Landis (1962). \`\`An algorithm for
 the organization of information". Proceedings of the USSR Academy of
 Sciences 146: 263–266. (Russian) English translation by Myron J. Ricci
 in Soviet Math. Doklady, 3:1259–1263, 1962.
 
-c13 GNU Go. <https://www.gnu.org/software/gnugo/>
+[13] GNU Go. <https://www.gnu.org/software/gnugo/>
 
-c14 GoGui. <http://gogui.sourceforge.net/>
+[14] GoGui. <http://gogui.sourceforge.net/>
 
-c15 Go Text Protocol.\
+[15] Go Text Protocol.\
 <http://www.gnu.org/software/gnugo/gnugo_19.html>
 
-c16 Monte Carlo Tree Search (MCTS) research hub.\
+[16] Monte Carlo Tree Search (MCTS) research hub.\
 <http://mcts.ai>
 
-c17 Kamil Marek Rocki, Reiji Suda, \`\`Large Scale Monte Carlo Tree
+[17] Kamil Marek Rocki, Reiji Suda, \`\`Large Scale Monte Carlo Tree
 Search on GPU".\
 <http://olab.is.s.u-tokyo.ac.jp/~kamil.rocki/phd_thesis.pdf>
 
-c18 Zhou, J. (2013). Parallel Go on CUDA with Monte Carlo Tree Search.
+[18] Zhou, J. (2013). Parallel Go on CUDA with Monte Carlo Tree Search.
 (Electronic Thesis or Dissertation).\
 <https://etd.ohiolink.edu/ap:10:0::NO:10:P10_ETD_SUBID:4810#abstract-files>
