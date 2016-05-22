@@ -1,5 +1,5 @@
 language: cpp
-os:
-    - linux
+os: linux
+sudo: required
 install: ./install_env.sh
 script: make all
