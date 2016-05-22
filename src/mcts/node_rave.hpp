@@ -19,7 +19,7 @@ template <class Value,class Data> class NodeUCTRave{
         double sqrt_visits;
         unsigned long amaf_visits;
         double sqrt_for_amaf;
-        void count_nodes(int level,long counter[],int max_level);
+        void count_nodes(int level,long counter[],int max_level) const;
         NodeUCTRave(Value init_value,Data init_data,NodeUCTRave<Value,Data> *father);
     public:
         typedef typename vector< NodeUCTRave<Value,Data>* >::const_iterator const_iterator;
@@ -41,8 +41,8 @@ template <class Value,class Data> class NodeUCTRave{
         void create_child(Value init_value,Data init_data);
         void delete_tree();
         void join(NodeUCTRave<Value,Data>* nod);
-        void show();
-        void debug();
+        void show() const;
+        void debug() const;
 };
 
 template <class Value,class Data>
@@ -103,7 +103,7 @@ NodeUCTRave<Value,Data> *NodeUCTRave<Value,Data>::move_root_to_child(Data child_
 }
 
 template <class Value,class Data>
-void NodeUCTRave<Value,Data>::count_nodes(int level,long counter[],int max_level){
+void NodeUCTRave<Value,Data>::count_nodes(int level,long counter[],int max_level) const {
     if(level >= max_level)
         return;
     counter[level]+=children.size();
@@ -112,7 +112,7 @@ void NodeUCTRave<Value,Data>::count_nodes(int level,long counter[],int max_level
 }
 
 template <class Value,class Data>
-void NodeUCTRave<Value,Data>::show(){
+void NodeUCTRave<Value,Data>::show() const {
     long size[20],total=0;
     for(int i=0;i<20;i++)
         size[i]=0;
@@ -127,7 +127,7 @@ void NodeUCTRave<Value,Data>::show(){
 }
 
 template <class Value,class Data>
-void NodeUCTRave<Value,Data>::debug(){
+void NodeUCTRave<Value,Data>::debug() const {
     cout << "DEBUG STATS NODE: vis=" << visits << " win=" << value<< " vis_amaf=" << amaf_visits << " win_amaf=" << amaf_value << endl;
     cout << "                  rate=" << (value / visits) << "  amaf_rate=" << (amaf_value / amaf_visits) << "  amaf_coeff="<< (sqrt(k_rave)/sqrt_for_amaf) << endl;
 }

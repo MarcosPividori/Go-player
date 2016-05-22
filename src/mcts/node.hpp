@@ -17,7 +17,7 @@ template <class Value,class Data> class NodeUCT{
         vector< NodeUCT<Value,Data>* > children;
         unsigned long visits;
         double sqrt_visits;
-        void count_nodes(int level,long counter[],int max_level);
+        void count_nodes(int level,long counter[],int max_level) const;
         NodeUCT(Value init_value,Data init_data,NodeUCT<Value,Data> *father);
     public:
         typedef typename vector< NodeUCT<Value,Data>* >::const_iterator const_iterator;
@@ -34,8 +34,8 @@ template <class Value,class Data> class NodeUCT{
         void create_child(Value init_value,Data init_data);
         void delete_tree();
         void join(NodeUCT<Value,Data>* nod);
-        void show();
-        void debug();
+        void show() const;
+        void debug() const;
 };
 
 template <class Value,class Data>
@@ -90,7 +90,7 @@ NodeUCT<Value,Data> *NodeUCT<Value,Data>::move_root_to_child(Data child_data){
 }
 
 template <class Value,class Data>
-void NodeUCT<Value,Data>::count_nodes(int level,long counter[],int max_level){
+void NodeUCT<Value,Data>::count_nodes(int level,long counter[],int max_level) const {
     if(level >= max_level)
         return;
     counter[level]+=children.size();
@@ -99,7 +99,7 @@ void NodeUCT<Value,Data>::count_nodes(int level,long counter[],int max_level){
 }
 
 template <class Value,class Data>
-void NodeUCT<Value,Data>::show(){
+void NodeUCT<Value,Data>::show() const {
     long size[20],total=0;
     for(int i=0;i<20;i++)
         size[i]=0;
@@ -114,7 +114,7 @@ void NodeUCT<Value,Data>::show(){
 }
 
 template <class Value,class Data>
-void NodeUCT<Value,Data>::debug(){
+void NodeUCT<Value,Data>::debug() const {
     cout << "DEBUG STATS NODE: vis=" << visits << " win=" << value << endl;
     cout << "                  rate=" << (value / visits) << endl;
 }
