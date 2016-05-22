@@ -1,5 +1,7 @@
-Go-player
+Go-player 
 =========
+
+[![Build Status](https://travis-ci.org/MarcosPividori/Go-player.svg?branch=master)](https://travis-ci.org/MarcosPividori/Go-player)
 
 Instalación:
 ------------
