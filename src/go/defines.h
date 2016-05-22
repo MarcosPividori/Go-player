@@ -20,13 +20,13 @@
 #define MAX(a,b)         ((a)>(b)? a : b)
 #define POS_TO_LETTER(p) (char('A'+((p<('I'-'A'))?p:p+1)))
 
-typedef enum : char{
+typedef enum : int8_t {
     Black = -1,
     Empty = 0,
     White = 1,
 } Player;
 
-typedef char INDEX;
+typedef uint8_t INDEX;
 
 union POS {
     struct{
