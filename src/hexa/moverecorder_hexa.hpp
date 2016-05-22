@@ -4,7 +4,7 @@
 
 class MoveRecorderHexa: public MoveRecorder<DataHexa>{
     private:
-        CELL A[11][11];
+        Cell A[11][11];
     public:
         void clear();
         void postMove(DataHexa move);
@@ -21,15 +21,15 @@ inline void MoveRecorderHexa::clear()
 
 inline void MoveRecorderHexa::postMove(DataHexa move)
 {
-    A[I(move)][J(move)]=PlayerToCell(Player(move));
+    A[move.i][move.j]=PlayerToCell(move.player);
 }
 
 inline void MoveRecorderHexa::prevMove(DataHexa move)
 {
-    A[I(move)][J(move)]=PlayerToCell(Player(move));
+    A[move.i][move.j]=PlayerToCell(move.player);
 }
 
 inline bool MoveRecorderHexa::isMove(DataHexa move)
 {
-    return A[I(move)][J(move)]==PlayerToCell(Player(move));
+    return A[move.i][move.j]==PlayerToCell(move.player);
 }

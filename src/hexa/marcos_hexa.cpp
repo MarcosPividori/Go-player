@@ -25,7 +25,7 @@ struct EvalNod : public EvalNode<ValHexa,DataHexa> {
     {
         if(v_final == EMPTY)//Tie
             return v_nodo+0.9999;
-        if(v_final == PlayerToCell(Player(dat_nodo)))
+        if(v_final == PlayerToCell(dat_nodo.player))
             return v_nodo+1;
         return v_nodo;
     }
@@ -41,7 +41,7 @@ Player insert_player()
         cin.clear();
         cin.ignore(10000, '\n');
     }
-    return (c=='f') ? Cross : Circle;
+    return (c=='f') ? CROSS_P : CIRCLE_P;
 }
 
 DataHexa insert_mov(Player player,StateHexa *state)
@@ -49,13 +49,13 @@ DataHexa insert_mov(Player player,StateHexa *state)
     int i,j;
     while(1){
         cout<<"Insert mov (row and column): ";
-        if((cin>>i>>j) && (i>=1 && i<12) && (j>=1 && j<12) && state->valid_move(MOVE(i-1,j-1,player)))
+        if((cin>>i>>j) && (i>=1 && i<12) && (j>=1 && j<12) && state->valid_move(DataHexa(i-1,j-1,player)))
             break;
         cin.clear();
         cin.ignore(10000, '\n');
     }
     cout<<endl;
-    return MOVE(i-1,j-1,player);
+    return DataHexa(i-1,j-1,player);
 }
 
 void debug(MctsParallel_GlobalMutex<ValHexa,DataHexa,Nod,StateHexa> &mcts);
@@ -112,8 +112,8 @@ int main()
     }
 
     cout<<endl<<"------------------"<<endl<<endl;
-    cout << "RESULT: " << (state.get_final_value()==1  ? "++ wins." :
-                               (state.get_final_value()==-1 ? "oo wins." : "Tie."))
+    cout << "RESULT: " << (state.get_final_value()==CROSS  ? "++ wins." :
+                               (state.get_final_value()==CIRCLE ? "oo wins." : "Tie."))
                             << endl<<endl;
 
 #ifdef RAVE
@@ -146,13 +146,13 @@ void debug(MctsParallel_GlobalMutex<ValHexa,DataHexa,Nod,StateHexa> &mcts)
     double sqrt_log_parent = sqrt(log((double) root->get_visits()));
     for(;iter != root->children_end();iter++)
     {
-        visits[I((*iter)->data)][J((*iter)->data)]=(*iter)->get_visits();
+        visits[(*iter)->data.i][(*iter)->data.j]=(*iter)->get_visits();
 #ifdef RAVE
-        coeffs[I((*iter)->data)][J((*iter)->data)]=
+        coeffs[(*iter)->data.i][(*iter)->data.j]=
                 SelectionUCTRave<ValHexa,DataHexa>(BANDIT_COEFF,K_RAVE)
                 .get_uct_amaf_val((*iter),sqrt_log_parent);
 #else
-        coeffs[I((*iter)->data)][J((*iter)->data)]=
+        coeffs[(*iter)->data.i][(*iter)->data.j]=
                 SelectionUCT<ValHexa,DataHexa>(BANDIT_COEFF)
                 .get_uct_val((*iter),sqrt_log_parent);
 #endif

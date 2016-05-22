@@ -6,7 +6,7 @@ StateConnect4::StateConnect4()
     for(int i=0;i<6;i++)
         for(int j=0;j<7;j++)
             A[i][j]=EMPTY;
-    turn=Cross;
+    turn=CROSS_P;
 }
 
 StateConnect4::StateConnect4(StateConnect4 *src)
@@ -14,16 +14,16 @@ StateConnect4::StateConnect4(StateConnect4 *src)
     *this = *src;
 }
 
-void StateConnect4::get_possible_moves(vector<DataConnect4>& v)
+void StateConnect4::get_possible_moves(vector<DataConnect4>& v) const
 {
     if(get_final_value() !=EMPTY)
         return;
     for(int j=0;j<7;j++)
         if(A[0][j]==EMPTY)
-            v.push_back(MOVE(j,turn));
+            v.push_back(DataConnect4(j,turn));
 }
 
-ValConnect4 StateConnect4::get_final_value()
+ValConnect4 StateConnect4::get_final_value() const
 {
     int sum;
     for(int i=0;i<6;i++){
@@ -91,20 +91,20 @@ ValConnect4 StateConnect4::get_final_value()
 
 void StateConnect4::apply(DataConnect4 d)
 {
-    assert(Player(d) == turn);
-    assert(A[0][Pos(d)] == EMPTY);
+    assert(d.player == turn);
+    assert(A[0][d.pos] == EMPTY);
     for(int i=0;i<6;i++){
-        if(A[i][Pos(d)] != EMPTY){
-            A[i-1][Pos(d)]=PlayerToCell(turn);
+        if(A[i][d.pos] != EMPTY){
+            A[i-1][d.pos]=PlayerToCell(turn);
             break;
         }
         if(i==5)
-            A[5][Pos(d)]=PlayerToCell(turn);
+            A[5][d.pos]=PlayerToCell(turn);
     }
     turn=ChangePlayer(turn);
 }
 
-void StateConnect4::show()
+void StateConnect4::show() const
 {
     for(int j=0;j<7;j++)
         cout<<" "<<j;
@@ -116,8 +116,8 @@ void StateConnect4::show()
     }
 }
 
-bool StateConnect4::valid_move(DataConnect4 d)
+bool StateConnect4::valid_move(DataConnect4 d) const
 {
-    return A[0][Pos(d)]==EMPTY;
+    return A[0][d.pos]==EMPTY;
 }
 

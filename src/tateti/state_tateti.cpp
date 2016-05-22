@@ -6,7 +6,7 @@ StateTateti::StateTateti()
     for(int i=0;i<3;i++)
         for(int j=0;j<3;j++)
             A[i][j]=EMPTY;
-    turn=Cross;
+    turn=CROSS_P;
 }
 
 StateTateti::StateTateti(StateTateti *src)
@@ -14,17 +14,17 @@ StateTateti::StateTateti(StateTateti *src)
     *this = *src;
 }
 
-void StateTateti::get_possible_moves(vector<DataTateti>& v)
+void StateTateti::get_possible_moves(vector<DataTateti>& v) const
 {
     if(get_final_value() !=0)
         return;
     for(int i=0;i<3;i++)
         for(int j=0;j<3;j++)
             if(A[i][j]==EMPTY)
-                v.push_back(MOVE(i,j,turn));
+                v.push_back(DataTateti(i,j,turn));
 }
 
-ValTateti StateTateti::get_final_value()
+ValTateti StateTateti::get_final_value() const
 {
     int sum;
     for(int i=0;i<3;i++){
@@ -60,13 +60,13 @@ ValTateti StateTateti::get_final_value()
 
 void StateTateti::apply(DataTateti d)
 {
-    assert(Player(d) == turn);
-    assert(A[I(d)][J(d)] == EMPTY);
-    A[I(d)][J(d)]=PlayerToCell(turn);
+    assert(d.player == turn);
+    assert(A[d.i][d.j] == EMPTY);
+    A[d.i][d.j]=PlayerToCell(turn);
     turn=ChangePlayer(turn);
 }
 
-void StateTateti::show()
+void StateTateti::show() const
 {
     cout<<"  1 2 3"<<endl;
     for(int i=0;i<3;i++){
@@ -77,8 +77,8 @@ void StateTateti::show()
     }
 }
 
-bool StateTateti::valid_move(DataTateti d)
+bool StateTateti::valid_move(DataTateti d) const
 {
-    return A[I(d)][J(d)]==EMPTY;
+    return A[d.i][d.j]==EMPTY;
 }
 

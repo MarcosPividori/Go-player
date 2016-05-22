@@ -3,8 +3,6 @@
 #include "mcts_utils.hpp"
 #include "mcts_uct.hpp"
 #include <iostream>
-#include <cassert>
-#include <thread>
 #include "state_connect4.hpp"
 
 using namespace std;
@@ -14,7 +12,7 @@ struct EvalNod : public EvalNode<ValConnect4,DataConnect4> {
     {
         if(v_final == EMPTY)//Tie
             return v_nodo+0.9999;
-        if(v_final == PlayerToCell(Player(dat_nodo)))
+        if(v_final == PlayerToCell(dat_nodo.player))
             return v_nodo+1;
         return v_nodo;
     }
@@ -30,7 +28,7 @@ Player insert_player()
         cin.clear();
         cin.ignore(10000, '\n');
     }
-    return (c=='f') ? Cross : Circle;
+    return (c=='f') ? CROSS_P : CIRCLE_P;
 }
 
 DataConnect4 insert_mov(Player player,StateConnect4 *state)
@@ -38,13 +36,13 @@ DataConnect4 insert_mov(Player player,StateConnect4 *state)
     int j;
     while(1){
         cout<<"Insert mov (Column num 0-6): ";
-        if((cin>>j) && (j>=0 && j<7) && state->valid_move(MOVE(j,player)))
+        if((cin>>j) && (j>=0 && j<7) && state->valid_move(DataConnect4(j,player)))
             break;
         cin.clear();
         cin.ignore(10000, '\n');
     }
     cout<<endl;
-    return MOVE(j,player);
+    return DataConnect4(j,player);
 }
 
 int main()
@@ -60,7 +58,7 @@ int main()
     SelectResMostRobust<ValConnect4,DataConnect4,Nod> sel_res;
     Mcts<ValConnect4,DataConnect4,Nod,StateConnect4> m(&sel,&exp,&sim,&ret,&sel_res);
     vector<Mcts<ValConnect4,DataConnect4,Nod,StateConnect4> *> m_vector(NUM_THREADS,&m);
-    MctsParallel_GlobalMutex<ValConnect4,DataConnect4,Nod,StateConnect4> mcts(m_vector,&state,MOVE(Circle,0));
+    MctsParallel_GlobalMutex<ValConnect4,DataConnect4,Nod,StateConnect4> mcts(m_vector,&state,DataConnect4(0,CIRCLE_P));
     
     cout<< "CONNNECT4:"<<endl;
     Player us_player=insert_player();
@@ -88,8 +86,8 @@ int main()
     }
 
     cout<<endl<<"------------------"<<endl<<endl;
-    cout << "RESULT: " << (state.get_final_value()==1  ? "X wins." :
-                               (state.get_final_value()==-1 ? "O wins." : "Tie.")) <<endl<<endl;
+    cout << "RESULT: " << (state.get_final_value()==CROSS ? "X wins." :
+                               (state.get_final_value()==CIRCLE ? "O wins." : "Tie.")) <<endl<<endl;
     return 0;
 }
 

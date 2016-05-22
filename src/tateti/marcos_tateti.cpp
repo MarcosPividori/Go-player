@@ -14,7 +14,7 @@ struct EvalNod: public EvalNode<ValTateti,DataTateti> {
     {
         if(v_final == EMPTY)//Tie
             return v_nodo+0.9;
-        if(v_final == PlayerToCell(Player(dat_nodo)))
+        if(v_final == PlayerToCell(dat_nodo.player))
             return v_nodo+1;
         return v_nodo;
     }
@@ -30,7 +30,7 @@ Player insert_player()
         cin.clear();
         cin.ignore(10000, '\n');
     }
-    return (c=='f') ? Cross : Circle;
+    return (c=='f') ? CROSS_P : CIRCLE_P;
 }
 
 DataTateti insert_mov(Player player,StateTateti *state)
@@ -38,13 +38,13 @@ DataTateti insert_mov(Player player,StateTateti *state)
     int i,j;
     while(1){
         cout<<"Insert mov (row and column): ";
-        if((cin>>i>>j) && (i>=1 && i<4) && (j>=1 && j<4) && state->valid_move(MOVE(i-1,j-1,player)))
+        if((cin>>i>>j) && (i>=1 && i<4) && (j>=1 && j<4) && state->valid_move(DataTateti(i-1,j-1,player)))
             break;
         cin.clear();
         cin.ignore(10000, '\n');
     }
     cout<<endl;
-    return MOVE(i-1,j-1,player);
+    return DataTateti(i-1,j-1,player);
 }
 
 int main()
@@ -87,8 +87,8 @@ int main()
     }
 
     cout<<endl<<"------------------"<<endl<<endl;
-    cout << "RESULT: " << (state.get_final_value()==1  ? "X wins." :
-                               (state.get_final_value()==-1 ? "O wins." : "Tie.")) <<endl<<endl;
+    cout << "RESULT: " << (state.get_final_value()==CROSS  ? "X wins." :
+                               (state.get_final_value()==CIRCLE ? "O wins." : "Tie.")) <<endl<<endl;
     return 0;
 }
 

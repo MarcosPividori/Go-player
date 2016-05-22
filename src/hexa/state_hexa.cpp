@@ -20,20 +20,20 @@ using namespace std;
 
 StateHexa::StateHexa(int size) : _size(size)
 {
-    A = new CELL*[size];
+    A = new Cell*[size];
     for(int i=0;i<size;i++){
-        A[i] = new CELL[size];
+        A[i] = new Cell[size];
         for(int j=0;j<size;j++)
             A[i][j]=EMPTY;
     }
-    turn=Cross;
+    turn=CROSS_P;
 }
 
 StateHexa::StateHexa(StateHexa *src) : _size(src->_size)
 {
-    A = new CELL*[_size];
+    A = new Cell*[_size];
     for(int i=0;i<_size;i++){
-        A[i] = new CELL[_size];
+        A[i] = new Cell[_size];
         for(int j=0;j<_size;j++)
             A[i][j]=src->A[i][j];
     }
@@ -47,17 +47,17 @@ StateHexa::~StateHexa()
     delete[] A;
 }
 
-void StateHexa::get_possible_moves(vector<DataHexa>& v)
+void StateHexa::get_possible_moves(vector<DataHexa>& v) const
 {
     if(get_final_value() !=0)
         return;
     for(int i=0;i<_size;i++)
         for(int j=0;j<_size;j++)
             if(A[i][j]==EMPTY)
-                v.push_back(MOVE(i,j,turn));
+                v.push_back(DataHexa(i,j,turn));
 }
 
-bool StateHexa::check_vertical(int i,int j,CELL p,bool **visited)
+bool StateHexa::check_vertical(int i,int j,Cell p,bool **visited) const
 {
     visited[i][j]=true;
     if(i==_size-1)
@@ -73,7 +73,7 @@ bool StateHexa::check_vertical(int i,int j,CELL p,bool **visited)
     return false;
 }
 
-bool StateHexa::check_horizontal(int i,int j,CELL p,bool **visited)
+bool StateHexa::check_horizontal(int i,int j,Cell p,bool **visited) const
 {
     visited[i][j]=true;
     if(j==_size-1)
@@ -89,7 +89,7 @@ bool StateHexa::check_horizontal(int i,int j,CELL p,bool **visited)
     return false;
 }
 
-ValHexa StateHexa::get_final_value()
+ValHexa StateHexa::get_final_value() const
 {
     bool **visited=new bool*[_size];
     for(int i=0;i<_size;i++){
@@ -117,13 +117,13 @@ ValHexa StateHexa::get_final_value()
 
 void StateHexa::apply(DataHexa d)
 {
-    assert(Player(d) == turn);
-    assert(A[I(d)][J(d)] == EMPTY);
-    A[I(d)][J(d)]=PlayerToCell(turn);
+    assert(d.player == turn);
+    assert(A[d.i][d.j] == EMPTY);
+    A[d.i][d.j]=PlayerToCell(turn);
     turn=ChangePlayer(turn);
 }
 
-void StateHexa::show()
+void StateHexa::show() const
 {
     cout<<"    ";
     for(int j=0;j<_size;j++)
@@ -158,8 +158,8 @@ void StateHexa::show()
     cout<<endl;
 }
 
-bool StateHexa::valid_move(DataHexa d)
+bool StateHexa::valid_move(DataHexa d) const
 {
-    return A[I(d)][J(d)]==EMPTY;
+    return A[d.i][d.j]==EMPTY;
 }
 
