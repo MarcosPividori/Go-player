@@ -6,6 +6,9 @@ import os.path
 output = open('stats.txt','a',0)
 col_sizes = [4,10,6,5,8,7,7,7,4,4,4,4,4,7,8,5,5,7,7,6,6,15]
 
+if not os.path.exists('./stats'):
+    os.makedirs('./stats')
+
 def write_row(files,l):
     for i in range(0,len(l)):
       el=l[i]
@@ -15,7 +18,7 @@ def write_row(files,l):
     files.write('\n')
 
 def winning_rate(prog):
-    stats = open('./game/stats.dat','r')
+    stats = open('./stats/stats.dat','r')
     wcount=0;
     bcount=0;
     for l in stats:
@@ -142,11 +145,11 @@ def analyze_program(isWhite=False,
                     rave,
                     totally_random)
     os.environ[prog]=command
-    twogtp="gogui-twogtp -black \"$BLACK\" -white \"$WHITE\" -games "+
-        str(num_games)+" -size "+str(size)+" -komi "+str(komi)+
-        " -auto -sgffile ./game/stats"
-    if os.path.isfile('./game/stats.dat'):
-       subprocess.Popen("rm ./game/stats*",shell=True)
+    twogtp="gogui-twogtp -black \"$BLACK\" -white \"$WHITE\" -games "+ \
+        str(num_games)+" -size "+str(size)+" -komi "+str(komi)+ \
+        " -auto -sgffile ./stats/stats"
+    if os.path.isfile('./stats/stats.dat'):
+       subprocess.Popen("rm ./stats/stats*",shell=True)
     p=subprocess.Popen(twogtp,shell=True)
     p.wait()
     if p.returncode == 0 :
@@ -307,7 +310,7 @@ analyze_program(isWhite=True, komi=5, num_games=300,
   limit_expansion=1,
   root_parallel=False,
   chinese_rules=True,
-  -rave=True,
+  rave=True,
   totally_random=False,
 )
 

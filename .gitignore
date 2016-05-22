@@ -1,4 +1,4 @@
 bin/*
 *.o
-game*
+stats*
 /docs/*
