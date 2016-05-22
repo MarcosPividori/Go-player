@@ -38,7 +38,8 @@ DataTateti insert_mov(Player player,StateTateti *state)
     int i,j;
     while(1){
         cout<<"Insert mov (row and column): ";
-        if((cin>>i>>j) && (i>=1 && i<4) && (j>=1 && j<4) && state->valid_move(DataTateti(i-1,j-1,player)))
+        if((cin>>i>>j) && (i>=1 && i<4) && (j>=1 && j<4)
+            && state->valid_move(DataTateti(i-1,j-1,player)))
             break;
         cin.clear();
         cin.ignore(10000, '\n');
@@ -58,8 +59,10 @@ int main()
     RetropropagationSimple<ValTateti,DataTateti,EvalNod> ret;
     SelectResMostRobust<ValTateti,DataTateti,Nod> sel_res;
     Mcts<ValTateti,DataTateti,Nod,StateTateti> m(&sel,&exp,&sim,&ret,&sel_res);
-    vector<Mcts<ValTateti,DataTateti,Nod,StateTateti> *> m_vector(NUM_THREADS,&m);
-    MctsParallel_GlobalMutex<ValTateti,DataTateti,Nod,StateTateti> mcts(m_vector,&state,0);
+    vector<Mcts<ValTateti,DataTateti,Nod,StateTateti> *>
+        m_vector(NUM_THREADS,&m);
+    MctsParallel_GlobalMutex<ValTateti,DataTateti,Nod,StateTateti>
+        mcts(m_vector,&state,0);
     
     cout<< "TATETI:"<<endl;
     Player us_player=insert_player();
@@ -87,8 +90,10 @@ int main()
     }
 
     cout<<endl<<"------------------"<<endl<<endl;
-    cout << "RESULT: " << (state.get_final_value()==CROSS  ? "X wins." :
-                               (state.get_final_value()==CIRCLE ? "O wins." : "Tie.")) <<endl<<endl;
+    cout << "RESULT: "
+         << (state.get_final_value()==CROSS  ? "X wins." :
+                (state.get_final_value()==CIRCLE ? "O wins." : "Tie."))
+         <<endl<<endl;
     return 0;
 }
 

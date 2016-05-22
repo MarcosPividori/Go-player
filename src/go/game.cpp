@@ -6,23 +6,31 @@
 
 RaveEnv::RaveEnv(Config &cfg_input,StateGo *state)
 {
-    _exp= new ExpansionAllChildren<ValGo,DataGo,StateGo,Nod>(cfg_input.limit_expansion,0);
+    _exp= new ExpansionAllChildren<ValGo,DataGo,StateGo,Nod>(
+        cfg_input.limit_expansion,0);
     _sel_res= new SelectResMostRobustOverLimit<Nod>(cfg_input.resign_limit);
-    _sim_and_retro= new SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>*[cfg_input.num_threads_mcts];
-    _sel= new SelectionUCTRave<ValGo,DataGo>(cfg_input.bandit_coeff,cfg_input.amaf_coeff);
+    _sim_and_retro= new SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,
+        EvalNod,MoveRecorderGo>*[cfg_input.num_threads_mcts];
+    _sel= new SelectionUCTRave<ValGo,DataGo>(
+        cfg_input.bandit_coeff,cfg_input.amaf_coeff);
     for(int i=0;i<cfg_input.num_threads_mcts;i++){
         if(cfg_input.knowledge)
             _sim_and_retro[i]= new SimulationWithDomainKnowledge(
-                                           cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff,cfg_input.limit_atari);
+                cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff,
+                cfg_input.limit_atari);
         else
-            _sim_and_retro[i]= new SimulationAndRetropropagationRaveGo(cfg_input.long_game_coeff);
-        _m.push_back(new Mcts<ValGo,DataGo,Nod,StateGo>(_sel,_exp,_sim_and_retro[i],_sim_and_retro[i],_sel_res));
+            _sim_and_retro[i]= new SimulationAndRetropropagationRaveGo(
+                cfg_input.long_game_coeff);
+        _m.push_back(new Mcts<ValGo,DataGo,Nod,StateGo>(
+            _sel,_exp,_sim_and_retro[i],_sim_and_retro[i],_sel_res));
     }
     NodeUCTRave<ValGo,DataGo>::k_rave = cfg_input.amaf_coeff;
     if(cfg_input.root_parallel)
-        _mcts= new MctsParallel_Root<ValGo,DataGo,Nod,StateGo>(_m,state,INIT_DATA(CHANGE_PLAYER(state->turn)));
+        _mcts= new MctsParallel_Root<ValGo,DataGo,Nod,StateGo>(
+            _m,state,INIT_DATA(CHANGE_PLAYER(state->turn)));
     else
-        _mcts= new MctsParallel_GlobalMutex<ValGo,DataGo,Nod,StateGo>(_m,state,INIT_DATA(CHANGE_PLAYER(state->turn)));
+        _mcts= new MctsParallel_GlobalMutex<ValGo,DataGo,Nod,StateGo>(
+            _m,state,INIT_DATA(CHANGE_PLAYER(state->turn)));
 }
 
 RaveEnv::~RaveEnv()
@@ -40,22 +48,28 @@ RaveEnv::~RaveEnv()
 
 UCTEnv::UCTEnv(Config &cfg_input,StateGo *state)
 {
-    _exp= new ExpansionAllChildren<ValGo,DataGo,StateGo,Nod>(cfg_input.limit_expansion,0);
+    _exp= new ExpansionAllChildren<ValGo,DataGo,StateGo,Nod>(
+        cfg_input.limit_expansion,0);
     _sel_res= new SelectResMostRobustOverLimit<Nod>(cfg_input.resign_limit);
     _sel= new SelectionUCT<ValGo,DataGo>(cfg_input.bandit_coeff);
     _sim= new Simulation<ValGo,StateGo>*[cfg_input.num_threads_mcts];
     _ret= new RetropropagationSimple<ValGo,DataGo,EvalNod>();
     for(int i=0;i<cfg_input.num_threads_mcts;i++){
         if(cfg_input.knowledge)
-            _sim[i]= new SimulationWithDomainKnowledge(cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff,cfg_input.limit_atari);
+            _sim[i]= new SimulationWithDomainKnowledge(
+                cfg_input.number_fill_board_attemps,cfg_input.long_game_coeff,
+                cfg_input.limit_atari);
         else
             _sim[i]= new SimulationTotallyRandomGo(cfg_input.long_game_coeff);
-        _m.push_back(new Mcts<ValGo,DataGo,Nod,StateGo>(_sel,_exp,_sim[i],_ret,_sel_res));
+        _m.push_back(new Mcts<ValGo,DataGo,Nod,StateGo>(
+            _sel,_exp,_sim[i],_ret,_sel_res));
     }
     if(cfg_input.root_parallel)
-        _mcts= new MctsParallel_Root<ValGo,DataGo,Nod,StateGo>(_m,state,INIT_DATA(CHANGE_PLAYER(state->turn)));
+        _mcts= new MctsParallel_Root<ValGo,DataGo,Nod,StateGo>(
+            _m,state,INIT_DATA(CHANGE_PLAYER(state->turn)));
     else
-        _mcts= new MctsParallel_GlobalMutex<ValGo,DataGo,Nod,StateGo>(_m,state,INIT_DATA(CHANGE_PLAYER(state->turn)));
+        _mcts= new MctsParallel_GlobalMutex<ValGo,DataGo,Nod,StateGo>(
+            _m,state,INIT_DATA(CHANGE_PLAYER(state->turn)));
 }
 
 UCTEnv::~UCTEnv()
@@ -72,7 +86,8 @@ UCTEnv::~UCTEnv()
     delete _mcts;
 }
 
-Game::Game(int size,Config &cfg_input) : _komi(0),_size(size),_cfg(cfg_input),_patterns(NULL)
+Game::Game(int size,Config &cfg_input) :
+    _komi(0),_size(size),_cfg(cfg_input),_patterns(NULL)
 {
     if(cfg_input.knowledge && cfg_input.pattern_file){
         _patterns= new PatternList();
@@ -168,15 +183,18 @@ void Game::debug() const{
             visits[i][j]=0;
     if(_cfg.rave)
     {
-        NodeUCTRave<ValGo,DataGo> *root = (NodeUCTRave<ValGo,DataGo>*) _mcts->get_root();
+        NodeUCTRave<ValGo,DataGo> *root =
+            (NodeUCTRave<ValGo,DataGo>*) _mcts->get_root();
         if(!root) return;
         cout<<"CELL MCTS VISITS:"<<endl;
         double sqrt_log_parent = sqrt(log((double) root->get_visits()));
         NodeUCTRave<ValGo,DataGo>::const_iterator iter=root->children_begin();
         for(;iter != root->children_end();iter++)
             if(!IS_PASS((*iter)->data)){
-              visits[(*iter)->data.i][(*iter)->data.j]=(*iter)->get_visits();
-              coeffs[(*iter)->data.i][(*iter)->data.j]=SelectionUCTRave<ValGo,DataGo>(_cfg.bandit_coeff,_cfg.amaf_coeff).get_uct_amaf_val((*iter),sqrt_log_parent);
+                visits[(*iter)->data.i][(*iter)->data.j]=(*iter)->get_visits();
+                coeffs[(*iter)->data.i][(*iter)->data.j]=
+                    SelectionUCTRave<ValGo,DataGo>(_cfg.bandit_coeff,
+                    _cfg.amaf_coeff).get_uct_amaf_val((*iter),sqrt_log_parent);
             }
     }
     else
@@ -188,8 +206,9 @@ void Game::debug() const{
         NodeUCT<ValGo,DataGo>::const_iterator iter=root->children_begin();
         for(;iter != root->children_end();iter++)
             if(!IS_PASS((*iter)->data)){
-              visits[(*iter)->data.i][(*iter)->data.j]=(*iter)->get_visits();
-              coeffs[(*iter)->data.i][(*iter)->data.j]=SelectionUCT<ValGo,DataGo>(_cfg.bandit_coeff).get_uct_val((*iter),sqrt_log_parent);
+                visits[(*iter)->data.i][(*iter)->data.j]=(*iter)->get_visits();
+                coeffs[(*iter)->data.i][(*iter)->data.j]=SelectionUCT<ValGo,DataGo>(
+                    _cfg.bandit_coeff).get_uct_val((*iter),sqrt_log_parent);
             }
     }
     for(int i=_size-1;i>=0;i--){

@@ -50,12 +50,16 @@ double NodeUCTRave<Value,Data>::k_rave;
 
 template <class Value,class Data>
 NodeUCTRave<Value,Data>::NodeUCTRave(Value init_value,Data init_data) : 
-        value(init_value),data(init_data),parent(NULL),visits(0),sqrt_visits(0),amaf_visits(0),amaf_value(0),sqrt_for_amaf(0)
+    value(init_value),data(init_data),parent(NULL),visits(0),sqrt_visits(0),
+    amaf_visits(0),amaf_value(0),sqrt_for_amaf(0)
 {}
 
 template <class Value,class Data>
-NodeUCTRave<Value,Data>::NodeUCTRave(Value init_value,Data init_data,NodeUCTRave<Value,Data> *father) : 
-        value(init_value),data(init_data),parent(father),visits(0),sqrt_visits(0),amaf_visits(0),amaf_value(0),sqrt_for_amaf(0)
+NodeUCTRave<Value,Data>::NodeUCTRave(Value init_value,
+                                     Data init_data,
+                                     NodeUCTRave<Value,Data> *father) : 
+    value(init_value),data(init_data),parent(father),visits(0),sqrt_visits(0),
+    amaf_visits(0),amaf_value(0),sqrt_for_amaf(0)
 {}
 
 template <class Value,class Data>
@@ -84,7 +88,8 @@ inline void NodeUCTRave<Value,Data>::create_child(Value init_value,Data init_dat
 
 template <class Value,class Data>
 void NodeUCTRave<Value,Data>::delete_tree(){
-    for_each(children.begin(), children.end(), mem_fun(&NodeUCTRave<Value,Data>::delete_tree));
+    for_each(children.begin(), children.end(),
+        mem_fun(&NodeUCTRave<Value,Data>::delete_tree));
     delete this;
 }
 
@@ -128,8 +133,11 @@ void NodeUCTRave<Value,Data>::show() const {
 
 template <class Value,class Data>
 void NodeUCTRave<Value,Data>::debug() const {
-    cout << "DEBUG STATS NODE: vis=" << visits << " win=" << value<< " vis_amaf=" << amaf_visits << " win_amaf=" << amaf_value << endl;
-    cout << "                  rate=" << (value / visits) << "  amaf_rate=" << (amaf_value / amaf_visits) << "  amaf_coeff="<< (sqrt(k_rave)/sqrt_for_amaf) << endl;
+    cout << "DEBUG STATS NODE: vis=" << visits << " win=" << value
+         << " vis_amaf=" << amaf_visits << " win_amaf=" << amaf_value << endl;
+    cout << "                  rate=" << (value / visits)
+         << "  amaf_rate=" << (amaf_value / amaf_visits)
+         << "  amaf_coeff=" << (sqrt(k_rave)/sqrt_for_amaf) << endl;
 }
 
 #endif //__NODE_RAVE__

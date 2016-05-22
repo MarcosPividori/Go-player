@@ -49,7 +49,8 @@ DataHexa insert_mov(Player player,StateHexa *state)
     int i,j;
     while(1){
         cout<<"Insert mov (row and column): ";
-        if((cin>>i>>j) && (i>=1 && i<12) && (j>=1 && j<12) && state->valid_move(DataHexa(i-1,j-1,player)))
+        if((cin>>i>>j) && (i>=1 && i<12) && (j>=1 && j<12)
+            && state->valid_move(DataHexa(i-1,j-1,player)))
             break;
         cin.clear();
         cin.ignore(10000, '\n');
@@ -71,10 +72,12 @@ int main()
 #ifdef RAVE
     NodeUCTRave<ValHexa,DataHexa>::k_rave = K_RAVE;
     SelectionUCTRave<ValHexa,DataHexa> sel(BANDIT_COEFF,K_RAVE);
-    SimulationAndRetropropagationRave<ValHexa,DataHexa,StateHexa,EvalNod,MoveRecorderHexa> sim_and_retro[NUM_THREADS];
+    SimulationAndRetropropagationRave<ValHexa,DataHexa,StateHexa,EvalNod,
+        MoveRecorderHexa> sim_and_retro[NUM_THREADS];
     vector<Mcts<ValHexa,DataHexa,Nod,StateHexa> *> m_vector;
     for(int i=0;i<NUM_THREADS;i++)
-      m_vector.push_back(new Mcts<ValHexa,DataHexa,Nod,StateHexa>(&sel,&exp,&sim_and_retro[i],&sim_and_retro[i],&sel_res));
+      m_vector.push_back(new Mcts<ValHexa,DataHexa,Nod,StateHexa>(&sel,&exp,
+          &sim_and_retro[i],&sim_and_retro[i],&sel_res));
 #else
     SelectionUCT<ValHexa,DataHexa> sel(1);
     SimulationTotallyRandom<ValHexa,DataHexa,StateHexa> sim;
@@ -82,7 +85,8 @@ int main()
     Mcts<ValHexa,DataHexa,Nod,StateHexa> m(&sel,&exp,&sim,&ret,&sel_res);
     vector<Mcts<ValHexa,DataHexa,Nod,StateHexa> *> m_vector(NUM_THREADS,&m);
 #endif
-    MctsParallel_GlobalMutex<ValHexa,DataHexa,Nod,StateHexa> mcts(m_vector,&state,0);
+    MctsParallel_GlobalMutex<ValHexa,DataHexa,Nod,StateHexa>
+        mcts(m_vector,&state,0);
 
     cout<< "HEXA:"<<endl;
     Player us_player=insert_player();
@@ -112,9 +116,10 @@ int main()
     }
 
     cout<<endl<<"------------------"<<endl<<endl;
-    cout << "RESULT: " << (state.get_final_value()==CROSS  ? "++ wins." :
-                               (state.get_final_value()==CIRCLE ? "oo wins." : "Tie."))
-                            << endl<<endl;
+    cout << "RESULT: "
+         << (state.get_final_value()==CROSS  ? "++ wins." :
+                (state.get_final_value()==CIRCLE ? "oo wins." : "Tie."))
+         <<endl<<endl;
 
 #ifdef RAVE
     for(int i=0;i<NUM_THREADS;i++)

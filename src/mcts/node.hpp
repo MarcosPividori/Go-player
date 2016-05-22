@@ -44,8 +44,10 @@ NodeUCT<Value,Data>::NodeUCT(Value init_value,Data init_data) :
 {}
 
 template <class Value,class Data>
-NodeUCT<Value,Data>::NodeUCT(Value init_value,Data init_data,NodeUCT<Value,Data> *father) : 
-        value(init_value),data(init_data),parent(father),visits(0),sqrt_visits(0)
+NodeUCT<Value,Data>::NodeUCT(Value init_value,
+                             Data init_data,
+                             NodeUCT<Value,Data> *father) : 
+    value(init_value),data(init_data),parent(father),visits(0),sqrt_visits(0)
 {}
 
 template <class Value,class Data>
@@ -71,7 +73,8 @@ inline void NodeUCT<Value,Data>::create_child(Value init_value,Data init_data)
 
 template <class Value,class Data>
 void NodeUCT<Value,Data>::delete_tree(){
-    for_each(children.begin(), children.end(), mem_fun(&NodeUCT<Value,Data>::delete_tree));
+    for_each(children.begin(), children.end(),
+        mem_fun(&NodeUCT<Value,Data>::delete_tree));
     delete this;
 }
 

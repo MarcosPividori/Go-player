@@ -74,10 +74,10 @@ class MctsParallel_Root : public MctsParallel<Value,Data,State> {
 ///////////////////////////////////////////////////////////////////
 
 template <class Value,class Data,class Nod,class State>
-MctsParallel_GlobalMutex<Value,Data,Nod,State>::MctsParallel_GlobalMutex(vector<Mcts<Value,Data,Nod,State>* > &m,
-  State *init_state,
-  Data init_data)
-                         : _state(init_state),_m(m)
+MctsParallel_GlobalMutex<Value,Data,Nod,State>::MctsParallel_GlobalMutex(
+    vector<Mcts<Value,Data,Nod,State>* > &m,
+    State *init_state,
+    Data init_data) : _state(init_state), _m(m)
 {
     assert(_m.size()>0);
     _root= new Nod(0,init_data);
@@ -90,7 +90,8 @@ void MctsParallel_GlobalMutex<Value,Data,Nod,State>::run_time(double time_limit)
 {
     thread *threads= new thread[_m.size()];
     for(int i=0;i<_m.size();i++)
-        threads[i] = thread(&Mcts<Value,Data,Nod,State>::run_time,_m[i],time_limit,_root,_state);
+        threads[i] = thread(&Mcts<Value,Data,Nod,State>::run_time,_m[i],
+            time_limit,_root,_state);
     for(int i=0;i<_m.size();i++)
         threads[i].join();
     delete[] threads;
@@ -101,7 +102,8 @@ void MctsParallel_GlobalMutex<Value,Data,Nod,State>::run_cycles(unsigned long cy
 {
     thread *threads= new thread[_m.size()];
     for(int i=0;i<_m.size();i++)
-        threads[i] = thread(&Mcts<Value,Data,Nod,State>::run_cycles,_m[i],cycles_limit/_m.size(),_root,_state);
+        threads[i] = thread(&Mcts<Value,Data,Nod,State>::run_cycles,_m[i],
+            cycles_limit/_m.size(),_root,_state);
     for(int i=0;i<_m.size();i++)
         threads[i].join();
     delete[] threads;
@@ -129,7 +131,7 @@ void MctsParallel_GlobalMutex<Value,Data,Nod,State>::apply_move(Data move)
 
 template <class Value,class Data,class Nod,class State>
 void MctsParallel_GlobalMutex<Value,Data,Nod,State>::reinit(State *init_state,
-                           Data init_data)
+                           i                                Data init_data)
 {   _state=init_state;
     _root->delete_tree();
     _root= new Nod(0,init_data);
@@ -152,10 +154,10 @@ void *MctsParallel_GlobalMutex<Value,Data,Nod,State>::get_root()
 ///////////////////////////////////////////////////////////////////////////
 
 template <class Value,class Data,class Nod,class State>
-MctsParallel_Root<Value,Data,Nod,State>::MctsParallel_Root(vector<Mcts<Value,Data,Nod,State>* > &m,
-  State *init_state,
-  Data init_data)
-                         : _state(init_state),_m(m),_exp(0,0)
+MctsParallel_Root<Value,Data,Nod,State>::MctsParallel_Root(
+    vector<Mcts<Value,Data,Nod,State>* > &m,
+    State *init_state,
+    Data init_data) : _state(init_state), _m(m), _exp(0,0)
 {
     assert(_m.size()>0);
     _root= new Nod(0,init_data);
@@ -169,7 +171,8 @@ void MctsParallel_Root<Value,Data,Nod,State>::run_time(double time_limit)
 {
     thread *threads= new thread[_m.size()];
     for(int i=0;i<_m.size();i++)
-        threads[i] = thread(&Mcts<Value,Data,Nod,State>::run_time,_m[i],time_limit,_roots_mcts[i],_state);
+        threads[i] = thread(&Mcts<Value,Data,Nod,State>::run_time,_m[i],
+            time_limit,_roots_mcts[i],_state);
     for(int i=0;i<_m.size();i++)
         threads[i].join();
     delete[] threads;
@@ -181,7 +184,8 @@ void MctsParallel_Root<Value,Data,Nod,State>::run_cycles(unsigned long cycles_li
 {
     thread *threads= new thread[_m.size()];
     for(int i=0;i<_m.size();i++)
-        threads[i] = thread(&Mcts<Value,Data,Nod,State>::run_cycles,_m[i],cycles_limit/_m.size(),_roots_mcts[i],_state);
+        threads[i] = thread(&Mcts<Value,Data,Nod,State>::run_cycles,_m[i],
+            cycles_limit/_m.size(),_roots_mcts[i],_state);
     for(int i=0;i<_m.size();i++)
         threads[i].join();
     delete[] threads;

@@ -19,24 +19,35 @@ struct EvalNod : EvalNode<ValGo,DataGo> {
     }
 };
 
-class SimulationWithDomainKnowledge: public SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo> {
+class SimulationWithDomainKnowledge: public SimulationAndRetropropagationRave<
+    ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo> {
     protected:
         int mov_counter;
         int mov_limit;
         int _fill_board_n;
         double _long_game_coeff;
         int _limit_atari;
-        void get_possible_moves(StateGo *state,vector<DataGo> &v,uniform_int_distribution<int> &mov_dist);
+        void get_possible_moves(StateGo *state,vector<DataGo> &v,
+            uniform_int_distribution<int> &mov_dist);
     public:
-        SimulationWithDomainKnowledge(int number_fill_board_attemps,double long_game_coeff,int limit_atari): SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>(),_fill_board_n(number_fill_board_attemps), _long_game_coeff(long_game_coeff), _limit_atari(limit_atari) {};
+        SimulationWithDomainKnowledge(int number_fill_board_attemps,
+            double long_game_coeff,int limit_atari):
+            SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,
+                EvalNod,MoveRecorderGo>(),_fill_board_n(number_fill_board_attemps),
+            _long_game_coeff(long_game_coeff), _limit_atari(limit_atari) {};
         ValGo simulate(StateGo *state);
 };
 
-class SimulationAndRetropropagationRaveGo: public SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo> {
+class SimulationAndRetropropagationRaveGo:
+    public SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,
+        EvalNod,MoveRecorderGo> {
     protected:
         double _long_game_coeff;
     public:
-        SimulationAndRetropropagationRaveGo(double long_game_coeff): SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo>(), _long_game_coeff(long_game_coeff) {};
+        SimulationAndRetropropagationRaveGo(double long_game_coeff):
+            SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,
+                EvalNod,MoveRecorderGo>(),
+            _long_game_coeff(long_game_coeff) {};
         ValGo simulate(StateGo *state);
 };
 
@@ -58,7 +69,7 @@ class SelectResMostRobustOverLimit: public SelectRes<DataGo,Node> {
         DataGo select_res(Node *node);
 };
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 
 template <class Node>
@@ -73,7 +84,8 @@ DataGo SelectResMostRobustOverLimit<Node>::select_res(Node *node)
             max_node = (*iter);
             max_visits = (*iter)->get_visits();
         }
-    if(max_node->get_visits()!=0 && (max_node->value / max_node->get_visits()) < _limit)
+    if(max_node->get_visits()!=0
+        && (max_node->value / max_node->get_visits()) < _limit)
         return PASS(max_node->data.player);
     return max_node->data;
 }

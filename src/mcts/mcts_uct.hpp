@@ -41,7 +41,8 @@ SelectionUCT<Value,Data>::SelectionUCT(double coeff) : _coeff(coeff)
 {}
 
 template <class Value,class Data>
-inline double SelectionUCT<Value,Data>::get_uct_val(const NodeUCT<Value,Data> *nod, double sqrt_log_parent)
+inline double SelectionUCT<Value,Data>::get_uct_val(const NodeUCT<Value,Data> *nod,
+                                                    double sqrt_log_parent)
 {
     if(nod->get_visits()==0)
         return -1;

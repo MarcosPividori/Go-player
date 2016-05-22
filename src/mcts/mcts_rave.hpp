@@ -33,7 +33,7 @@ class MoveRecorder{
 
 template <class Value,class Data,class State,class EvalNode,class MoveRecorderT>
 class SimulationAndRetropropagationRave: public Simulation<Value,State>,
-                                         public Retropropagation<Value, NodeUCTRave<Value,Data> >
+    public Retropropagation<Value, NodeUCTRave<Value,Data> >
 {
     protected:
         mt19937 mt;
@@ -49,11 +49,14 @@ class SimulationAndRetropropagationRave: public Simulation<Value,State>,
 ////////////////////////////////////////////////////////////////////
 
 template <class Value,class Data>
-SelectionUCTRave<Value,Data>::SelectionUCTRave(double coeff, double amaf_coeff) : _coeff(coeff),_amaf_coeff(sqrt(amaf_coeff))
+SelectionUCTRave<Value,Data>::SelectionUCTRave(double coeff, double amaf_coeff) :
+    _coeff(coeff),_amaf_coeff(sqrt(amaf_coeff))
 {}
 
 template <class Value,class Data>
-inline double SelectionUCTRave<Value,Data>::get_uct_amaf_val(const NodeUCTRave<Value,Data> *nod, double sqrt_log_parent)
+inline double SelectionUCTRave<Value,Data>::get_uct_amaf_val(
+    const NodeUCTRave<Value,Data> *nod,
+    double sqrt_log_parent)
 {
     if(nod->get_visits()==0)
         return -1;
@@ -67,7 +70,8 @@ inline double SelectionUCTRave<Value,Data>::get_uct_amaf_val(const NodeUCTRave<V
 }
 
 template <class Value,class Data>
-NodeUCTRave<Value,Data>* SelectionUCTRave<Value,Data>::select(const NodeUCTRave<Value,Data> *nod)
+NodeUCTRave<Value,Data>* SelectionUCTRave<Value,Data>::select(
+    const NodeUCTRave<Value,Data> *nod)
 {
     typename NodeUCTRave<Value,Data>::const_iterator iter=nod->children_begin();
     if(iter==nod->children_end())
@@ -88,14 +92,16 @@ NodeUCTRave<Value,Data>* SelectionUCTRave<Value,Data>::select(const NodeUCTRave<
 }
 
 template <class Value,class Data,class State,class EvalNode,class MoveRecorderT>
-SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::SimulationAndRetropropagationRave()
+SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>
+::SimulationAndRetropropagationRave()
 {
     random_device rd;
     mt.seed(rd());
 }
 
 template <class Value,class Data,class State,class EvalNode,class MoveRecorderT>
-Value SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::simulate(State *state)
+Value SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>
+::simulate(State *state)
 {
     recorder.clear();
     vector<Data> v;
@@ -113,8 +119,9 @@ Value SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>
 }
 
 template <class Value,class Data,class State,class EvalNode,class MoveRecorderT>
-void SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>::retro(NodeUCTRave<Value,Data> *node,
-                                   Value value)
+void SimulationAndRetropropagationRave<Value,Data,State,EvalNode,MoveRecorderT>
+::retro(NodeUCTRave<Value,Data> *node,
+        Value value)
 {
     do{
         node->value=_eval_fun(node->value,value,node->data);

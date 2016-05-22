@@ -39,7 +39,9 @@ class SelectResMostRobust: public SelectRes<Data,Node> {
 ////////////////////////////////////////////////////////////////////
 
 template <class Value,class Data,class State,class Node>
-ExpansionAllChildren<Value,Data,State,Node>::ExpansionAllChildren(int lim,Value init_val) : _lim(lim),_val(init_val)
+ExpansionAllChildren<Value,Data,State,Node>::ExpansionAllChildren(
+    int lim,
+    Value init_val) : _lim(lim),_val(init_val)
 #ifdef DEBUG
 ,counter(0)
 #endif
@@ -47,7 +49,7 @@ ExpansionAllChildren<Value,Data,State,Node>::ExpansionAllChildren(int lim,Value 
 
 template <class Value,class Data,class State,class Node>
 Node* ExpansionAllChildren<Value,Data,State,Node>::expand(Node *nod,
-                                            State *state)
+                                                          State *state)
 {
     assert(nod->children_begin() == nod->children_end());
     if(!nod->get_parent() //Root node.

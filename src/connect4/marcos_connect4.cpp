@@ -8,7 +8,9 @@
 using namespace std;
 
 struct EvalNod : public EvalNode<ValConnect4,DataConnect4> {
-    ValConnect4 operator()(ValConnect4 v_nodo,ValConnect4 v_final,DataConnect4 dat_nodo)
+    ValConnect4 operator()(ValConnect4 v_nodo,
+                           ValConnect4 v_final,
+                           DataConnect4 dat_nodo)
     {
         if(v_final == EMPTY)//Tie
             return v_nodo+0.9999;
@@ -56,9 +58,12 @@ int main()
     SimulationTotallyRandom<ValConnect4,DataConnect4,StateConnect4> sim;
     RetropropagationSimple<ValConnect4,DataConnect4,EvalNod> ret;
     SelectResMostRobust<ValConnect4,DataConnect4,Nod> sel_res;
-    Mcts<ValConnect4,DataConnect4,Nod,StateConnect4> m(&sel,&exp,&sim,&ret,&sel_res);
-    vector<Mcts<ValConnect4,DataConnect4,Nod,StateConnect4> *> m_vector(NUM_THREADS,&m);
-    MctsParallel_GlobalMutex<ValConnect4,DataConnect4,Nod,StateConnect4> mcts(m_vector,&state,DataConnect4(0,CIRCLE_P));
+    Mcts<ValConnect4,DataConnect4,Nod,StateConnect4>
+        m(&sel,&exp,&sim,&ret,&sel_res);
+    vector<Mcts<ValConnect4,DataConnect4,Nod,StateConnect4> *>
+        m_vector(NUM_THREADS,&m);
+    MctsParallel_GlobalMutex<ValConnect4,DataConnect4,Nod,StateConnect4>
+        mcts(m_vector,&state,DataConnect4(0,CIRCLE_P));
     
     cout<< "CONNNECT4:"<<endl;
     Player us_player=insert_player();
@@ -86,8 +91,10 @@ int main()
     }
 
     cout<<endl<<"------------------"<<endl<<endl;
-    cout << "RESULT: " << (state.get_final_value()==CROSS ? "X wins." :
-                               (state.get_final_value()==CIRCLE ? "O wins." : "Tie.")) <<endl<<endl;
+    cout << "RESULT: "
+         << (state.get_final_value()==CROSS ? "X wins." :
+                (state.get_final_value()==CIRCLE ? "O wins." : "Tie."))
+         <<endl<<endl;
     return 0;
 }
 

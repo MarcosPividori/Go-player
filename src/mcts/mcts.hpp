@@ -76,7 +76,8 @@ Mcts<Value,Data,Nod,State>::Mcts(Selection<Nod> *sel,
                            Retropropagation<Value,Nod> *ret,
                            SelectRes<Data,Nod> *sel_res,
                            mutex *mutex)
-                         : _sel(sel),_exp(exp),_sim(sim),_ret(ret),_sel_res(sel_res),_mutex(mutex)
+                         : _sel(sel), _exp(exp), _sim(sim), _ret(ret),
+                           _sel_res(sel_res), _mutex(mutex)
 {}
 
 template <class Value,class Data,class Nod,class State>

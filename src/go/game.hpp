@@ -39,7 +39,8 @@ class RaveEnv : public MctsParallel<ValGo,DataGo,StateGo>
         typedef NodeUCTRave<ValGo,DataGo> Nod;
         Selection<Nod> *_sel;
         Expansion<Nod,StateGo> *_exp;
-        SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,EvalNod,MoveRecorderGo> **_sim_and_retro;
+        SimulationAndRetropropagationRave<ValGo,DataGo,StateGo,
+            EvalNod,MoveRecorderGo> **_sim_and_retro;
         Retropropagation<ValGo,Nod> **_ret;
         SelectRes<DataGo,Nod> *_sel_res;
         vector<Mcts<ValGo,DataGo,Nod,StateGo> *> _m;
@@ -48,10 +49,12 @@ class RaveEnv : public MctsParallel<ValGo,DataGo,StateGo>
         RaveEnv(Config &cfg_input,StateGo *state);
         ~RaveEnv();
         void run_time(double time_limit) {_mcts->run_time(time_limit);};
-        void run_cycles(unsigned long cycles_limit) {_mcts->run_cycles(cycles_limit);};
+        void run_cycles(unsigned long cycles_limit) {
+            _mcts->run_cycles(cycles_limit);};
         DataGo get_resultant_move() {return _mcts->get_resultant_move();};
         void apply_move(DataGo mov) {_mcts->apply_move(mov);};
-        void reinit(StateGo *init_state,DataGo init_data) {_mcts->reinit(init_state,init_data);};
+        void reinit(StateGo *init_state,DataGo init_data) {
+            _mcts->reinit(init_state,init_data);};
 #ifdef DEBUG
         void *get_root() {_mcts->get_root();};
 #endif
@@ -72,10 +75,12 @@ class UCTEnv : public MctsParallel<ValGo,DataGo,StateGo>
         UCTEnv(Config &cfg_input,StateGo *state);
         ~UCTEnv();
         void run_time(double time_limit) {_mcts->run_time(time_limit);};
-        void run_cycles(unsigned long cycles_limit) {_mcts->run_cycles(cycles_limit);};
+        void run_cycles(unsigned long cycles_limit) {
+            _mcts->run_cycles(cycles_limit);};
         DataGo get_resultant_move() {return _mcts->get_resultant_move();};
         void apply_move(DataGo mov) {_mcts->apply_move(mov);};
-        void reinit(StateGo *init_state,DataGo init_data) {_mcts->reinit(init_state,init_data);};
+        void reinit(StateGo *init_state,DataGo init_data) {
+            _mcts->reinit(init_state,init_data);};
 #ifdef DEBUG
         void *get_root() {_mcts->get_root();};
 #endif

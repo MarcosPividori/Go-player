@@ -3,7 +3,8 @@
 #define FOUND_LIB 1
 #define FAIL_LIB  2
 
-unsigned int StateGo::get_liberty_block(Block *block,Block *flag,INDEX i,INDEX j,INDEX &lib_i,INDEX &lib_j)
+unsigned int StateGo::get_liberty_block(
+    Block *block,Block *flag,INDEX i,INDEX j,INDEX &lib_i,INDEX &lib_j)
 {
     Blocks[i][j]= flag;
     INDEX t_i,t_j;
@@ -39,7 +40,8 @@ unsigned int StateGo::get_liberty_block(Block *block,Block *flag,INDEX i,INDEX j
     return res;
 }
 
-inline bool StateGo::is_block_in_atari(INDEX i,INDEX j,INDEX &i_atari,INDEX &j_atari)
+inline bool StateGo::is_block_in_atari(
+    INDEX i,INDEX j,INDEX &i_atari,INDEX &j_atari)
 {
     if(Blocks[i][j]->adj >4)
       return false;
@@ -52,7 +54,8 @@ inline bool StateGo::is_block_in_atari(INDEX i,INDEX j,INDEX &i_atari,INDEX &j_a
     return res;
 }
 
-DataGo StateGo::look_for_delete_atari(Block *block,Block *flag,INDEX i,INDEX j,int &max_size) const
+DataGo StateGo::look_for_delete_atari(
+    Block *block,Block *flag,INDEX i,INDEX j,int &max_size) const
 {
     Blocks[i][j]= flag;
     Player opp=CHANGE_PLAYER(Stones[i][j]);

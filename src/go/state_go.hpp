@@ -64,9 +64,11 @@ class StateGo
         bool no_self_atari_nor_suicide(INDEX i,INDEX j,Player p);
         bool remove_opponent_block_and_no_ko(INDEX i,INDEX j) const;
         bool is_useful_move(DataGo mov);
-        unsigned int get_liberty_block(Block *block,Block *flag,INDEX i,INDEX j,INDEX &lib_i,INDEX &lib_j);
+        unsigned int get_liberty_block(Block *block,Block *flag,INDEX i,INDEX j,
+            INDEX &lib_i,INDEX &lib_j);
         bool is_block_in_atari(INDEX i,INDEX j,INDEX &i_atari,INDEX &j_atari);
-        DataGo look_for_delete_atari(Block *block,Block *flag,INDEX i,INDEX j,int &max_size) const;
+        DataGo look_for_delete_atari(Block *block,Block *flag,INDEX i,INDEX j,
+            int &max_size) const;
         DataGo get_delete_atari(INDEX i,INDEX j,int &b_size);
         float final_value() const;
     public:

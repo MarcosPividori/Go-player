@@ -2,7 +2,8 @@
 #define __STATES__
 
 #include <vector>
-//Unused class to represent minimal necessary interface for the State class template parameter.
+// Unused class to represent minimal necessary interface for the
+// State class template parameter.
 template <class Value,class Data>
 class States{
     public:
