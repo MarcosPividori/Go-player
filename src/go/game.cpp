@@ -125,7 +125,7 @@ void Game::set_komi(float komi){
     }
 }
 
-float Game::get_final_score(){
+float Game::get_final_score() const{
     return _state->get_final_score();
 }
 
@@ -154,12 +154,12 @@ DataGo Game::gen_move(Player p){
     return pos;
 }
 
-void Game::show_board(FILE *output){
+void Game::show_board(FILE *output) const{
     _state->show(output);
 }
 
 #ifdef DEBUG
-void Game::debug(){
+void Game::debug() const{
     _state->debug();
     long visits[MAX_BOARD][MAX_BOARD];
     double coeffs[MAX_BOARD][MAX_BOARD];
@@ -217,7 +217,7 @@ void Game::debug(){
     }
 }
 
-void Game::match_patterns(){
+void Game::match_patterns() const{
     vector<DataGo> v;
     cout<<"ESCAPE ATARI: "<<endl;
     _state->get_atari_escape_moves(v);

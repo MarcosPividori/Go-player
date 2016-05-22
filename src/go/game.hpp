@@ -23,13 +23,13 @@ class Game{
         int get_boardsize(){return _size;}
         void clear_board();
         void set_komi(float komi);
-        float get_final_score();
+        float get_final_score() const;
         bool play_move(DataGo pos);
         DataGo gen_move(Player p);
-        void show_board(FILE *output);
+        void show_board(FILE *output) const;
 #ifdef DEBUG
-        void debug();
-        void match_patterns();
+        void debug() const;
+        void match_patterns() const;
 #endif
 };
 

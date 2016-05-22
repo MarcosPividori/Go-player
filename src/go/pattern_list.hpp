@@ -27,12 +27,12 @@ class PatternList{
         bool list[27000];
         void add(Pattern pattern);
         void add_pattern(Pattern pattern);
-        void rotate_pattern(Pattern &pattern);
-        void invert_pattern(Pattern &pattern);
-        void mirror_pattern(Pattern &pattern);
+        void rotate_pattern(Pattern &pattern) const;
+        void invert_pattern(Pattern &pattern) const;
+        void mirror_pattern(Pattern &pattern) const;
     public:
         PatternList();
-        bool match(StateGo *state,INDEX i,INDEX j);
+        bool match(StateGo *state,INDEX i,INDEX j) const;
         void read_file(const char *file_name);
 };
 

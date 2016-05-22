@@ -49,7 +49,7 @@ void PatternList::add(Pattern pattern){
     list[sum]=true;
 }
 
-void PatternList::mirror_pattern(Pattern &pattern){
+void PatternList::mirror_pattern(Pattern &pattern) const {
     Pattern pat;
     for(int i=0;i<3;i++)
       for(int j=0,l=2;j<3;j++,l--)
@@ -59,7 +59,7 @@ void PatternList::mirror_pattern(Pattern &pattern){
         pattern.x[i][j]=pat.x[i][j];
 }
 
-void PatternList::rotate_pattern(Pattern &pattern){
+void PatternList::rotate_pattern(Pattern &pattern) const {
     Pattern pat;
     for(int i=0,l=0;i<3;i++,l++)
       for(int j=0,k=2;j<3;j++,k--)
@@ -69,7 +69,7 @@ void PatternList::rotate_pattern(Pattern &pattern){
         pattern.x[i][j]=pat.x[i][j];
 }
 
-void PatternList::invert_pattern(Pattern &pattern){
+void PatternList::invert_pattern(Pattern &pattern) const {
     for(int i=0;i<3;i++)
       for(int j=0;j<3;j++)
         switch(pattern.x[i][j]){
@@ -102,7 +102,7 @@ void PatternList::add_pattern(Pattern pattern){
     add(pattern);
 }
 
-bool PatternList::match(StateGo *state,INDEX i,INDEX j){
+bool PatternList::match(StateGo *state,INDEX i,INDEX j) const {
     int sum=0;
     for(int k=MAX(i-1,0);k<=MIN(state->_size-1,i+1);k++)
       for(int l=MAX(j-1,0);l<=MIN(state->_size-1,j+1);l++){

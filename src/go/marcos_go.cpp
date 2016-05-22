@@ -53,9 +53,9 @@ int main(int argc,char *argv[])
             cfg_input.rave=false;
           else if(!strcmp(argv[c],"--help")){
             cout<<"usage: marcos_go [--patterns file] [--bandit_coeff double] [--amaf_coeff double] [--help]\n"
-                     <<"                 [--fill_board double] [--long_game_coeff double] [--limit_expansion int]\n"
-                     <<"                 [--cycles_mcts int] [--threads_mcts int] [--resign_limit double]\n"
-                     <<"                 [--root_parallel] [--japanese_rules] [--totally_random_sim] [--no_rave]\n";
+                <<"                 [--fill_board double] [--long_game_coeff double] [--limit_expansion int]\n"
+                <<"                 [--cycles_mcts int] [--threads_mcts int] [--resign_limit double]\n"
+                <<"                 [--root_parallel] [--japanese_rules] [--totally_random_sim] [--no_rave]\n";
             return 0;
           }
           else{
