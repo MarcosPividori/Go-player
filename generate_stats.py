@@ -142,7 +142,9 @@ def analyze_program(isWhite=False,
                     rave,
                     totally_random)
     os.environ[prog]=command
-    twogtp="gogui-twogtp -black \"$BLACK\" -white \"$WHITE\" -games "+str(num_games)+" -size "+str(size)+" -komi "+str(komi)+" -auto -sgffile ./game/stats"
+    twogtp="gogui-twogtp -black \"$BLACK\" -white \"$WHITE\" -games "+
+        str(num_games)+" -size "+str(size)+" -komi "+str(komi)+
+        " -auto -sgffile ./game/stats"
     if os.path.isfile('./game/stats.dat'):
        subprocess.Popen("rm ./game/stats*",shell=True)
     p=subprocess.Popen(twogtp,shell=True)
@@ -195,7 +197,9 @@ def analyze_program(isWhite=False,
                         str(rave),
                         str(patterns)])
 
-write_row(output,['COL','WRATE','TOTAL','SIZE','BCOEFF','ACOEFF','FBOARD','LGCOEF','PCF','CCF','ADC','AEC','LAT','CYCLES','THREADS','LEXP','KOMI','ROOT_P','CHIN_R','TRAND','RAVE','PATT']);
+write_row(output,['COL','WRATE','TOTAL','SIZE','BCOEFF','ACOEFF','FBOARD',
+    'LGCOEF','PCF','CCF','ADC','AEC','LAT','CYCLES','THREADS','LEXP','KOMI',
+    'ROOT_P','CHIN_R','TRAND','RAVE','PATT']);
 
 #TOTALLY-RANDOM vs GNU
 analyze_program(isWhite=False, komi=5, num_games=300,
@@ -303,7 +307,7 @@ analyze_program(isWhite=True, komi=5, num_games=300,
   limit_expansion=1,
   root_parallel=False,
   chinese_rules=True,
-  rave=True,
+  -rave=True,
   totally_random=False,
 )
 
