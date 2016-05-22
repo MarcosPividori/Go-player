@@ -7,8 +7,7 @@ Instalación:
 Para instalar la interfaz gráfica *GoGui*\cite{c14} y el jugador
 *GnuGo*\cite{c13}, ejecutamos:
 
-    make env
-    sudo make install
+    ./install_env.sh
 
 Para compilar nuestros programas:
 
