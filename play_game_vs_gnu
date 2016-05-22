@@ -15,7 +15,7 @@ WHITE="./bin/marcos_go \
 TWOGTP="gogui-twogtp \
     -black \"$BLACK\" \
     -white \"$WHITE\" \
-    -games 100 \
+    -games 10 \
     -size 9 \
     -komi 5 \
     -sgffile ./game/stats"
