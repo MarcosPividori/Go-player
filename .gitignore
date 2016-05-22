@@ -1,5 +1,6 @@
 bin/*
 *.o
+*.pyc
 stats
 stats.txt
 stats/*
