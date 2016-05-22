@@ -1,7 +1,7 @@
 language: cpp
 os: linux
 sudo: required
-install:
- - ./install_env.sh
- - ./play_game_vs_gnu
-script: make all
+install: ./install_env.sh
+script:
+ - make all
+ - ./test.py
