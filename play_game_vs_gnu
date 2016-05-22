@@ -18,8 +18,9 @@ TWOGTP="gogui-twogtp \
     -games 10 \
     -size 9 \
     -komi 5 \
-    -sgffile ./game/stats"
+    -sgffile ./stats/stats"
 
-rm ./game/stats* 
+mkdir -p stats
+rm -f ./stats/stats*
 
 gogui -size 9 -program "$TWOGTP" -komi 5 -computer-both -auto
