@@ -26,7 +26,7 @@ typedef enum : int8_t {
     White = 1,
 } Player;
 
-typedef uint8_t INDEX;
+typedef int8_t INDEX;
 
 union POS {
     struct{
