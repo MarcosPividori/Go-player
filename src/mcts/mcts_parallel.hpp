@@ -131,7 +131,7 @@ void MctsParallel_GlobalMutex<Value,Data,Nod,State>::apply_move(Data move)
 
 template <class Value,class Data,class Nod,class State>
 void MctsParallel_GlobalMutex<Value,Data,Nod,State>::reinit(State *init_state,
-                           i                                Data init_data)
+                                                            Data init_data)
 {   _state=init_state;
     _root->delete_tree();
     _root= new Nod(0,init_data);
