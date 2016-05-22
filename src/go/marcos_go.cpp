@@ -52,10 +52,20 @@ int main(int argc,char *argv[])
           else if(!strcmp(argv[c],"--no_rave"))
             cfg_input.rave=false;
           else if(!strcmp(argv[c],"--help")){
-            cout<<"usage: marcos_go [--patterns file] [--bandit_coeff double] [--amaf_coeff double] [--help]\n"
-                <<"                 [--fill_board double] [--long_game_coeff double] [--limit_expansion int]\n"
-                <<"                 [--cycles_mcts int] [--threads_mcts int] [--resign_limit double]\n"
-                <<"                 [--root_parallel] [--japanese_rules] [--totally_random_sim] [--no_rave]\n";
+            cout<<"usage: marcos_go [--patterns file]"<<endl
+                <<"                 [--bandit_coeff double]"<<endl
+                <<"                 [--amaf_coeff double]"<<endl
+                <<"                 [--fill_board double]"<<endl
+                <<"                 [--long_game_coeff double]"<<endl
+                <<"                 [--limit_expansion int]"<<endl
+                <<"                 [--cycles_mcts int]"<<endl
+                <<"                 [--threads_mcts int]"<<endl
+                <<"                 [--resign_limit double]"<<endl
+                <<"                 [--root_parallel]"<<endl
+                <<"                 [--japanese_rules]"<<endl
+                <<"                 [--totally_random_sim]"<<endl
+                <<"                 [--no_rave]"<<endl
+                <<"                 [--help]"<<endl;
             return 0;
           }
           else{
