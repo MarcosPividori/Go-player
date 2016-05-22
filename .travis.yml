@@ -1,4 +1,5 @@
 language: cpp
 os:
     - linux
+install: ./install_env.sh
 script: make all
