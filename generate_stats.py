@@ -2,8 +2,6 @@
 
 from stats import *
 
-begin_stats()
-
 #TOTALLY-RANDOM vs GNU
 analyze_program(isWhite=False, komi=5, num_games=300,
   patterns='patterns.txt',
@@ -219,5 +217,3 @@ analyze_program(isWhite=True, komi=5, num_games=300,
   totally_random=False,
 )
 
-end_stats()
- 

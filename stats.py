@@ -2,20 +2,48 @@
 
 import subprocess
 import os.path
+from collections import OrderedDict
 
-output = open('stats.txt','a',0)
-col_sizes = [4,10,6,5,8,7,7,7,4,4,4,4,4,7,8,5,5,7,7,6,6,15]
+col_width = OrderedDict([
+    ('COL'    , 4),
+    ('WRATE'  , 10),
+    ('TOTAL'  , 6),
+    ('SIZE'   , 5),
+    ('BCOEFF' , 8),
+    ('ACOEFF' , 7),
+    ('FBOARD' , 7),
+    ('LGCOEF' , 7),
+    ('PCF'    , 4),
+    ('CCF'    , 4),
+    ('ADC'    , 4),
+    ('AEC'    , 4),
+    ('LAT'    , 4),
+    ('CYCLES' , 7),
+    ('THREADS', 8),
+    ('LEXP'   , 5),
+    ('KOMI'   , 5),
+    ('ROOT_P' , 7),
+    ('CHIN_R' , 7),
+    ('TRAND'  , 6),
+    ('RAVE'   , 6),
+    ('PATT'   , 15)
+])
 
 if not os.path.exists('./stats'):
     os.makedirs('./stats')
 
-def write_row(files,l):
-    for i in range(0,len(l)):
-      el=l[i]
-      if len(el)< col_sizes[i] :
-        el = el + " " * (col_sizes[i]-len(el))
-      files.write(el)
-    files.write('\n')
+def write_row(file_path,data):
+    with open(file_path,'a',0) as output:
+      for key in col_width:
+        el=str(data.get(key,""))
+        el=el + " " * (col_width[key]-len(el))
+        output.write(el)
+      output.write('\n')
+
+def write_stats(file_path,data):
+    if not os.path.isfile(file_path):
+        write_row(file_path,{x:x for x in col_width})
+    write_row(file_path,data)
 
 def winning_rate(prog):
     stats = open('./stats/stats.dat','r')
@@ -36,24 +64,46 @@ def winning_rate(prog):
     else:
       return (bcount/float(wcount+bcount),wcount+bcount)
 
-def marcos_go_command(
-                    patterns=None,
-                    bandit_coeff=None,
-                    amaf_coeff=None,
-                    fill_board=None,
-                    long_game_coeff=None,
-                    pattern_coeff=None,
-                    capture_coeff=None,
-                    atari_delete_coeff=None,
-                    atari_escape_coeff=None,
-                    limit_atari=None,
-                    cycles_mcts=None,
-                    threads_mcts=None,
-                    limit_expansion=None,
-                    root_parallel=False,
-                    chinese_rules=False,
-                    rave=True,
-                    totally_random=False):
+def analyze_program(
+        isWhite=False,
+        patterns=None,
+        bandit_coeff=None,
+        amaf_coeff=None,
+        fill_board=None,
+        long_game_coeff=None,
+        pattern_coeff=None,
+        capture_coeff=None,
+        atari_delete_coeff=None,
+        atari_escape_coeff=None,
+        limit_atari=None,
+        cycles_mcts=None,
+        threads_mcts=None,
+        limit_expansion=None,
+        root_parallel=False,
+        chinese_rules=False,
+        rave=True,
+        totally_random=False,
+        opponent_command=None,
+        komi=5,
+        size=9,
+        num_games=100,
+        stats_output='stats.txt'
+    ):
+    if isWhite:
+      prog='WHITE'
+      opp='BLACK'
+    else:
+      prog='BLACK'
+      opp='WHITE'
+
+    if opponent_command:
+      os.environ[opp]=opponent_command
+    else:
+      if chinese_rules:
+        os.environ[opp]="gnugo --mode gtp --capture-all-dead --chinese-rules"
+      else:
+        os.environ[opp]="gnugo --mode gtp --capture-all-dead"
+    
     command="./bin/marcos_go "
     if patterns!=None:
         command+=" --patterns " + patterns
@@ -89,122 +139,52 @@ def marcos_go_command(
         command+=" --totally_random_sim "
     if not rave:
         command+=" --no_rave "
-    return command
-
-def analyze_program(isWhite=False,
-                    patterns=None,
-                    bandit_coeff=None,
-                    amaf_coeff=None,
-                    fill_board=None,
-                    long_game_coeff=None,
-                    pattern_coeff=None,
-                    capture_coeff=None,
-                    atari_delete_coeff=None,
-                    atari_escape_coeff=None,
-                    limit_atari=None,
-                    cycles_mcts=None,
-                    threads_mcts=None,
-                    limit_expansion=None,
-                    root_parallel=False,
-                    chinese_rules=False,
-                    rave=True,
-                    totally_random=False,
-                    opponent_command=None,
-                    komi=5,
-                    size=9,
-                    num_games=100):
-    if isWhite:
-      prog='WHITE'
-      opp='BLACK'
-    else:
-      prog='BLACK'
-      opp='WHITE'
-    if opponent_command:
-      os.environ[opp]=opponent_command
-    else:
-      if chinese_rules:
-        os.environ[opp]="gnugo --mode gtp --capture-all-dead --chinese-rules"
-      else:
-        os.environ[opp]="gnugo --mode gtp --capture-all-dead"
-    command= marcos_go_command(
-                    patterns,
-                    bandit_coeff,
-                    amaf_coeff,
-                    fill_board,
-                    long_game_coeff,
-                    pattern_coeff,
-                    capture_coeff,
-                    atari_delete_coeff,
-                    atari_escape_coeff,
-                    limit_atari,
-                    cycles_mcts,
-                    threads_mcts,
-                    limit_expansion,
-                    root_parallel,
-                    chinese_rules,
-                    rave,
-                    totally_random)
+    
     os.environ[prog]=command
-    twogtp="gogui-twogtp -black \"$BLACK\" -white \"$WHITE\" -games "+ \
-        str(num_games)+" -size "+str(size)+" -komi "+str(komi)+ \
-        " -auto -sgffile ./stats/stats"
+
+    twogtp= 'gogui-twogtp'
+    twogtp+=' -black "$BLACK"'
+    twogtp+=' -white "$WHITE"'
+    twogtp+=' -games '+ str(num_games)
+    twogtp+=' -size ' + str(size)
+    twogtp+=' -komi ' + str(komi)
+    twogtp+=' -auto -sgffile ./stats/stats'
+
     if os.path.isfile('./stats/stats.dat'):
        subprocess.Popen("rm ./stats/stats*",shell=True)
+
     p=subprocess.Popen(twogtp,shell=True)
     p.wait()
+
     if p.returncode == 0 :
       (wrate,total) = winning_rate(prog)
-      write_row(output,[prog[0],
-                        "{0:.4f}".format(wrate),
-                        str(total),
-                        str(size),
-                        str(bandit_coeff),
-                        str(amaf_coeff),
-                        str(fill_board),
-                        str(long_game_coeff),
-                        str(pattern_coeff),
-                        str(capture_coeff),
-                        str(atari_delete_coeff),
-                        str(atari_escape_coeff),
-                        str(limit_atari),
-                        str(cycles_mcts),
-                        str(threads_mcts),
-                        str(limit_expansion),
-                        str(komi),
-                        str(root_parallel),
-                        str(chinese_rules),
-                        str(totally_random),
-                        str(rave),
-                        str(patterns)])
+      write_stats(stats_output,{
+        'COL'    : prog[0],
+        'WRATE'  : "{0:.4f}".format(wrate),
+        'TOTAL'  : total, 
+        'SIZE'   : size, 
+        'BCOEFF' : bandit_coeff,
+        'ACOEFF' : amaf_coeff,
+        'FBOARD' : fill_board,
+        'LGCOEF' : long_game_coeff,
+        'PCF'    : pattern_coeff,
+        'CCF'    : capture_coeff,
+        'ADC'    : atari_delete_coeff,
+        'AEC'    : atari_escape_coeff,
+        'LAT'    : limit_atari,
+        'CYCLES' : cycles_mcts,
+        'THREADS': threads_mcts,
+        'LEXP'   : limit_expansion,
+        'KOMI'   : komi,
+        'ROOT_P' : root_parallel,
+        'CHIN_R' : chinese_rules,
+        'TRAND'  : totally_random,
+        'RAVE'   : rave,
+        'PATT'   : patterns
+      })
     else:
-      write_row(output,[prog[0],
-                        'ERROR:',
-                        'COD'+str(p.returncode),
-                        str(size),
-                        str(bandit_coeff),
-                        str(amaf_coeff),
-                        str(fill_board),
-                        str(long_game_coeff),
-                        str(pattern_coeff),
-                        str(capture_coeff),
-                        str(atari_delete_coeff),
-                        str(atari_escape_coeff),
-                        str(limit_atari),
-                        str(cycles_mcts),
-                        str(threads_mcts),
-                        str(limit_expansion),
-                        str(komi),
-                        str(root_parallel),
-                        str(chinese_rules),
-                        str(totally_random),
-                        str(rave),
-                        str(patterns)])
-
-def begin_stats():
-    write_row(output,['COL','WRATE','TOTAL','SIZE','BCOEFF','ACOEFF','FBOARD',
-        'LGCOEF','PCF','CCF','ADC','AEC','LAT','CYCLES','THREADS','LEXP','KOMI',
-        'ROOT_P','CHIN_R','TRAND','RAVE','PATT']);
-
-def end_stats():
-    output.close()
- 
+      write_stats(stats_output,{
+        'COL'   : prog[0],
+        'WRATE' : 'ERROR:',
+        'TOTAL' : 'COD'+str(p.returncode)
+      })
