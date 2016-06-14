@@ -3,6 +3,82 @@ Go-player
 
 [![Build Status](https://travis-ci.org/MarcosPividori/Go-player.svg?branch=master)](https://travis-ci.org/MarcosPividori/Go-player)
 
+Installation:
+-------------
+
+To install the graphical interface *GoGui*[14] and the player
+*GnuGo*[13], execute:
+
+    ./install_env.sh
+
+To compile our programs:
+
+    make all
+
+Inside the folder *bin* you will find:
+*marcos\_(tateti|connect4|hexa|go)* and *marcos\_debug*, which is a special compilation of the *Go* player with enabled debug flags.
+
+The program can be used by console through commands
+provided by *Go Text Protocol*[15].
+
+On the other hand, if you want a friendlier user interface, you can use
+*GoGui*. A sample script is provided:
+"play\_game" (You can also start *GoGui* and configure it).
+
+To play a game between our program and *GnuGo* through
+visual interface, you can use the "play\_game\_vs\_gnu" script.
+
+Go Text Protocol - List of commands:
+-------------------------------------------------
+
+-   *boardsize* int , Determines the size of the board.
+-   *clear\_board* ,  Clean the board, ie, restart the game.
+-   *genmove* (w|white|b|black) ,  Generates a movement for the right player.
+-   *play* (w|white|b|black) mov , Performs a certain movement for the right player. The movement may be a coordinate on the board, "pass" (pass) or "resign"
+(give up).
+-   *showboard* , Display the board.
+-   *komi* value , Determines the komi value (compensation for the white player).
+-   *final\_score* , Displays the final score of the game.
+-   *quit* , Finish the game.
+
+If you run the debug version, you will have two more commands:
+
+-   *match\_patterns* , Shows board positions that match
+patterns, capture movements and atari escape.
+-   *debug* Displays information about the internal representation of
+board as: grouping of blocks, the number of free adjacencies of each
+block, status within the MCTS tree for each board position (number
+of visits and current estimation), etc.
+
+Command line options:
+------------------------------
+Within the implementation of the program there are several variables that can be modified and influence how the program progresses. Several command line options were implemented to allow you to configure each of them without recompiling the code (if not be present, a default value is taken).
+
+-  *--help* , Displays available options.
+-  *--patterns* file\_name (No file) Determines the input file from which read the 
+3x3 patterns.
+-  *--bandit\_coeff* double (0) Specify exploration coefficient.
+-  *--amaf\_coeff* double (2500) Specify the K value for the RAVE extension.
+-  *--fill\_board* double (1) Number of attempts per cycle to fill the board.
+-  *--long\_game\_coeff* double (3) Specify the coefficient to be multiplied by the size of the board to determine the maximum number of moves per simulation.
+-  *--limit\_expansion* int (1) Determine the number of simulations required before expanding a node.
+-  *--cycles\_mcts* int (30000) Determines the number of cycles of the algorithm
+MCTS before a mov.
+-  *--threads\_mcts* int (5) Determines the number of threads to run
+parallel.
+-  *--resign\_limit* double (0.1) Determines the minimum probability of winning
+the game to continue playing.
+-  *--root\_parallel* (False) Enables parallelization using the
+\`\`Root Parallel" approach.
+-  *--japanese\_rules* (China) Activates the Japanese score (by
+territory).
+-  *--totally\_random\_sim* (False) Disables the use of patterns and
+captures. Totally random simulations.
+-  *--no\_rave* (Rave) Disables the use of Rave extension.
+
+
+------------------------------------------------------------------------------------
+
 Instalación:
 ------------
 
