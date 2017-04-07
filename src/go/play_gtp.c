@@ -29,36 +29,36 @@ DECLARE(gtp_match_patterns);
 
 /* List of known commands. */
 static struct gtp_command commands[] = {
-  {"protocol_version",        gtp_protocol_version},
-  {"name",                    gtp_name},
-  {"version",                 gtp_program_version},
-  {"known_command",    	      gtp_known_command},
-  {"list_commands",    	      gtp_list_commands},
-  {"quit",             	      gtp_quit},
-  {"boardsize",        	      gtp_set_boardsize},
-  {"clear_board",      	      gtp_clear_board},
-  {"komi",        	          gtp_set_komi},
-  {"play",            	      gtp_play},
-  {"genmove",                 gtp_genmove},
-  {"showboard",        	      gtp_showboard},
-  {"final_score",             gtp_final_score},
+  {"protocol_version", gtp_protocol_version},
+  {"name", gtp_name},
+  {"version", gtp_program_version},
+  {"known_command", gtp_known_command},
+  {"list_commands", gtp_list_commands},
+  {"quit", gtp_quit},
+  {"boardsize", gtp_set_boardsize},
+  {"clear_board", gtp_clear_board},
+  {"komi", gtp_set_komi},
+  {"play", gtp_play},
+  {"genmove", gtp_genmove},
+  {"showboard", gtp_showboard},
+  {"final_score", gtp_final_score},
 #ifdef DEBUG
-  {"debug",        	          gtp_debug},
-  {"match_patterns",          gtp_match_patterns},
+  {"debug", gtp_debug},
+  {"match_patterns", gtp_match_patterns},
 #endif
-  {NULL,                      NULL}
+  {NULL, NULL}
 };
 
 Game *game;
 
 /* Start playing using the Go Text Protocol. */
 void
-play_gtp(FILE *gtp_input, FILE *gtp_output, FILE *gtp_dump_commands, Game *g)
-{
+play_gtp(FILE * gtp_input, FILE * gtp_output, FILE * gtp_dump_commands,
+         Game * g) {
   setbuf(gtp_output, NULL);
 
   game = g;
-  
+
   /* Inform the GTP utility functions about the board size. */
   gtp_internal_set_boardsize(game->get_boardsize());
 
@@ -72,9 +72,7 @@ play_gtp(FILE *gtp_input, FILE *gtp_output, FILE *gtp_dump_commands, Game *g)
  *
  * Status:    GTP version 2 standard command.
  */
-static int
-gtp_quit(char *s)
-{
+static int gtp_quit(char *s) {
   UNUSED(s);
   gtp_success("");
   return GTP_QUIT;
@@ -87,9 +85,7 @@ gtp_quit(char *s)
  *
  * Status:    GTP version 2 standard command.
  */
-static int
-gtp_protocol_version(char *s)
-{
+static int gtp_protocol_version(char *s) {
   UNUSED(s);
   return gtp_success("%d", GTP_VERSION);
 }
@@ -101,9 +97,7 @@ gtp_protocol_version(char *s)
  *
  * Status:    GTP version 2 standard command.
  */
-static int
-gtp_name(char *s)
-{
+static int gtp_name(char *s) {
   UNUSED(s);
   return gtp_success("Marcos Go");
 }
@@ -115,9 +109,7 @@ gtp_name(char *s)
  *
  * Status:    GTP version 2 standard command.
  */
-static int
-gtp_program_version(char *s)
-{
+static int gtp_program_version(char *s) {
   UNUSED(s);
   return gtp_success(VERSION);
 }
@@ -129,15 +121,13 @@ gtp_program_version(char *s)
  *
  * Status:    GTP version 2 standard command.
  */
-static int
-gtp_set_boardsize(char *s)
-{
+static int gtp_set_boardsize(char *s) {
   int boardsize;
 
   if (sscanf(s, "%d", &boardsize) < 1)
     return gtp_failure("boardsize not an integer");
-  
-  if (boardsize<=0 || boardsize>MAX_BOARD) {
+
+  if (boardsize <= 0 || boardsize > MAX_BOARD) {
     if (GTP_VERSION == 1)
       return gtp_failure("unacceptable boardsize");
     else
@@ -157,9 +147,7 @@ gtp_set_boardsize(char *s)
  *
  * Status:    GTP version 2 standard command.
  */
-static int
-gtp_clear_board(char *s)
-{
+static int gtp_clear_board(char *s) {
   UNUSED(s);
 
   game->clear_board();
@@ -175,9 +163,7 @@ gtp_clear_board(char *s)
  * Status:    GTP version 2 standard command.
  */
 
-static int
-gtp_set_komi(char *s)
-{
+static int gtp_set_komi(char *s) {
   float komi;
   if (sscanf(s, "%f", &komi) < 1)
     return gtp_failure("komi not a float");
@@ -194,15 +180,13 @@ gtp_set_komi(char *s)
  *
  * Status:    GTP version 2 standard command.
  */
-static int
-gtp_play(char *s)
-{
+static int gtp_play(char *s) {
   DataGo move;
 
   if (!gtp_decode_move(s, &move))
     return gtp_failure("invalid color or coordinate");
 
-  if(!game->play_move(move))
+  if (!game->play_move(move))
     return gtp_failure("illegal move");
 
   return gtp_success("");
@@ -215,24 +199,22 @@ gtp_play(char *s)
  *
  * Status:    GTP version 2 standard command.
  */
-static int
-gtp_genmove(char *s)
-{
+static int gtp_genmove(char *s) {
   DataGo move;
   Player color;
 
-  if(!gtp_decode_color(s, &color))
+  if (!gtp_decode_color(s, &color))
     return gtp_failure("invalid color");
-  
+
   move = game->gen_move(color);
-  
-  if(IS_RESIGN(move))
+
+  if (IS_RESIGN(move))
     return gtp_success("resign");
-  
+
   assert(game->play_move(move));
   gtp_start_response(GTP_SUCCESS);
-  if(IS_PASS(move))
-    gtp_print_vertex(-1,-1);
+  if (IS_PASS(move))
+    gtp_print_vertex(-1, -1);
   else
     gtp_print_vertex(move.i, move.j);
   return gtp_finish_response();
@@ -245,11 +227,9 @@ gtp_genmove(char *s)
  *
  * Status:    GTP version 2 standard command.
  */
-static int
-gtp_showboard(char *s)
-{
+static int gtp_showboard(char *s) {
   UNUSED(s);
-  
+
   gtp_start_response(GTP_SUCCESS);
   gtp_printf("\n");
   game->show_board(gtp_output_file);
@@ -263,10 +243,8 @@ gtp_showboard(char *s)
  *
  * Status:    GTP version 2 standard command.
  */
-static int
-gtp_final_score(char *s)
-{
-  float final_score=game->get_final_score();
+static int gtp_final_score(char *s) {
+  float final_score = game->get_final_score();
   gtp_start_response(GTP_SUCCESS);
   if (final_score > 0.0)
     gtp_printf("W+%3.1f", final_score);
@@ -284,11 +262,9 @@ gtp_final_score(char *s)
  * Returns:   nothing
  *
  */
-static int
-gtp_debug(char *s)
-{
+static int gtp_debug(char *s) {
   UNUSED(s);
-  
+
   gtp_start_response(GTP_SUCCESS);
   gtp_printf("\n");
   game->debug();
@@ -301,11 +277,9 @@ gtp_debug(char *s)
  * Returns:   nothing
  *
  */
-static int
-gtp_match_patterns(char *s)
-{
+static int gtp_match_patterns(char *s) {
   UNUSED(s);
-  
+
   gtp_start_response(GTP_SUCCESS);
   gtp_printf("\n");
   game->match_patterns();
@@ -320,9 +294,7 @@ gtp_match_patterns(char *s)
  *
  * Status:    GTP version 2 standard command.
  */
-static int
-gtp_list_commands(char *s)
-{
+static int gtp_list_commands(char *s) {
   int k;
   UNUSED(s);
 
@@ -342,18 +314,15 @@ gtp_list_commands(char *s)
  *
  * Status:    GTP version 2 standard command.
  */
-static int
-gtp_known_command(char *s)
-{
+static int gtp_known_command(char *s) {
   int k;
   char command[GTP_BUFSIZE];
 
   if (sscanf(s, "%s", command) == 1) {
     for (k = 0; commands[k].name != NULL; k++)
       if (strcmp(command, commands[k].name) == 0)
-	return gtp_success("true");
+        return gtp_success("true");
   }
 
   return gtp_success("false");
 }
-
